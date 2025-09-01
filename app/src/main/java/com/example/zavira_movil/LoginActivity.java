@@ -77,22 +77,15 @@ public class LoginActivity extends AppCompatActivity {
 
                 try {
                     String body = response.body().string().trim();
-                    Log.d("LOGIN_RESPONSE", "Respuesta cruda: " + body);
-
-                    // Ahora parseamos con Gson
                     LoginResponse loginResponse = new Gson().fromJson(body, LoginResponse.class);
 
-                    if (loginResponse.getError() != null) {
-                        Toast.makeText(LoginActivity.this, loginResponse.getError(), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (loginResponse.getToken() == null) {
+                    if (loginResponse.getToken() == null || loginResponse.getToken().isEmpty()) {
                         Toast.makeText(LoginActivity.this, "No se recibió token", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     tokenManager.saveToken(loginResponse.getToken());
+                    Log.d("TOKEN_GUARDADO", loginResponse.getToken());
                     Toast.makeText(LoginActivity.this, "Bienvenido/a", Toast.LENGTH_SHORT).show();
                     goToHome();
 
@@ -102,18 +95,18 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
 
-
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 progress.setVisibility(View.GONE);
                 Toast.makeText(LoginActivity.this, "Fallo de red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
 
     private void goToHome() {
-        Intent i = new Intent(this, HomeActivity.class);
+        Intent i = new Intent(this, TestActivity.class);
         startActivity(i);
         finish();
     }

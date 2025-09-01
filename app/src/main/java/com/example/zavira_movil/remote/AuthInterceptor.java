@@ -1,5 +1,7 @@
 package com.example.zavira_movil.remote;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
@@ -23,13 +25,19 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
         String token = tokenProvider.getToken();
+        Log.d("INTERCEPTOR_TOKEN", "Token usado en interceptor: Bearer " + token);
+
 
         if (token != null && !token.trim().isEmpty()) {
             Request withAuth = original.newBuilder()
                     .addHeader("Authorization", "Bearer " + token)
                     .build();
+            Log.d("INTERCEPTOR_TOKEN", "Header Authorization agregado con token"); // <--- y aquí
+
             return chain.proceed(withAuth);
         }
+        Log.d("INTERCEPTOR_TOKEN", "No hay token, enviando request original"); // <--- o aquí
+
         return chain.proceed(original);
     }
 }

@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         TokenManager tokenManager = new TokenManager(this);
-        String token = tokenManager.getToken();
+        String token = tokenManager.getToken(this);
 
         if (token != null && !token.isEmpty()) {
             // Si hay token → va al Home
