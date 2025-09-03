@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zavira_movil.local.TokenManager;
 import com.example.zavira_movil.model.KolbRequest;
 import com.example.zavira_movil.model.KolbResponse;
 import com.example.zavira_movil.model.PreguntasKolb;
@@ -144,7 +145,10 @@ public class TestActivity extends AppCompatActivity {
     private void enviarRespuestas() {
         ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
 
-        KolbRequest request = new KolbRequest(1, listaRespuestas); // id_usuario simulado
+        int userId = TokenManager.getUserId(this);
+        KolbRequest request = new KolbRequest(userId, listaRespuestas);
+
+
         Call<KolbResponse> call = api.guardarRespuestas(request);
 
         call.enqueue(new Callback<KolbResponse>() {

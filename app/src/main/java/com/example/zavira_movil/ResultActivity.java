@@ -1,6 +1,5 @@
 package com.example.zavira_movil;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -8,10 +7,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.zavira_movil.local.TokenManager;
-import com.example.zavira_movil.model.KolbResultado;
 import com.example.zavira_movil.remote.ApiService;
 import com.example.zavira_movil.remote.RetrofitClient;
+import com.example.zavira_movil.model.KolbResultado;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,35 +32,22 @@ public class ResultActivity extends AppCompatActivity {
         tvCaracteristicas = findViewById(R.id.tvCaracteristicas);
         tvRecomendaciones = findViewById(R.id.tvRecomendaciones);
 
-        // Instancia de API
+        // Instancia de API con interceptor
         apiService = RetrofitClient.getInstance(this).create(ApiService.class);
 
-        // Recuperar token guardado en SharedPreferences
-        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        String token = prefs.getString("token", null);
+        obtenerResultadoKolb();
+    }
 
-        if (token == null || token.isEmpty()) {
-            Toast.makeText(this, "Token NO encontrado en SharedPreferences", Toast.LENGTH_LONG).show();
-            Log.d("RESULT_ACTIVITY_TOKEN", "Token leído de SharedPreferences: " + token);
-            return;
-        }
-
-        Log.d("TOKEN_ENVIADO", "Bearer " + token);
-
-        Toast.makeText(this, " Token recuperado correctamente", Toast.LENGTH_SHORT).show();
-
-
-        // Llamada al backend
-        Call<KolbResultado> call = apiService.obtenerResultado("Bearer " + token);
+    private void obtenerResultadoKolb() {
+        Call<KolbResultado> call = apiService.obtenerResultado();
 
         call.enqueue(new Callback<KolbResultado>() {
             @Override
             public void onResponse(Call<KolbResultado> call, Response<KolbResultado> response) {
                 Log.d("KOLB_RESPONSE_CODE", String.valueOf(response.code()));
+
                 if (response.isSuccessful() && response.body() != null) {
                     KolbResultado resultado = response.body();
-
-                    Log.d("KOLB_RESULT_RAW", resultado.toString()); // Implementa toString() si quieres
 
                     // Mostrar datos en la UI
                     String nombreCompleto = resultado.getNombre() + " " + resultado.getApellido();
@@ -71,9 +56,14 @@ public class ResultActivity extends AppCompatActivity {
                     tvEstilo.setText("Estilo: " + resultado.getEstilo());
                     tvCaracteristicas.setText("Características: " + resultado.getCaracteristicas());
                     tvRecomendaciones.setText("Recomendaciones: " + resultado.getRecomendaciones());
+
+                    Log.d("KOLB_RESULT", "Resultado recibido correctamente");
+
                 } else {
+                    // Mostrar error detallado
                     try {
-                        Log.e("KOLB_ERROR_BODY", response.errorBody().string());
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "N/A";
+                        Log.e("KOLB_ERROR_BODY", errorBody);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -81,7 +71,6 @@ public class ResultActivity extends AppCompatActivity {
                     Toast.makeText(ResultActivity.this, "Error al obtener resultado", Toast.LENGTH_SHORT).show();
                 }
             }
-
 
             @Override
             public void onFailure(Call<KolbResultado> call, Throwable t) {

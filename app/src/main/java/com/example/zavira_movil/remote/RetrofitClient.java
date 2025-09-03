@@ -14,7 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "https://zavira-v9.onrender.com/";
+    private static final String BASE_URL = "https://zavira-v99.onrender.com";
     private static Retrofit retrofit;
 
     public static Retrofit getInstance(Context context) {

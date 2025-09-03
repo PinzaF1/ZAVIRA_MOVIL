@@ -14,6 +14,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface ApiService {
@@ -31,9 +32,6 @@ public interface ApiService {
     @POST("kolb/guardarRespuestas")
     Call<KolbResponse> guardarRespuestas(@Body KolbRequest request);
 
-    @GET("kolb/obtenerResultado")
-    Call<KolbResultado> obtenerResultado(String s);
-
-
+    @GET("/kolb/resultado")
+    Call<KolbResultado> obtenerResultado();
 }
-
