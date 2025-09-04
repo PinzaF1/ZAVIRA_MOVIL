@@ -14,18 +14,19 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "https://zavira-v99.onrender.com";
+    // IMPORTANTE: barra final, porque en ApiService usas rutas con "/" inicial
+    private static final String BASE_URL = "https://zavira-v99.onrender.com/";
     private static Retrofit retrofit;
 
     public static Retrofit getInstance(Context context) {
         if (retrofit == null) {
-            TokenManager tokenManager = new TokenManager(context.getApplicationContext());
-
+            // Interceptor de logging (opcional)
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
             OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(new AuthInterceptor(tokenManager::getToken))
+                    // Pasa un TokenProvider (función) que lee SIEMPRE el token actual usando el Context
+                    .addInterceptor(new AuthInterceptor(() -> TokenManager.getToken(context)))
                     .addInterceptor(logging)
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)

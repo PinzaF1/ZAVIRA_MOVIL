@@ -32,11 +32,11 @@ public class AuthInterceptor implements Interceptor {
             Request withAuth = original.newBuilder()
                     .addHeader("Authorization", "Bearer " + token)
                     .build();
-            Log.d("INTERCEPTOR_TOKEN", "Header Authorization agregado con token"); // <--- y aquí
+            Log.d("INTERCEPTOR_TOKEN", "Header Authorization agregado con token");
 
             return chain.proceed(withAuth);
         }
-        Log.d("INTERCEPTOR_TOKEN", "No hay token, enviando request original"); // <--- o aquí
+        Log.d("INTERCEPTOR_TOKEN", "No hay token, enviando request original"); 
 
         return chain.proceed(original);
     }

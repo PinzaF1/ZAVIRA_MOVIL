@@ -2,13 +2,24 @@ package com.example.zavira_movil.model;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Modelo para mapear las preguntas de Kolb desde el backend.
+ * Backend devuelve claves en camelCase:
+ *   - idPreguntaEstiloAprendizajes
+ *   - tipoPregunta
+ *   - titulo
+ *   - pregunta
+ *
+ * Mantenemos los mismos getters públicos que ya usa tu app.
+ */
 public class PreguntasKolb {
 
-    @SerializedName("id_pregunta_estilo_aprendizajes")
-    private int id_pregunta_estilo_aprendizajes;
+    // === Campos exactos del JSON ===
+    @SerializedName("idPreguntaEstiloAprendizajes")
+    private Integer idPreguntaEstiloAprendizajes;
 
     @SerializedName("tipoPregunta")
-    private String tipo_pregunta;
+    private String tipoPregunta;
 
     @SerializedName("titulo")
     private String titulo;
@@ -16,32 +27,34 @@ public class PreguntasKolb {
     @SerializedName("pregunta")
     private String pregunta;
 
+    // === Getters públicos (los mismos que usa tu código) ===
     public int getId_pregunta_estilo_aprendizajes() {
-        return id_pregunta_estilo_aprendizajes;
-    }
-
-    public void setId_pregunta_estilo_aprendizajes(int id_pregunta_estilo_aprendizajes) {
-        this.id_pregunta_estilo_aprendizajes = id_pregunta_estilo_aprendizajes;
+        return idPreguntaEstiloAprendizajes != null ? idPreguntaEstiloAprendizajes : 0;
     }
 
     public String getTipo_pregunta() {
-        return tipo_pregunta;
-    }
-
-    public void setTipo_pregunta(String tipo_pregunta) {
-        this.tipo_pregunta = tipo_pregunta;
+        return tipoPregunta != null ? tipoPregunta : "";
     }
 
     public String getTitulo() {
-        return titulo;
+        return titulo != null ? titulo : "";
+    }
+
+    public String getPregunta() {
+        return pregunta != null ? pregunta : "";
+    }
+
+    // === Setters opcionales (si en algún momento necesitas mutar los datos) ===
+    public void setIdPreguntaEstiloAprendizajes(Integer id) {
+        this.idPreguntaEstiloAprendizajes = id;
+    }
+
+    public void setTipoPregunta(String tipoPregunta) {
+        this.tipoPregunta = tipoPregunta;
     }
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
-    }
-
-    public String getPregunta() {
-        return pregunta;
     }
 
     public void setPregunta(String pregunta) {
