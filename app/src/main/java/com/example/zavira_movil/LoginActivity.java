@@ -29,7 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etDocumento, etPassword;
     private ProgressBar progress;
     private ApiService api;
-    private TokenManager tokenManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,11 +40,9 @@ public class LoginActivity extends AppCompatActivity {
         Button btnLogin = findViewById(R.id.btnLogin);
         progress = findViewById(R.id.progress);
 
-        tokenManager = new TokenManager(this);
         api = RetrofitClient.getInstance(this).create(ApiService.class);
 
-        // Si ya hay token -> ir directo a Home
-        if (tokenManager.getToken() != null) {
+        if (TokenManager.getToken(this) != null) {
             goToHome();
             return;
         }
@@ -77,22 +74,26 @@ public class LoginActivity extends AppCompatActivity {
 
                 try {
                     String body = response.body().string().trim();
-                    Log.d("LOGIN_RESPONSE", "Respuesta cruda: " + body);
-
-                    // Ahora parseamos con Gson
                     LoginResponse loginResponse = new Gson().fromJson(body, LoginResponse.class);
 
-                    if (loginResponse.getError() != null) {
-                        Toast.makeText(LoginActivity.this, loginResponse.getError(), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (loginResponse.getToken() == null) {
+                    if (loginResponse.getToken() == null || loginResponse.getToken().isEmpty()) {
                         Toast.makeText(LoginActivity.this, "No se recibió token", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    tokenManager.saveToken(loginResponse.getToken());
+                    // Guardar token
+                    TokenManager.setToken(LoginActivity.this, loginResponse.getToken());
+                    Log.d("TOKEN_GUARDADO", loginResponse.getToken());
+
+                    // Guardar userId extraído del JWT
+                    int userId = TokenManager.extractUserIdFromJwt(loginResponse.getToken());
+                    if (userId > 0) {
+                        TokenManager.setUserId(LoginActivity.this, userId);
+                        Log.d("USER_ID_GUARDADO", "id=" + userId);
+                    } else {
+                        Log.w("USER_ID_GUARDADO", "No se pudo extraer el id del JWT");
+                    }
+
                     Toast.makeText(LoginActivity.this, "Bienvenido/a", Toast.LENGTH_SHORT).show();
                     goToHome();
 
@@ -102,7 +103,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
 
-
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 progress.setVisibility(View.GONE);
@@ -111,6 +111,8 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    //Boton de logion hacia la actividad
+    //Hola ana
 
     private void goToHome() {
         Intent i = new Intent(this, HomeActivity.class);

@@ -3,4 +3,21 @@
 
     <solid android:color="#2979FF" /> <!-- Azul Zavira -->
     <corners android:radius="12dp" />
+
+    <!-- Estado seleccionado -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#0D47A1" /> <!-- Azul oscuro -->
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+
+    <!-- Estado normal -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#5393FF" /> <!-- Azul más claro -->
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+
 </shape>

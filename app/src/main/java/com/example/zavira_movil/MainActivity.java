@@ -11,8 +11,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TokenManager tokenManager = new TokenManager(this);
-        String token = tokenManager.getToken();
+        TokenManager tokenManager = new TokenManager();
+        String token = tokenManager.getToken(this);
 
         if (token != null && !token.isEmpty()) {
             // Si hay token → va al Home

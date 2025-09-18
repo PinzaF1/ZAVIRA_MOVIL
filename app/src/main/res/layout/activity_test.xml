@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- TÍTULO PRINCIPAL -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Test de Estilos de Aprendizaje (Kolb)"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:paddingBottom="12dp" />
+
+    <!-- SCROLL CON LAS PREGUNTAS -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/questionsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="?android:attr/dividerHorizontal"
+            android:showDividers="middle"
+            android:paddingBottom="16dp" />
+    </ScrollView>
+
+    <!-- BOTÓN ENVIAR -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEnviar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enviar respuestas"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:layout_marginTop="12dp"
+        app:cornerRadius="12dp"
+        app:icon="@android:drawable/ic_menu_send"
+        app:iconTint="@android:color/white"
+        app:iconPadding="8dp"/>
+</LinearLayout>

@@ -1,11 +1,17 @@
 package com.example.zavira_movil.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class LoginRequest {
-    private String numero_documento;
+    @SerializedName("numero_documento")
+    private String numeroDocumento;
+
+    @SerializedName("password")
     private String password;
 
-    public LoginRequest(String numero_documento, String password) {
-        this.numero_documento = numero_documento;
+    public LoginRequest(String numeroDocumento, String password) {
+        this.numeroDocumento = numeroDocumento;
         this.password = password;
     }
 }
+
