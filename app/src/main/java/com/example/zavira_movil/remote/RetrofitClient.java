@@ -18,7 +18,7 @@ public class RetrofitClient {
     private static final String BASE_URL = "https://zavira-backend.onrender.com/";
 
     private static Retrofit retrofit;
-   // HOLAAAAAAAAAAAAAAAAAAAAAAAAAA
+   // EL MACHO
     public static Retrofit getInstance(Context context) {
         if (retrofit == null) {
             // Interceptor de logging (opcional)
