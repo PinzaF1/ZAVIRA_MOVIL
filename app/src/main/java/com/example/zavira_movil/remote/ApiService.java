@@ -19,17 +19,17 @@ import retrofit2.http.POST;
 
 public interface ApiService {
 
-    @POST("loginEstudiante")
+    @POST("estudiante/login")
     Call<ResponseBody> loginEstudiante(@Body LoginRequest request);
 
 
-    @GET("perfilEstudiante")
+    @GET("estudiante/perfil")
     Call<Estudiante> getPerfilEstudiante();
 
     @GET("kolb/preguntas")
     Call<List<PreguntasKolb>> getPreguntas();
 
-    @POST("kolb/guardarRespuestas")
+    @POST("kolb/enviar")
     Call<KolbResponse> guardarRespuestas(@Body KolbRequest request);
 
     @GET("/kolb/resultado")
