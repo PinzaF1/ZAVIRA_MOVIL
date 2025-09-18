@@ -12,10 +12,16 @@ public class Subject implements Serializable {
     public final int headerDrawableRes;
     public final List<Level> levels;
 
-    public Subject(String id, String title, int done, int total, int iconRes,
-                   int headerDrawableRes, List<Level> levels) {
+    public boolean expanded;
+    public String description;   // ✅ ahora String
+
+    public Subject(String id, String title, String description,
+                   int done, int total,
+                   int iconRes, int headerDrawableRes,
+                   List<Level> levels) {
         this.id = id;
         this.title = title;
+        this.description = description;
         this.done = done;
         this.total = total;
         this.iconRes = iconRes;
@@ -27,10 +33,11 @@ public class Subject implements Serializable {
         return (int) Math.round((done * 100.0) / Math.max(total, 1));
     }
 
+    // ---- Nivel/Subtema ----
     public static class Level implements Serializable {
-        public final String name;                 // Ej: "Nivel 2: Álgebra básica"
-        public final String status;               // "Completado | En curso | Bloqueado"
-        public final List<Subtopic> subtopics;    // NUEVO
+        public final String name;
+        public final String status;
+        public final List<Subtopic> subtopics;
 
         public Level(String name, String status, List<Subtopic> subtopics) {
             this.name = name;
@@ -51,9 +58,11 @@ public class Subject implements Serializable {
         }
     }
 
+    // ---- Subtema ----
     public static class Subtopic implements Serializable {
-        public final String title;    // Ej: "Ecuaciones lineales"
-        public final boolean done;    // datos quemados
+        public final String title;
+        public final boolean done;
+
         public Subtopic(String title, boolean done) {
             this.title = title;
             this.done = done;

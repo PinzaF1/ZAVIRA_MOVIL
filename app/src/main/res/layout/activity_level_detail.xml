@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F9FAFB">
 
-    <!-- Header con color de la asignatura -->
+    <!-- HEADER -->
     <FrameLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:padding="16dp"
-        android:background="@drawable/bg_subject_header">
+        android:background="@drawable/bg_subject_header"
+        android:padding="12dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center_vertical">
@@ -22,68 +25,88 @@
                 android:id="@+id/tvSubject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Asignatura"
+                android:text="Matemáticas"
+                android:textColor="@android:color/white"
                 android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@android:color/white" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/tvLevel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nivel"
-                android:textSize="14sp"
-                android:textColor="@android:color/white" />
+                android:text="Nivel 1: Aritmética"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"/>
 
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="En curso"
-                android:textSize="12sp"
-                android:textColor="@android:color/white" />
+                android:text="Pendiente"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:layout_marginTop="2dp"/>
         </LinearLayout>
     </FrameLayout>
 
-    <!-- Progreso subtemas -->
+    <!-- DESCRIPCIÓN -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Desarrolla habilidades para resolver problemas numéricos, algebraicos, geométricos y estadísticos en contexto real."
+        android:textColor="#374151"
+        android:textSize="14sp" />
+
+    <!-- PROGRESO -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp">
 
         <ProgressBar
             android:id="@+id/progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
-            android:layout_height="10dp"
             android:layout_weight="1"
+            android:layout_height="8dp"
             android:max="100"
             android:progress="0"
             android:progressTint="#4F46E5"
-            android:progressBackgroundTint="#E5E7EB" />
+            android:progressBackgroundTint="#E5E7EB"/>
 
         <TextView
             android:id="@+id/tvProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:text="0/0 subtemas (0%)"
-            android:textStyle="bold"
-            android:textColor="#111827" />
+            android:textColor="#111827"
+            android:textSize="13sp"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#E5E7EB" />
-
-    <!-- Lista de subtemas -->
+    <!-- LISTA DE SUBTEMAS -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSubtopics"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:layout_weight="1"
-        android:padding="8dp" />
+        android:clipToPadding="false"/>
+
+    <!-- BOTÓN COMENZAR -->
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Comenzar"
+        android:textAllCaps="false"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#4F46E5"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"/>
 </LinearLayout>
