@@ -1,5 +1,6 @@
 package com.example.zavira_movil.remote;
 
+import com.example.zavira_movil.PreguntaAcademica;
 import com.example.zavira_movil.model.Estudiante;
 import com.example.zavira_movil.model.KolbResultado;
 import com.example.zavira_movil.model.LoginRequest;
@@ -28,9 +29,14 @@ public interface ApiService {
     @GET("kolb/preguntas")
     Call<List<PreguntasKolb>> getPreguntas();
 
-    @POST("kolb/guardarRespuestas")
+    @POST("kolb/enviar")
     Call<KolbResponse> guardarRespuestas(@Body KolbRequest request);
 
-    @GET("/kolb/resultado")
+    @GET("kolb/resultado")
     Call<KolbResultado> obtenerResultado();
+
+    @POST("movil/quiz-inicial/iniciar")
+    Call<List<PreguntaAcademica>> getPreguntaAcademica();
+
+
 }

@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tvPregunta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aquí va la pregunta"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:paddingBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/rgOpciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDDDDD"
+        android:layout_marginTop="8dp"/>
+</LinearLayout>
