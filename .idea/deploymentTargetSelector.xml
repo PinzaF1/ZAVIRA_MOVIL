@@ -4,14 +4,27 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
+<<<<<<< HEAD
         <DropdownSelection timestamp="2025-09-18T04:19:25.862582500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=LBGUMBS8UKJRPNXK" />
+=======
+        <DropdownSelection timestamp="2025-09-11T20:46:02.198852500Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=3300a85c6619c4d1" />
+>>>>>>> 5fd47610cb51dabf19828ad11f375e7b87d409be
             </handle>
           </Target>
         </DropdownSelection>
         <DialogSelection />
+<<<<<<< HEAD
+=======
+      </SelectionState>
+      <SelectionState runConfigName="ProfileActivity">
+        <option name="selectionMode" value="DROPDOWN" />
+>>>>>>> 5fd47610cb51dabf19828ad11f375e7b87d409be
       </SelectionState>
     </selectionStates>
   </component>

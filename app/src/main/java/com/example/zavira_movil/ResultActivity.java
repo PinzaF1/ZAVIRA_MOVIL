@@ -1,12 +1,13 @@
 package com.example.zavira_movil;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zavira_movil.databinding.ActivityResultBinding;
 import com.example.zavira_movil.model.KolbResultado;
 import com.example.zavira_movil.remote.ApiService;
 import com.example.zavira_movil.remote.RetrofitClient;
@@ -25,7 +26,7 @@ import retrofit2.Response;
 
 public class ResultActivity extends AppCompatActivity {
 
-    private TextView tvNombreCompleto, tvFecha, tvEstilo, tvCaracteristicas, tvRecomendaciones;
+    private ActivityResultBinding binding;   // View Binding
     private ApiService apiService;
 
     private String limpiarTexto(String s) {
@@ -66,25 +67,35 @@ public class ResultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_result);
 
-        tvNombreCompleto   = findViewById(R.id.tvNombreCompleto);
-        tvFecha            = findViewById(R.id.tvFecha);
-        tvEstilo           = findViewById(R.id.tvEstilo);
-        tvCaracteristicas  = findViewById(R.id.tvCaracteristicas);
-        tvRecomendaciones  = findViewById(R.id.tvRecomendaciones);
+        // Inflate con View Binding
+        binding = ActivityResultBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        String extraNombre        = getIntent().getStringExtra("nombre");
-        String extraFechaIso      = getIntent().getStringExtra("fecha");
-        String extraEstiloDom     = getIntent().getStringExtra("estilo");
-        String extraCaract        = getIntent().getStringExtra("caracteristicas");
-        String extraRecom         = getIntent().getStringExtra("recomendaciones");
+        // Navegación a HomeActivity
+        binding.btnIrHome.setOnClickListener(v -> {
+            Intent i = new Intent(ResultActivity.this, HomeActivity.class);
+            // Limpia el back stack para no volver a esta pantalla
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+            finish();
+        });
 
-        tvNombreCompleto.setText("Nombre completo: " + (extraNombre != null && !extraNombre.isEmpty() ? extraNombre : "-"));
-        tvFecha.setText("Fecha: " + formatearFechaFlexible(extraFechaIso));
-        tvEstilo.setText("Estilo: " + (extraEstiloDom != null && !extraEstiloDom.isEmpty() ? extraEstiloDom : "-"));
-        tvCaracteristicas.setText("Características: " + limpiarTexto(extraCaract));
-        tvRecomendaciones.setText("Recomendaciones: " + limpiarTexto(extraRecom));
+        // Lee extras
+        String extraNombre    = getIntent().getStringExtra("nombre");
+        String extraFechaIso  = getIntent().getStringExtra("fecha");
+        String extraEstiloDom = getIntent().getStringExtra("estilo");
+        String extraCaract    = getIntent().getStringExtra("caracteristicas");
+        String extraRecom     = getIntent().getStringExtra("recomendaciones");
+
+        // Pinta UI
+        binding.tvNombreCompleto.setText("Nombre completo: " +
+                (extraNombre != null && !extraNombre.isEmpty() ? extraNombre : "-"));
+        binding.tvFecha.setText("Fecha: " + formatearFechaFlexible(extraFechaIso));
+        binding.tvEstilo.setText("Estilo: " +
+                (extraEstiloDom != null && !extraEstiloDom.isEmpty() ? extraEstiloDom : "-"));
+        binding.tvCaracteristicas.setText("Características: " + limpiarTexto(extraCaract));
+        binding.tvRecomendaciones.setText("Recomendaciones: " + limpiarTexto(extraRecom));
 
         boolean faltaNombre = (extraNombre == null || extraNombre.trim().isEmpty());
         boolean faltaFecha  = (extraFechaIso == null || extraFechaIso.trim().isEmpty());
@@ -107,21 +118,19 @@ public class ResultActivity extends AppCompatActivity {
                                 + " " + ((r.getApellido() != null) ? r.getApellido() : "");
                         nombreCompleto = nombreCompleto.trim();
                         if (nombreCompleto.isEmpty()) nombreCompleto = "-";
-                        tvNombreCompleto.setText("Nombre completo: " + nombreCompleto);
+                        binding.tvNombreCompleto.setText("Nombre completo: " + nombreCompleto);
                     }
                     if (faltaFecha) {
-                        tvFecha.setText("Fecha: " + formatearFechaFlexible(r.getFecha()));
+                        binding.tvFecha.setText("Fecha: " + formatearFechaFlexible(r.getFecha()));
                     }
                     if (extraCaract == null || extraCaract.trim().isEmpty()) {
-                        tvCaracteristicas.setText("Características: " + limpiarTexto(r.getCaracteristicas()));
+                        binding.tvCaracteristicas.setText("Características: " + limpiarTexto(r.getCaracteristicas()));
                     }
                     if (extraRecom == null || extraRecom.trim().isEmpty()) {
-                        tvRecomendaciones.setText("Recomendaciones: " + limpiarTexto(r.getRecomendaciones()));
+                        binding.tvRecomendaciones.setText("Recomendaciones: " + limpiarTexto(r.getRecomendaciones()));
                     }
-
-                    // No sobreescribir el estilo si ya vino por extras
                     if (extraEstiloDom == null || extraEstiloDom.trim().isEmpty()) {
-                        tvEstilo.setText("Estilo: " + (r.getEstilo() != null ? r.getEstilo() : "-"));
+                        binding.tvEstilo.setText("Estilo: " + (r.getEstilo() != null ? r.getEstilo() : "-"));
                     }
                 }
 
