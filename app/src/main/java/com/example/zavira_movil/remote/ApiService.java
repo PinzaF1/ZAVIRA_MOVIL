@@ -19,9 +19,8 @@ import retrofit2.http.POST;
 
 public interface ApiService {
 
-    @POST("loginEstudiante")
+    @POST("estudiante/login")
     Call<ResponseBody> loginEstudiante(@Body LoginRequest request);
-
 
     @GET("perfilEstudiante")
     Call<Estudiante> getPerfilEstudiante();
