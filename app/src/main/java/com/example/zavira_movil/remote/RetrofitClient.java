@@ -16,6 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
     // IMPORTANTE: barra final, porque en ApiService usas rutas con "/" inicial
     private static final String BASE_URL = "https://zavira-backend.onrender.com/";
+
+    //hola
     private static Retrofit retrofit;
 
     public static Retrofit getInstance(Context context) {
