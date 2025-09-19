@@ -14,45 +14,60 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- HEADER con id para cambiar color -->
-        <FrameLayout
-            android:id="@+id/flHeader"
+        <!-- HEADER clickeable -->
+        <LinearLayout
+            android:id="@+id/headerClickable"
             android:layout_width="match_parent"
-            android:layout_height="96dp"
-            android:background="@drawable/bg_subject_header"
-            android:padding="12dp">
+            android:layout_height="72dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:background="@drawable/bg_subject_header">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/ivIcon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_icon_round"
+                android:padding="6dp"
+                android:src="@drawable/ic_book_24"
+                android:tint="@android:color/white" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Asignatura"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
 
-                <ImageView
-                    android:id="@+id/ivIcon"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@drawable/bg_icon_round"
-                    android:padding="6dp"
-                    android:src="@drawable/ic_book_24"
-                    android:tint="@android:color/white" />
+            <ImageView
+                android:id="@+id/ivChevron"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_play_24"
+                android:tint="@android:color/white"
+                android:rotation="90" />
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tvTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="Asignatura"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp" />
-            </LinearLayout>
-        </FrameLayout>
+        <!-- Descripción (texto debajo del header) -->
+        <TextView
+            android:id="@+id/tvDescripcion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textColor="#374151"
+            android:textSize="14sp" />
 
+        <!-- Resumen / progreso -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -80,18 +95,17 @@
             android:layout_height="8dp"
             android:layout_marginTop="6dp"
             android:max="100"
-            android:progress="65"
+            android:progress="0"
             android:progressTint="#4F46E5"
             android:progressBackgroundTint="#E5E7EB" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnExplore"
+        <!-- Contenedor donde el adapter pinta NIVELES + SUBTEMAS al expandir -->
+        <LinearLayout
+            android:id="@+id/subtopicsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Explorar Isla"
-            app:icon="@drawable/ic_play_24"
-            app:iconPadding="8dp"
-            app:iconGravity="textStart" />
+            android:orientation="vertical"
+            android:visibility="gone" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

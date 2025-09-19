@@ -22,7 +22,9 @@ public interface ApiService {
     @POST("estudiante/login")
     Call<ResponseBody> loginEstudiante(@Body LoginRequest request);
 
+
     @GET("perfilEstudiante")
+
     Call<Estudiante> getPerfilEstudiante();
 
     @GET("kolb/preguntas")

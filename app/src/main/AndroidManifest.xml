@@ -29,6 +29,7 @@
         <activity android:name=".TestActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".HomeActivity" />
+        <activity android:name=".Home.SubjectDetailActivity" />
     </application>
 
 </manifest>

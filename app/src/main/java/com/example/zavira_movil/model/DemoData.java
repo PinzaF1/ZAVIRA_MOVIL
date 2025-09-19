@@ -2,132 +2,83 @@ package com.example.zavira_movil.model;
 
 import com.example.zavira_movil.R;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DemoData {
 
-    // ---- Subtemas de ejemplo (Matemáticas) ----
-    private static List<Subject.Subtopic> subtemasMate1() {
-        return Arrays.asList(
-                new Subject.Subtopic("Operaciones con enteros", true),
-                new Subject.Subtopic("Proporciones y razones", true),
-                new Subject.Subtopic("Porcentajes", false)
-        );
-    }
-    private static List<Subject.Subtopic> subtemasMate2() {
-        return Arrays.asList(
-                new Subject.Subtopic("Expresiones algebraicas", true),
-                new Subject.Subtopic("Ecuaciones lineales", false),
-                new Subject.Subtopic("Sistemas de ecuaciones", false)
-        );
-    }
-    private static List<Subject.Subtopic> subtemasMate3() {
-        return Arrays.asList(
-                new Subject.Subtopic("Figuras planas", false),
-                new Subject.Subtopic("Perímetro y área", false),
-                new Subject.Subtopic("Ángulos", false)
-        );
-    }
-
-    // Repite helpers similares si quieres subtemas para las otras materias
-
     public static List<Subject> subjects() {
         return Arrays.asList(
-                new Subject("MAT", "Matemáticas", 12, 25, R.drawable.ic_book_24,
-                        R.drawable.bg_header_math,
+                new Subject(
+                        "1",
+                        "Matemáticas",
+                        "Desarrolla habilidades para resolver problemas numéricos, algebraicos, geométricos y estadísticos en contexto real.",
+                        0, 5,
+                        R.drawable.ic_book_24, R.drawable.bg_subject_header,
                         Arrays.asList(
-                                new Subject.Level("Nivel 1: Números y proporciones", "Completado", subtemasMate1()),
-                                new Subject.Level("Nivel 2: Álgebra básica", "En curso", subtemasMate2()),
-                                new Subject.Level("Nivel 3: Geometría y medidas", "Bloqueado", subtemasMate3())
-                        )),
-                new Subject("LECT", "Lectura Crítica", 8, 20, R.drawable.ic_book_24,
-                        R.drawable.bg_header_reading,
+                                new Subject.Level("Nivel 1 — Aritmética", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 2 — Álgebra", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 3 — Geometría", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 4 — Estadística y Probabilidad", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 5 — Funciones y Gráficas", "Pendiente", Collections.emptyList())
+                        )
+                ),
+                new Subject(
+                        "2",
+                        "Lectura Crítica",
+                        "Analiza y evalúa diferentes tipos de textos para identificar información explícita, implícita y la intención del autor.",
+                        0, 5,
+                        R.drawable.ic_book_24, R.drawable.bg_subject_header,
                         Arrays.asList(
-                                new Subject.Level("Nivel 1: Comprensión literal", "Completado",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Ideas principales", true),
-                                                new Subject.Subtopic("Detalles explícitos", true),
-                                                new Subject.Subtopic("Conectores básicos", false)
-                                        )),
-                                new Subject.Level("Nivel 2: Inferencia", "En curso",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Inferencias causales", false),
-                                                new Subject.Subtopic("Implicaturas", false),
-                                                new Subject.Subtopic("Contexto y tono", false)
-                                        )),
-                                new Subject.Level("Nivel 3: Argumentación", "Bloqueado",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Estructura del argumento", false),
-                                                new Subject.Subtopic("Falacias comunes", false),
-                                                new Subject.Subtopic("Posturas del autor", false)
-                                        ))
-                        )),
-                new Subject("SOC", "Sociales y Ciudadanas", 18, 28, R.drawable.ic_book_24,
-                        R.drawable.bg_header_social,
+                                new Subject.Level("Nivel 1 — Comprensión literal", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 2 — Vocabulario en contexto", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 3 — Comprensión inferencial", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 4 — Lectura crítica", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 5 — Tipos de texto", "Pendiente", Collections.emptyList())
+                        )
+                ),
+                new Subject(
+                        "3",
+                        "Ciencias Sociales",
+                        "Comprende procesos históricos, geográficos, económicos, políticos y culturales que explican la sociedad actual.",
+                        0, 5,
+                        R.drawable.ic_book_24, R.drawable.bg_subject_header,
                         Arrays.asList(
-                                new Subject.Level("Nivel 1: Ciudadanía y Estado", "Completado",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Derechos y deberes", true),
-                                                new Subject.Subtopic("Participación democrática", false),
-                                                new Subject.Subtopic("Organización del Estado", false)
-                                        )),
-                                new Subject.Level("Nivel 2: Historia de Colombia", "En curso",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Independencia de Colombia", false),
-                                                new Subject.Subtopic("Siglo XX en Colombia", false),
-                                                new Subject.Subtopic("Procesos sociales", false)
-                                        )),
-                                new Subject.Level("Nivel 3: Constitución", "Bloqueado",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Constitución de 1991", false),
-                                                new Subject.Subtopic("Ramas del poder público", false),
-                                                new Subject.Subtopic("Mecanismos de participación", false)
-                                        ))
-                        )),
-                new Subject("NAT", "Ciencias Naturales", 10, 24, R.drawable.ic_book_24,
-                        R.drawable.bg_header_science,
+                                new Subject.Level("Nivel 1 — Historia", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 2 — Geografía", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 3 — Filosofía y ciudadanía", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 4 — Economía", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 5 — Cultura y sociedad", "Pendiente", Collections.emptyList())
+                        )
+                ),
+                new Subject(
+                        "4",
+                        "Ciencias Naturales",
+                        "Explica fenómenos de la biología, química, física y ciencias de la Tierra aplicados a la vida diaria.",
+                        0, 5,
+                        R.drawable.ic_book_24, R.drawable.bg_subject_header,
                         Arrays.asList(
-                                new Subject.Level("Nivel 1: Biología", "En curso",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Célula y tejidos", true),
-                                                new Subject.Subtopic("Genética básica", false),
-                                                new Subject.Subtopic("Ecosistemas", false)
-                                        )),
-                                new Subject.Level("Nivel 2: Física", "Bloqueado",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Movimiento y fuerzas", false),
-                                                new Subject.Subtopic("Energía", false),
-                                                new Subject.Subtopic("Ondas", false)
-                                        )),
-                                new Subject.Level("Nivel 3: Química", "Bloqueado",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Propiedades de la materia", false),
-                                                new Subject.Subtopic("Reacciones químicas", false),
-                                                new Subject.Subtopic("Estequiometría", false)
-                                        ))
-                        )),
-                new Subject("ING", "Inglés", 5, 18, R.drawable.ic_book_24,
-                        R.drawable.bg_header_english,
+                                new Subject.Level("Nivel 1 — Biología", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 2 — Química", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 3 — Física", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 4 — Ciencias de la Tierra", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 5 — Indagación científica", "Pendiente", Collections.emptyList())
+                        )
+                ),
+                new Subject(
+                        "5",
+                        "Inglés",
+                        "Desarrolla competencias de comprensión y producción en inglés, enfocadas en lectura y uso del lenguaje.",
+                        0, 5,
+                        R.drawable.ic_book_24, R.drawable.bg_subject_header,
                         Arrays.asList(
-                                new Subject.Level("Nivel 1: Reading A1", "Completado",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Reading: food & drinks", true),
-                                                new Subject.Subtopic("Reading: hobbies", false),
-                                                new Subject.Subtopic("Reading: travel", false)
-                                        )),
-                                new Subject.Level("Nivel 2: Vocabulary A2", "En curso",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Vocabulary: daily routines", false),
-                                                new Subject.Subtopic("Vocabulary: places in town", false),
-                                                new Subject.Subtopic("Vocabulary: adjectives", false)
-                                        )),
-                                new Subject.Level("Nivel 3: Listening B1", "Bloqueado",
-                                        Arrays.asList(
-                                                new Subject.Subtopic("Listening: short dialogues", false),
-                                                new Subject.Subtopic("Listening: announcements", false),
-                                                new Subject.Subtopic("Listening: interviews", false)
-                                        ))
-                        ))
+                                new Subject.Level("Nivel 1 — Grammar", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 2 — Vocabulary", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 3 — Reading Comprehension", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 4 — Listening", "Pendiente", Collections.emptyList()),
+                                new Subject.Level("Nivel 5 — Writing", "Pendiente", Collections.emptyList())
+                        )
+                )
         );
     }
 }
