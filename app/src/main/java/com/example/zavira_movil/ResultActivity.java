@@ -74,7 +74,7 @@ public class ResultActivity extends AppCompatActivity {
 
         // Navegación a HomeActivity
         binding.btnIrHome.setOnClickListener(v -> {
-            Intent i = new Intent(ResultActivity.this, HomeActivity.class);
+            Intent i = new Intent(ResultActivity.this, TestAcademico.class);
             // Limpia el back stack para no volver a esta pantalla
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
