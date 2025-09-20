@@ -8,7 +8,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <!-- FOTO DE PERFIL -->
+        <ImageView
+            android:id="@+id/ivFotoPerfil"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_default_avatar"
+            android:background="@drawable/circle_background"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnEditarFoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_edit"
+            android:contentDescription="Editar foto"
+            android:backgroundTint="@color/blue_zavira"
+            android:tint="@android:color/white"
+            android:layout_marginBottom="16dp" />
 
         <TextView
             android:id="@+id/tvTitulo"
@@ -23,23 +44,18 @@
         <TextView android:id="@+id/tvNombre"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="16sp" android:layout_marginTop="8dp" />
-
         <TextView android:id="@+id/tvDocumento"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="16sp" />
-
         <TextView android:id="@+id/tvGrado"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="16sp" />
-
         <TextView android:id="@+id/tvCurso"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="16sp" />
-
         <TextView android:id="@+id/tvJornada"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="16sp" />
-
         <TextView android:id="@+id/tvCorreo"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="16sp" />
@@ -60,7 +76,6 @@
             android:textSize="18sp"
             android:textColor="#2C3E50"
             android:layout_marginTop="16dp" />
-
         <TextView
             android:id="@+id/tvEstilo"
             android:layout_width="wrap_content"
@@ -68,7 +83,6 @@
             android:text="Estilo: -"
             android:textSize="16sp"
             android:layout_marginTop="8dp" />
-
         <TextView
             android:id="@+id/tvFechaKolb"
             android:layout_width="wrap_content"
@@ -76,7 +90,6 @@
             android:text="Fecha: -"
             android:textSize="14sp"
             android:textColor="#555555" />
-
         <TextView
             android:id="@+id/tvCaracteristicas"
             android:layout_width="wrap_content"
@@ -84,7 +97,6 @@
             android:text="Características: -"
             android:textSize="15sp"
             android:layout_marginTop="8dp" />
-
         <TextView
             android:id="@+id/tvRecomendaciones"
             android:layout_width="wrap_content"
@@ -100,8 +112,9 @@
             android:text="Cerrar sesión"
             android:textAllCaps="false"
             android:layout_marginTop="24dp"
-            android:backgroundTint="#6A4BBC"
+            android:backgroundTint="@color/blue_zavira"
             android:textColor="@android:color/white"
             android:padding="12dp" />
+
     </LinearLayout>
 </ScrollView>
