@@ -13,6 +13,9 @@
         android:textColor="@android:color/black"
         android:paddingBottom="8dp" />
 
+
+
+
     <RadioGroup
         android:id="@+id/rgOpciones"
         android:layout_width="match_parent"
