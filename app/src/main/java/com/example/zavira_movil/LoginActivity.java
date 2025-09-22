@@ -111,11 +111,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    //Boton de logion hacia la actividad
-    //Hola ana
 
     private void goToHome() {
-        Intent i = new Intent(this, HomeActivity.class);
+        Intent i = new Intent(this, InfoTestActivity.class);
         startActivity(i);
         finish();
     }

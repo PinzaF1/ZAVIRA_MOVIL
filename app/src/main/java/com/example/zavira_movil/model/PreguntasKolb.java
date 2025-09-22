@@ -2,16 +2,6 @@ package com.example.zavira_movil.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Modelo para mapear las preguntas de Kolb desde el backend.
- * Backend devuelve claves en camelCase:
- *   - idPreguntaEstiloAprendizajes
- *   - tipoPregunta
- *   - titulo
- *   - pregunta
- *
- * Mantenemos los mismos getters públicos que ya usa tu app.
- */
 public class PreguntasKolb {
 
     // === Campos exactos del JSON ===
@@ -27,7 +17,7 @@ public class PreguntasKolb {
     @SerializedName("pregunta")
     private String pregunta;
 
-    // === Getters públicos (los mismos que usa tu código) ===
+
     public int getId_pregunta_estilo_aprendizajes() {
         return idPreguntaEstiloAprendizajes != null ? idPreguntaEstiloAprendizajes : 0;
     }
@@ -44,7 +34,7 @@ public class PreguntasKolb {
         return pregunta != null ? pregunta : "";
     }
 
-    // === Setters opcionales (si en algún momento necesitas mutar los datos) ===
+
     public void setIdPreguntaEstiloAprendizajes(Integer id) {
         this.idPreguntaEstiloAprendizajes = id;
     }

@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="56dp"
     android:orientation="horizontal"
-    android:padding="12dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="12dp">
 
-    <CheckBox
-        android:id="@+id/cbDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:clickable="false" />
-
+    <!-- Título del subtema / nivel -->
     <TextView
         android:id="@+id/tvSubtopicTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
         android:layout_weight="1"
-        android:text="Nombre del subtema"
+        android:text="Nivel 1 — Aritmética"
+        android:textSize="10sp"
         android:textColor="#111827" />
+
+    <!-- Botón Comenzar a la derecha -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Comenzar"
+        android:textAllCaps="false"
+        app:cornerRadius="18dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 </LinearLayout>

@@ -23,7 +23,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Acción campana
         binding.btnBell.setOnClickListener(v ->
-                Toast.makeText(this, "Notificaciones pronto 😊", Toast.LENGTH_SHORT).show());
+                Toast.makeText(this, "Notificaciones pronto ", Toast.LENGTH_SHORT).show());
 
         // Acción FAB perfil
         binding.fabPerfil.setOnClickListener(v ->

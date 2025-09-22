@@ -1,26 +1,3 @@
-package com.example.zavira_movil.remote;
-
-import com.example.zavira_movil.model.Estudiante;
-import com.example.zavira_movil.model.KolbResultado;
-import com.example.zavira_movil.model.LoginRequest;
-
-import com.example.zavira_movil.model.KolbRequest;
-import com.example.zavira_movil.model.KolbResponse;
-import com.example.zavira_movil.model.PreguntasKolb;
-
-import java.util.List;
-
-import okhttp3.MultipartBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.DELETE;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Multipart;
-import retrofit2.http.POST;
-import retrofit2.http.Part;
-
 public interface ApiService {
 
     @POST("estudiante/login")
@@ -32,14 +9,26 @@ public interface ApiService {
     @GET("kolb/preguntas")
     Call<List<PreguntasKolb>> getPreguntas();
 
-    @POST("kolb/guardarRespuestas")
+    @POST("kolb/enviar")
     Call<KolbResponse> guardarRespuestas(@Body KolbRequest request);
 
-    @GET("/kolb/resultado")
+    @GET("kolb/resultado")
     Call<KolbResultado> obtenerResultado();
 
+    // Métodos de quiz inicial
+    @POST("quizz/iniciar")
+    Call<QuizInicialResponse> iniciar(
+            @Header("Authorization") String bearerToken,
+            @Body Map<String, Object> body
+    );
 
-    //  MEtodos para la foto de perfil
+    @POST("quiz-inicial/cerrar")
+    Call<ResponseBody> cerrar(
+            @Header("Authorization") String bearerToken,
+            @Body QuizCerrarRequest request
+    );
+
+    // Métodos para la foto de perfil
     @Multipart
     @POST("users/me/photo")
     Call<ResponseBody> subirFoto(@Part MultipartBody.Part foto);

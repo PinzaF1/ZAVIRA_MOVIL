@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#5AADF0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="16dp"
+            android:text="Test de Estilos de Aprendizaje"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <!-- Subtítulo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="28dp"
+            android:text="Inventario de David Kolb"
+            android:textColor="#E0E0E0"
+            android:textSize="16sp" />
+
+        <!-- Card: Para qué sirve -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="20dp"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿Para qué sirve este test?"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#1A1A1A"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Este test te ayudará a identificar tu estilo de aprendizaje preferido según el modelo de David Kolb, permitiéndote conocer cómo procesas mejor la información y adaptar tus métodos de estudio."
+                android:textColor="#444444"
+                android:textSize="15sp"
+                android:lineSpacingExtra="6dp" />
+        </LinearLayout>
+
+        <!-- Card: Estilos de Aprendizaje -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="20dp"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Los 4 Estilos de Aprendizaje"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#1A1A1A"
+                android:paddingBottom="12dp" />
+
+            <!-- Fila 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_divergente"
+                    android:text="Divergente\nCreativo y empático"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    android:layout_marginEnd="6dp"
+                    android:backgroundTintMode="src_atop" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_asimilador"
+                    android:text="Asimilador\nLógico y técnico"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    android:layout_marginStart="6dp"
+                    android:backgroundTintMode="src_atop" />
+            </LinearLayout>
+
+            <!-- Fila 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_convergente"
+                    android:text="Convergente\nPráctico y técnico"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    android:layout_marginEnd="6dp"
+                    android:backgroundTintMode="src_atop" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_acomodador"
+                    android:text="Acomodador\nActivo y adaptable"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    android:layout_marginStart="6dp"
+                    android:backgroundTintMode="src_atop" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Card: Instrucciones -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="20dp"
+            android:layout_marginBottom="28dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Instrucciones"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#1A1A1A"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Responderás 36 preguntas divididas en 4 secciones\n✔ Califica cada afirmación del 1 al 4 según tu preferencia\n✔ 1 = Menos preferido, 4 = Más preferido\n✔ Responde honestamente según tu experiencia"
+                android:textSize="15sp"
+                android:textColor="#444444"
+                android:lineSpacingExtra="6dp" />
+        </LinearLayout>
+
+        <!-- Botón -->
+        <Button
+            android:id="@+id/btnStartTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Comenzar Test →"
+            android:backgroundTint="#2794ED"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:elevation="6dp"
+            android:padding="14dp"
+            android:layout_marginBottom="36dp" />
+    </LinearLayout>
+</ScrollView>
