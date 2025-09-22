@@ -35,13 +35,15 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // *** INICIALIZA RETROFIT ***
+        api = RetrofitClient.getInstance(this).create(ApiService.class);
+
         etDocumento = findViewById(R.id.etDocumento);
         etPassword  = findViewById(R.id.etPassword);
         Button btnLogin = findViewById(R.id.btnLogin);
         progress = findViewById(R.id.progress);
 
-        api = RetrofitClient.getInstance(this).create(ApiService.class);
-
+        // si ya hay token -> Home
         if (TokenManager.getToken(this) != null) {
             goToHome();
             return;
@@ -85,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                     TokenManager.setToken(LoginActivity.this, loginResponse.getToken());
                     Log.d("TOKEN_GUARDADO", loginResponse.getToken());
 
-                    // Guardar userId extraído del JWT
+                    // Guardar userId si viene en el JWT
                     int userId = TokenManager.extractUserIdFromJwt(loginResponse.getToken());
                     if (userId > 0) {
                         TokenManager.setUserId(LoginActivity.this, userId);
@@ -110,9 +112,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-    //Boton de logion hacia la actividad
-    //Hola ana
 
     private void goToHome() {
         Intent i = new Intent(this, HomeActivity.class);

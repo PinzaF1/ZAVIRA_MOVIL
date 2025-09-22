@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="recyclerViewPreguntas" type="id" />
+    <item name="progressBar" type="id" />
+    <item name="tvDescription" type="id" />
+    <item name="btnStart" type="id" />
+    <item name="tvLevelStatus" type="id" />
+    <item name="cbDone" type="id" />
+</resources>

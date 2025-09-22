@@ -1,5 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <!-- Colores base de Android -->
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+
+    <!-- Grises -->
+    <color name="gray_light">#E5E7EB</color>
+    <color name="gray_dark">#6B7280</color>
+    <color name="gray_darker">#374151</color>
+
+    <!-- Paleta principal (ejemplo) -->
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
+
+    <!-- Botones desbloqueados -->
+    <color name="btn_enabled_bg">#000000</color>
+    <color name="btn_enabled_text">#FFFFFF</color>
+
+    <!-- Botones bloqueados -->
+    <color name="btn_disabled_bg">#9E9E9E</color>
+    <color name="btn_disabled_text">#FFFFFF</color>
 </resources>

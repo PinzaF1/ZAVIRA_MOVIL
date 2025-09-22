@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="14dp"
@@ -14,7 +15,7 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- HEADER con id para cambiar color -->
+        <!-- HEADER con id para cambiar color (tappable para expandir/colapsar) -->
         <FrameLayout
             android:id="@+id/flHeader"
             android:layout_width="match_parent"
@@ -23,8 +24,8 @@
             android:padding="12dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
@@ -34,18 +35,27 @@
                     android:layout_height="36dp"
                     android:background="@drawable/bg_icon_round"
                     android:padding="6dp"
-                    android:src="@drawable/ic_book_24"
-                    android:tint="@android:color/white" />
+                    android:src="@drawable/ic_book_24" />
 
                 <TextView
                     android:id="@+id/tvTitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginStart="10dp"
-                    android:text="Asignatura"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    tools:text="Asignatura" />
+
+                <!-- FLECHA -->
+                <ImageView
+                    android:id="@+id/ivArrow"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:contentDescription="@string/expandir"
+                    app:srcCompat="@drawable/ic_expand_more_24"
+                    android:rotation="0" />
             </LinearLayout>
         </FrameLayout>
 
@@ -61,16 +71,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="0/0 niveles"
-                android:textColor="#374151" />
+                android:textColor="#374151"
+                tools:text="0/0 niveles" />
 
             <TextView
                 android:id="@+id/tvPercent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0%"
                 android:textStyle="bold"
-                android:textColor="#111827" />
+                android:textColor="#111827"
+                tools:text="0%" />
         </LinearLayout>
 
         <ProgressBar
@@ -80,18 +90,32 @@
             android:layout_height="8dp"
             android:layout_marginTop="6dp"
             android:max="100"
-            android:progress="65"
             android:progressTint="#4F46E5"
-            android:progressBackgroundTint="#E5E7EB" />
+            android:progressBackgroundTint="#E5E7EB"
+            tools:progress="65" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnExplore"
+        <!-- NUEVA DESCRIPCIÓN DEL ÁREA -->
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Aquí va la descripción del área."
+            android:textSize="14sp"
+            android:textColor="#4B5563"
+            android:visibility="gone"
+            tools:visibility="visible" />
+        <!-- ************************** -->
+
+        <!-- LISTA DE SUBTEMAS (oculta por defecto) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSubtopics"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Explorar Isla"
-            app:icon="@drawable/ic_play_24"
-            app:iconPadding="8dp"
-            app:iconGravity="textStart" />
+            android:nestedScrollingEnabled="false"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

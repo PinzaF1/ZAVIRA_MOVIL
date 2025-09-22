@@ -29,8 +29,8 @@ public class HomeActivity extends AppCompatActivity {
         binding.fabPerfil.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
-        // Lista de materias
+        // Lista de materias (áreas ICFES con niveles y subtemas)
         binding.rvSubjects.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvSubjects.setAdapter(new SubjectAdapter(DemoData.subjects()));
+        binding.rvSubjects.setAdapter(new SubjectAdapter(DemoData.getSubjects()));
     }
 }

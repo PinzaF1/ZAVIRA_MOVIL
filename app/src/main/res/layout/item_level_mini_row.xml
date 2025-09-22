@@ -21,7 +21,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- SOLO el nivel arriba -->
+            <!-- Título que queremos: "Nivel X: Aritmética" -->
             <TextView
                 android:id="@+id/tvLevelName"
                 android:layout_width="wrap_content"
@@ -31,26 +31,26 @@
                 android:textSize="16sp"
                 android:textColor="@android:color/black" />
 
-            <!-- Subtema pequeño abajo -->
+            <!-- Subtema pequeño debajo -->
             <TextView
                 android:id="@+id/tvLevelSubtopic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Subtema"
+                android:text="Aritmética"
                 android:textSize="14sp"
                 android:textColor="#5B5B5B" />
         </LinearLayout>
 
+        <!-- Botón COMENZAR que ahora SÍ navega -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStart"
-            style="@style/Widget.MaterialComponents.Button"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="36dp"
             android:text="Comenzar"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            app:cornerRadius="20dp"
-            app:backgroundTint="?attr/colorPrimary" />
+            android:textSize="14sp"
+            android:insetLeft="12dp"
+            android:insetRight="12dp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
