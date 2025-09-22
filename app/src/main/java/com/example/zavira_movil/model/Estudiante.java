@@ -25,19 +25,21 @@ public class Estudiante {
     )
     private String numeroDocumento;
 
-    // otros campos suelen venir igual, pero agrego alias por si acaso
+    // grado
     @SerializedName(
             value = "grado",
             alternate = {"grade"}
     )
     private String grado;
 
+    // curso
     @SerializedName(
             value = "curso",
             alternate = {"class", "cursoNombre"}
     )
     private String curso;
 
+    // jornada
     @SerializedName(
             value = "jornada",
             alternate = {"session"}
@@ -51,6 +53,13 @@ public class Estudiante {
     )
     private String correo;
 
+    // foto perfil
+    @SerializedName(
+            value = "foto_url",
+            alternate = {"fotoUrl", "foto", "profilePicture", "avatar"}
+    )
+    private String fotoUrl;
+
     // Getters
     public String getNombreUsuario()   { return nombreUsuario; }
     public String getApellido()        { return apellido; }
@@ -59,4 +68,5 @@ public class Estudiante {
     public String getCurso()           { return curso; }
     public String getJornada()         { return jornada; }
     public String getCorreo()          { return correo; }
+    public String getFotoUrl()         { return fotoUrl; }
 }
