@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -7,17 +9,29 @@
 
     <TextView
         android:id="@+id/tvSubjectTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Asignatura"
+        android:text="Matemáticas"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="#111827" />
+        android:paddingBottom="12dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLevels"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingTop="8dp" />
+        android:clipToPadding="false"
+        android:paddingBottom="12dp" />
+
+    <!-- Botón Simulacro final -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSimulacro"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SIMULACRO FINAL"
+        android:enabled="false"
+        app:cornerRadius="24dp" />
+
 </LinearLayout>

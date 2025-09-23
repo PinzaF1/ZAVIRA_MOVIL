@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zavira_movil.local.AuthStorageCompat;   // <— NUEVO
 import com.example.zavira_movil.local.TokenManager;
 import com.example.zavira_movil.model.LoginRequest;
 import com.example.zavira_movil.model.LoginResponse;
@@ -81,18 +82,15 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Guardar token
+                    // Guardar token donde ya lo usas…
                     TokenManager.setToken(LoginActivity.this, loginResponse.getToken());
-                    Log.d("TOKEN_GUARDADO", loginResponse.getToken());
+                    // …y también en las prefs/keys más comunes SIN tocar Retrofit/Interceptor
+                    AuthStorageCompat.saveTokenEverywhere(LoginActivity.this, loginResponse.getToken());
 
-                    // Guardar userId extraído del JWT
+                    Log.d("LOGIN", "token guardado");
+
                     int userId = TokenManager.extractUserIdFromJwt(loginResponse.getToken());
-                    if (userId > 0) {
-                        TokenManager.setUserId(LoginActivity.this, userId);
-                        Log.d("USER_ID_GUARDADO", "id=" + userId);
-                    } else {
-                        Log.w("USER_ID_GUARDADO", "No se pudo extraer el id del JWT");
-                    }
+                    if (userId > 0) TokenManager.setUserId(LoginActivity.this, userId);
 
                     Toast.makeText(LoginActivity.this, "Bienvenido/a", Toast.LENGTH_SHORT).show();
                     goToHome();
@@ -111,12 +109,8 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    //Boton de logion hacia la actividad
-    //Hola ana
-
     private void goToHome() {
-        Intent i = new Intent(this, HomeActivity.class);
-        startActivity(i);
+        startActivity(new Intent(this, HomeActivity.class));
         finish();
     }
 }

@@ -29,6 +29,10 @@
         <activity android:name=".TestActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".HomeActivity" />
+        <activity android:name=".Home.SubjectDetailActivity"/>
+        <activity android:name=".Home.QuizActivity"/>
+        <activity android:name=".Home.SimulacroActivity" />
+
     </application>
 
 </manifest>
