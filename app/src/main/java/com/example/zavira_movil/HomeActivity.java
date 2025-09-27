@@ -13,6 +13,7 @@ import com.example.zavira_movil.model.DemoData;
 
 public class HomeActivity extends AppCompatActivity {
     private ActivityHomeBinding binding;
+    private SubjectAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,16 +22,20 @@ public class HomeActivity extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Acción campana
         binding.btnBell.setOnClickListener(v ->
-                Toast.makeText(this, "Notificaciones pronto ", Toast.LENGTH_SHORT).show());
+                Toast.makeText(this, "Notificaciones pronto", Toast.LENGTH_SHORT).show());
 
-        // Acción FAB perfil
         binding.fabPerfil.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
-        // Lista de materias
         binding.rvSubjects.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvSubjects.setAdapter(new SubjectAdapter(DemoData.subjects()));
+        adapter = new SubjectAdapter(DemoData.getSubjects());
+        binding.rvSubjects.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adapter != null) adapter.notifyDataSetChanged(); // Refresca progreso/candados
     }
 }

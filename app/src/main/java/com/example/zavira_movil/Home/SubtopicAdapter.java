@@ -14,12 +14,11 @@ import com.example.zavira_movil.model.Subject;
 
 import java.util.List;
 
-/** Adapter para mostrar los subtemas dentro de un nivel/área */
 public class SubtopicAdapter extends RecyclerView.Adapter<SubtopicAdapter.VH> {
 
     private final List<Subject.Subtopic> data;
 
-    public SubtopicAdapter(@NonNull List<Subject.Subtopic> data) {
+    public SubtopicAdapter(List<Subject.Subtopic> data) {
         this.data = data;
     }
 
@@ -34,8 +33,13 @@ public class SubtopicAdapter extends RecyclerView.Adapter<SubtopicAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
         Subject.Subtopic s = data.get(position);
-        h.tvTitle.setText(s.title != null ? s.title : "-");
+        h.tvTitle.setText(s.title);
         h.cbDone.setChecked(s.done);
+
+        // Click futuro: abrir contenido del subtema
+        h.itemView.setOnClickListener(v -> {
+            // TODO: lanzar actividad de contenido (video/quiz)
+        });
     }
 
     @Override
@@ -44,13 +48,12 @@ public class SubtopicAdapter extends RecyclerView.Adapter<SubtopicAdapter.VH> {
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        final TextView tvTitle;
-        final CheckBox cbDone;
-
-        VH(@NonNull View itemView) {
-            super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvSubtopicTitle);   // ojo: id en item_subtopic_row.xml
-            cbDone  = itemView.findViewById(R.id.cbDone);
+        CheckBox cbDone;
+        TextView tvTitle;
+        VH(@NonNull View v) {
+            super(v);
+            cbDone = v.findViewById(R.id.cbDone);
+            tvTitle = v.findViewById(R.id.tvSubtopicTitle);
         }
     }
 }

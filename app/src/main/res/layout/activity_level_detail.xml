@@ -1,112 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLevelDetail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F9FAFB">
+    android:padding="16dp">
 
-    <!-- HEADER -->
     <FrameLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="@drawable/bg_subject_header"
-        android:padding="12dp">
+        android:layout_height="80dp"
+        android:background="@android:color/darker_gray"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/tvSubject"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Matemáticas"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/tvLevel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nivel 1: Aritmética"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:layout_marginTop="4dp"/>
-
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pendiente"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:layout_marginTop="2dp"/>
-        </LinearLayout>
-    </FrameLayout>
-
-    <!-- DESCRIPCIÓN -->
     <TextView
-        android:id="@+id/tvDescription"
+        android:id="@+id/tvSubject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Área"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/tvLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nivel"
+        android:layout_marginTop="2dp"/>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disponible"
+        android:layout_marginTop="2dp"/>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Desarrolla habilidades para resolver problemas numéricos, algebraicos, geométricos y estadísticos en contexto real."
-        android:textColor="#374151"
-        android:textSize="14sp" />
+        android:layout_marginTop="8dp"/>
 
-    <!-- PROGRESO -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvProgress"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="12dp">
+        android:text="0/5 subtemas (0%)"
+        android:layout_marginTop="4dp"/>
 
-        <ProgressBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="8dp"
-            android:max="100"
-            android:progress="0"
-            android:progressTint="#4F46E5"
-            android:progressBackgroundTint="#E5E7EB"/>
-
-        <TextView
-            android:id="@+id/tvProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="0/0 subtemas (0%)"
-            android:textColor="#111827"
-            android:textSize="13sp"/>
-    </LinearLayout>
-
-    <!-- LISTA DE SUBTEMAS -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSubtopics"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
         android:layout_weight="1"
-        android:clipToPadding="false"/>
-
-    <!-- BOTÓN COMENZAR -->
-    <Button
-        android:id="@+id/btnStart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Comenzar"
-        android:textAllCaps="false"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#4F46E5"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"/>
+        android:layout_marginTop="8dp"/>
 </LinearLayout>

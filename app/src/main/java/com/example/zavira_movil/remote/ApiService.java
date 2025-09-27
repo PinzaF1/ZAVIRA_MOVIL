@@ -13,6 +13,12 @@ import com.example.zavira_movil.model.KolbRequest;
 import com.example.zavira_movil.model.KolbResponse;
 import com.example.zavira_movil.model.PreguntasKolb;
 
+import com.example.zavira_movil.model.ParadaRequest;
+import com.example.zavira_movil.model.ParadaResponse;
+import com.example.zavira_movil.model.CerrarRequest;
+import com.example.zavira_movil.model.CerrarResponse;
+import com.example.zavira_movil.model.SimulacroRequest;
+
 
 import java.util.List;
 import java.util.Map;
@@ -64,7 +70,12 @@ public interface ApiService {
     Call<ResponseBody> eliminarFoto();
 
     //Test y Niveles por Area
+    @POST("sesion/parada")
+    Call<ParadaResponse> crearParada(@Body ParadaRequest req);
+    @POST("sesion/cerrar")
+    Call<CerrarResponse> cerrarSesion(@Body CerrarRequest req);
+    @POST("movil/simulacro")
+    Call<ParadaResponse> crearSimulacro(@Body SimulacroRequest req);
 
-
-
+    
 }
