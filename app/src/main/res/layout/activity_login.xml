@@ -113,6 +113,17 @@
             android:textAllCaps="false"
             android:layout_marginTop="24dp"/>
 
+        <!-- Botón Provicional -->
+        <Button
+            android:id="@+id/btnLoginprovicional"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Boton Provicional"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2979FF"
+            android:textAllCaps="false"
+            android:layout_marginTop="24dp"/>
+
 
         <!-- Footer -->
         <TextView

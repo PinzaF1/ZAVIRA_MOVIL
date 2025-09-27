@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zavira_movil.databinding.ActivityLoginBinding;
 import com.example.zavira_movil.local.TokenManager;
 import com.example.zavira_movil.model.LoginRequest;
 import com.example.zavira_movil.model.LoginResponse;
@@ -26,46 +24,57 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etDocumento, etPassword;
-    private ProgressBar progress;
+    private ActivityLoginBinding binding;
     private ApiService api;
+
+    // <<< NUEVO: destino después de validar >>>
+    private enum Destino { INFO_TEST, HOME }
+    private Destino destinoPendiente = Destino.INFO_TEST;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
-        etDocumento = findViewById(R.id.etDocumento);
-        etPassword  = findViewById(R.id.etPassword);
-        Button btnLogin = findViewById(R.id.btnLogin);
-        progress = findViewById(R.id.progress);
+        // ViewBinding
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         api = RetrofitClient.getInstance(this).create(ApiService.class);
 
+        // Si ya hay token, entra directo a InfoTest
         if (TokenManager.getToken(this) != null) {
-            goToHome();
+            goToInfoTest();
             return;
         }
 
-        btnLogin.setOnClickListener(v -> doLogin());
+        // Ambos botones usan la misma validación; cambian SOLO el destino
+        binding.btnLogin.setOnClickListener(v -> {
+            destinoPendiente = Destino.INFO_TEST; // después del login → InfoTest
+            doLogin();
+        });
+
+        binding.btnLoginprovicional.setOnClickListener(v -> {
+            destinoPendiente = Destino.HOME; // después del login → Home
+            doLogin();
+        });
     }
 
     private void doLogin() {
-        String doc = etDocumento.getText().toString().trim();
-        String pass = etPassword.getText().toString().trim();
+        String doc = binding.etDocumento.getText().toString().trim();
+        String pass = binding.etPassword.getText().toString().trim();
 
         if (doc.isEmpty() || pass.isEmpty()) {
             Toast.makeText(this, "Documento y contraseña son obligatorios", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        progress.setVisibility(View.VISIBLE);
+        binding.progress.setVisibility(View.VISIBLE);
 
         LoginRequest request = new LoginRequest(doc, pass);
         api.loginEstudiante(request).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                progress.setVisibility(View.GONE);
+                binding.progress.setVisibility(View.GONE);
 
                 if (!response.isSuccessful() || response.body() == null) {
                     Toast.makeText(LoginActivity.this, "Error en el login", Toast.LENGTH_SHORT).show();
@@ -95,7 +104,13 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     Toast.makeText(LoginActivity.this, "Bienvenido/a", Toast.LENGTH_SHORT).show();
-                    goToHome();
+
+                    // <<< NUEVO: navegar según el botón que se pulsó >>>
+                    if (destinoPendiente == Destino.HOME) {
+                        goToHome();
+                    } else {
+                        goToInfoTest();
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -105,15 +120,22 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                progress.setVisibility(View.GONE);
+                binding.progress.setVisibility(View.GONE);
                 Toast.makeText(LoginActivity.this, "Fallo de red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-
-    private void goToHome() {
+    // Navegación → InfoTestActivity
+    private void goToInfoTest() {
         Intent i = new Intent(this, InfoTestActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    // Navegación → HomeActivity
+    private void goToHome() {
+        Intent i = new Intent(this, HomeActivity.class);
         startActivity(i);
         finish();
     }
