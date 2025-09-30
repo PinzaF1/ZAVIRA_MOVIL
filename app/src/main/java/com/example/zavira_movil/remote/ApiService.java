@@ -1,17 +1,19 @@
 package com.example.zavira_movil.remote;
 
-import com.example.zavira_movil.BasicResponse;
-import com.example.zavira_movil.PreguntaAcademica;
 import com.example.zavira_movil.QuizCerrarRequest;
 import com.example.zavira_movil.QuizInicialResponse;
-import com.example.zavira_movil.QuizResponse;
 import com.example.zavira_movil.model.Estudiante;
+import com.example.zavira_movil.model.HistorialItem;
 import com.example.zavira_movil.model.KolbResultado;
 import com.example.zavira_movil.model.LoginRequest;
 
 import com.example.zavira_movil.model.KolbRequest;
 import com.example.zavira_movil.model.KolbResponse;
+import com.example.zavira_movil.model.MateriaDetalle;
+import com.example.zavira_movil.model.MateriaUi;
 import com.example.zavira_movil.model.PreguntasKolb;
+import com.example.zavira_movil.model.ProgresoMateria;
+import com.example.zavira_movil.model.ResumenGeneral;
 
 
 import java.util.List;
@@ -27,6 +29,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 public interface ApiService {
 
@@ -63,8 +66,22 @@ public interface ApiService {
     @DELETE("users/me/photo")
     Call<ResponseBody> eliminarFoto();
 
-    //Test y Niveles por Area
 
 
+   // movil progreso
+
+
+        // ---------- Progreso Móvil ----------
+        @GET("movil/progreso/resumen")
+        Call<ResumenGeneral> getProgresoGeneral();
+
+        @GET("movil/progreso/materias")
+        Call<List<ProgresoMateria>> getProgresoMaterias();
+
+        @GET("movil/progreso/historial")
+        Call<List<HistorialItem>> getHistorial();
+
+        @GET("movil/progreso/historial/{id}")
+        Call<HistorialItem> getHistorialDetalle(@Path("id") int idSesion);
 
 }
