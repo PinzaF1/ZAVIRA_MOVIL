@@ -9,9 +9,8 @@ import com.example.zavira_movil.model.LoginRequest;
 
 import com.example.zavira_movil.model.KolbRequest;
 import com.example.zavira_movil.model.KolbResponse;
-import com.example.zavira_movil.model.MateriaDetalle;
-import com.example.zavira_movil.model.MateriaUi;
 import com.example.zavira_movil.model.PreguntasKolb;
+import com.example.zavira_movil.model.MateriaProgreso;
 import com.example.zavira_movil.model.ProgresoMateria;
 import com.example.zavira_movil.model.ResumenGeneral;
 
@@ -85,6 +84,7 @@ public interface ApiService {
             @Header("Authorization") String authorization
     );
 
+
     // GET /movil/progreso/historial
     Call<List<HistorialItem>> getHistorial(
             @Header("Authorization") String authorization,
@@ -94,6 +94,20 @@ public interface ApiService {
             @Query("desde") String desde,
             @Query("hasta") String hasta
     );
+
+        // ---------- Progreso Móvil ----------
+        @GET("movil/progreso/resumen")
+        Call<ResumenGeneral> getProgresoGeneral();
+
+        @GET("movil/progreso/materias")
+        Call<List<MateriaProgreso>> getProgresoMaterias();
+
+        @GET("movil/progreso/historial")
+        Call<List<HistorialItem>> getHistorial();
+
+        @GET("movil/progreso/historial/{id}")
+        Call<HistorialItem> getHistorialDetalle(@Path("id") int idSesion);
+
 
     // GET /movil/progreso/historial/{id_sesion}
     Call<List<HistorialItem>> getHistorialDetalle(

@@ -2,8 +2,9 @@ package com.example.zavira_movil.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class MateriaDetalle {
-    @SerializedName("nombre")
+public class MateriaProgreso {
+
+    @SerializedName("nombre")  // Coincide con tu JSON
     private String nombre;
 
     @SerializedName("porcentaje")

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Nombre de la materia -->
+        <TextView
+            android:id="@+id/txtNombreMateria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lenguaje"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <!-- Barra de progreso horizontal -->
+        <ProgressBar
+            android:id="@+id/progressMateria"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_marginTop="6dp"
+            android:max="100"
+            android:progress="0"
+            android:progressTint="@color/azul"
+            android:backgroundTint="@color/lightGray"/>
+
+        <!-- Porcentaje de progreso -->
+        <TextView
+            android:id="@+id/txtProgreso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0%"
+            android:textSize="14sp"
+            android:layout_marginTop="6dp"/>
+
+        <!-- Descripción opcional -->
+        <TextView
+            android:id="@+id/txtDescripcion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buen progreso"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

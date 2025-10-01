@@ -4,15 +4,20 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
-    <!-- Tabs -->
+    <!-- TabLayout para las pestañas -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:tabMode="fixed"
-        app:tabGravity="fill" />
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/purple_500"
+        app:tabSelectedTextColor="@color/purple_500"
+        app:tabTextColor="@android:color/darker_gray"
+        app:tabIndicatorHeight="3dp" />
 
     <!-- Contenedor "General" -->
     <LinearLayout
@@ -41,10 +46,11 @@
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
-    <!-- Frame para Materias / Historial -->
+    <!-- FrameLayout para Materias / Historial -->
     <FrameLayout
         android:id="@+id/contenedorTabs"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
 </LinearLayout>

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZAVIRA_MOVIL">
         <activity
-            android:name=".ProgresoActivity"
+            android:name=".progreso.ProgresoActivity"
             android:exported="false" />
         <activity
             android:name=".InfoAcademico"

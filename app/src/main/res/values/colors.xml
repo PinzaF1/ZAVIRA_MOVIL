@@ -13,6 +13,23 @@
     <color name="pastel_verde">#C1E1C1</color>
     <color name="gray_200">#EEEEEE</color>
     <color name="gray_500">#9E9E9E</color>
+    <color name="azul_excellent">#2196F3</color>
+    <color name="verde_buen">#4CAF50</color>
+    <color name="rojo_necesita">#F44336</color>
+
+    <color name="morado">#800080</color>
+    <color name="azul">#2196F3</color>
+    <color name="verde">#4CAF50</color>
+    <color name="naranja">#FF9800</color>
+    <color name="rojo">#F44336</color>
+    <color name="lightGray">#E0E0E0</color>
+
+    <color name="blue">#1976D2</color>
+    <color name="green">#388E3C</color>
+    <color name="orange">#FFA000</color>
+    <color name="red">#D32F2F</color>
+
+
 
 
 
