@@ -1,44 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="12dp"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/txtTituloHistorial"
+        android:text="Sesión Lenguaje Nivel 2"
+        android:textStyle="bold"
+        android:textSize="16sp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp">
+        android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/tvFechaHistorial"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30/09/2025"
-            android:textSize="14sp"
-            android:textColor="@color/black"
-            android:layout_marginEnd="12dp"/>
+    <TextView
+        android:id="@+id/txtDetalleHistorial"
+        android:text="4 correctas de 5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"/>
 
-        <TextView
-            android:id="@+id/tvActividadHistorial"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Nombre de la actividad"
-            android:textSize="16sp"
-            android:textColor="@color/black"/>
-
-        <TextView
-            android:id="@+id/tvEstadoHistorial"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Completada"
-            android:textSize="14sp"
-            android:textColor="@color/purple_500"/>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/txtFechaHistorial"
+        android:text="2025-10-01 12:33"
+        android:textSize="12sp"
+        android:textColor="#666666"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"/>
+</LinearLayout>

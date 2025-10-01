@@ -1,74 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="@color/white">
+    android:layout_height="70dp"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
-    <!-- Circular Progress General -->
-    <FrameLayout
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/containerProgreso">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp">
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progresoGeneral"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:indicatorSize="160dp"
-            app:trackThickness="18dp"
-            app:indicatorColor="@color/purple_500"
-            app:trackColor="@color/gray_200"
-            app:showAnimationBehavior="none"/>
+        <ImageView
+            android:id="@+id/imgMateria"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_materia_default"
+            android:contentDescription="Imagen materia"/>
 
         <TextView
-            android:id="@+id/textoProgreso"
+            android:id="@+id/tvNombreMateria"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Materia"
+            android:textSize="16sp"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tvProgresoMateria"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0%"
-            android:textSize="24sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center"/>
-    </FrameLayout>
-
-    <!-- Título -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Progreso General"
-        android:textSize="18sp"
-        android:textColor="@color/black"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"/>
-
-    <!-- TabLayout -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabIndicatorColor="@color/purple_500"
-        app:tabSelectedTextColor="@color/purple_500"
-        app:tabTextColor="@color/gray_500"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Contenedores de RecyclerViews -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvMaterias"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"
-        android:layout_marginTop="8dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvHistorial"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"
-        android:layout_marginTop="8dp"/>
-</LinearLayout>
+            android:textSize="16sp"
+            android:textColor="@color/purple_500"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

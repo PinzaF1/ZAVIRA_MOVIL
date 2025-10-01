@@ -30,20 +30,24 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
 
     //Logue Estudiante
     @POST("estudiante/login")
     Call<ResponseBody> loginEstudiante(@Body LoginRequest request);
+
     @GET("perfilEstudiante")
     Call<Estudiante> getPerfilEstudiante();
 
     //Estilo de Kold
     @GET("kolb/preguntas")
     Call<List<PreguntasKolb>> getPreguntas();
+
     @POST("kolb/enviar")
     Call<KolbResponse> guardarRespuestas(@Body KolbRequest request);
+
     @GET("kolb/resultado")
     Call<KolbResultado> obtenerResultado();
 
@@ -53,6 +57,7 @@ public interface ApiService {
             @Header("Authorization") String bearerToken,
             @Body Map<String, Object> body
     );
+
     @POST("quiz-inicial/cerrar")
     Call<ResponseBody> cerrar(
             @Header("Authorization") String bearerToken,
@@ -63,25 +68,36 @@ public interface ApiService {
     @Multipart
     @POST("users/me/photo")
     Call<ResponseBody> subirFoto(@Part MultipartBody.Part foto);
+
     @DELETE("users/me/photo")
     Call<ResponseBody> eliminarFoto();
 
 
+    // movil progreso
 
-   // movil progreso
+    // GET /movil/progreso/resumen
+    Call<ResumenGeneral> getProgresoGeneral(
+            @Header("Authorization") String authorization
+    );
 
+    // GET /movil/progreso/materias
+    Call<List<ProgresoMateria>> getProgresoMaterias(
+            @Header("Authorization") String authorization
+    );
 
-        // ---------- Progreso Móvil ----------
-        @GET("movil/progreso/resumen")
-        Call<ResumenGeneral> getProgresoGeneral();
+    // GET /movil/progreso/historial
+    Call<List<HistorialItem>> getHistorial(
+            @Header("Authorization") String authorization,
+            @Query("materia") String materia,
+            @Query("page") Integer page,
+            @Query("limit") Integer limit,
+            @Query("desde") String desde,
+            @Query("hasta") String hasta
+    );
 
-        @GET("movil/progreso/materias")
-        Call<List<ProgresoMateria>> getProgresoMaterias();
-
-        @GET("movil/progreso/historial")
-        Call<List<HistorialItem>> getHistorial();
-
-        @GET("movil/progreso/historial/{id}")
-        Call<HistorialItem> getHistorialDetalle(@Path("id") int idSesion);
-
+    // GET /movil/progreso/historial/{id_sesion}
+    Call<List<HistorialItem>> getHistorialDetalle(
+            @Header("Authorization") String authorization,
+            @Path("id_sesion") String idSesion
+    );
 }

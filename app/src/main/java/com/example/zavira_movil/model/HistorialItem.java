@@ -1,17 +1,22 @@
 package com.example.zavira_movil.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class HistorialItem {
-    private String fecha; // Ej: "2025-09-30"
-    private String actividad;
-    private boolean completada;
+    @SerializedName("titulo")
+    private String titulo;
 
-    // Getters y Setters
+    @SerializedName("detalle")
+    private String detalle;
+
+    @SerializedName(value = "fecha", alternate = {"created_at", "ultima_vez"})
+    private String fecha;
+
+    public String getTitulo() { return titulo; }
+    public String getDetalle() { return detalle; }
     public String getFecha() { return fecha; }
+
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public void setDetalle(String detalle) { this.detalle = detalle; }
     public void setFecha(String fecha) { this.fecha = fecha; }
-
-    public String getActividad() { return actividad; }
-    public void setActividad(String actividad) { this.actividad = actividad; }
-
-    public boolean isCompletada() { return completada; }
-    public void setCompletada(boolean completada) { this.completada = completada; }
 }

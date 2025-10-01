@@ -27,6 +27,8 @@ public class RetrofitClient {
                     .readTimeout(30, TimeUnit.SECONDS)
                     .build();
 
+
+
             Gson gson = new GsonBuilder().setLenient().create();
 
             retrofit = new Retrofit.Builder()

@@ -3,7 +3,7 @@ package com.example.zavira_movil.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,44 +14,39 @@ import com.example.zavira_movil.model.ProgresoMateria;
 
 import java.util.List;
 
-public class ProgresoAdapter extends RecyclerView.Adapter<ProgresoAdapter.ProgresoViewHolder> {
+public class ProgresoAdapter extends RecyclerView.Adapter<ProgresoAdapter.VH> {
 
-    private List<ProgresoMateria> lista;
+    private final List<ProgresoMateria> data;
 
-    public ProgresoAdapter(List<ProgresoMateria> lista) {
-        this.lista = lista;
+    public ProgresoAdapter(List<ProgresoMateria> data) {
+        this.data = data;
     }
 
-    @NonNull
-    @Override
-    public ProgresoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    @NonNull @Override
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_materia, parent, false);
-        return new ProgresoViewHolder(v);
+        return new VH(v);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ProgresoViewHolder holder, int position) {
-        ProgresoMateria item = lista.get(position);
-        holder.tvNombre.setText(item.getNombre());
-        holder.tvProgreso.setText(item.getProgreso() + "%");
-        // Para imagen, si tienes url:
-        // Picasso.get().load(item.getImagenUrl()).placeholder(R.drawable.ic_materia_default).into(holder.imgMateria);
+    @Override public void onBindViewHolder(@NonNull VH h, int position) {
+        ProgresoMateria m = data.get(position);
+        h.txtNombre.setText(m.getNombre());
+        h.txtPorcentaje.setText(m.getProgreso() + "%");
+        h.progress.setProgress(m.getProgreso());
     }
 
-    @Override
-    public int getItemCount() {
-        return lista.size();
+    @Override public int getItemCount() {
+        return data == null ? 0 : data.size();
     }
 
-    static class ProgresoViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombre, tvProgreso;
-        ImageView imgMateria;
-
-        public ProgresoViewHolder(@NonNull View itemView) {
+    static class VH extends RecyclerView.ViewHolder {
+        TextView txtNombre, txtPorcentaje;
+        ProgressBar progress;
+        VH(@NonNull View itemView) {
             super(itemView);
-            tvNombre = itemView.findViewById(R.id.tvNombreMateria);
-            tvProgreso = itemView.findViewById(R.id.tvProgresoMateria);
-            imgMateria = itemView.findViewById(R.id.imgMateria);
+            txtNombre = itemView.findViewById(R.id.txtNombreMateria);
+            txtPorcentaje = itemView.findViewById(R.id.txtPorcentajeMateria);
+            progress = itemView.findViewById(R.id.progressMateria);
         }
     }
 }
