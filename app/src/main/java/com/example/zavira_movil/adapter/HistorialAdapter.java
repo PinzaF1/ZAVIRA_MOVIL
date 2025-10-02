@@ -1,6 +1,5 @@
 package com.example.zavira_movil.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,67 +15,47 @@ import java.util.List;
 
 public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder> {
 
-    private Context context;
-    private List<HistorialItem> historialList;
+    private List<HistorialItem> lista;
 
-    public HistorialAdapter(Context context, List<HistorialItem> historialList) {
-        this.context = context;
-        this.historialList = historialList;
+    public HistorialAdapter(List<HistorialItem> lista) {
+        this.lista = lista;
+    }
+
+    public void setLista(List<HistorialItem> nuevaLista) {
+        this.lista = nuevaLista;
     }
 
     @NonNull
     @Override
     public HistorialViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_historial, parent, false);
-        return new HistorialViewHolder(view);
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_historial, parent, false);
+        return new HistorialViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull HistorialViewHolder holder, int position) {
-        HistorialItem item = historialList.get(position);
-
-        holder.txtMateria.setText(item.getMateria());
-        holder.txtFecha.setText(item.getFecha());
-        holder.txtPorcentaje.setText(item.getPorcentaje() + "%");
-
-        // Nivel y color según porcentaje
-        String nivel;
-        int colorCircle;
-
-        if (item.getPorcentaje() >= 90) {
-            nivel = "Experto";
-            colorCircle = context.getResources().getColor(R.color.blue);
-        } else if (item.getPorcentaje() >= 70) {
-            nivel = "Avanzado";
-            colorCircle = context.getResources().getColor(R.color.green);
-        } else if (item.getPorcentaje() >= 50) {
-            nivel = "Intermedio";
-            colorCircle = context.getResources().getColor(R.color.orange);
-        } else {
-            nivel = "Básico";
-            colorCircle = context.getResources().getColor(R.color.red);
-        }
-
-        holder.txtNivel.setText(nivel);
-        holder.circuloNivel.setBackgroundColor(colorCircle);
+        HistorialItem item = lista.get(position);
+        holder.tvMateria.setText(item.getMateria());
+        holder.tvNivel.setText(item.getNivel());
+        holder.tvPorcentaje.setText(item.getPorcentaje() + "%");
+        holder.tvFecha.setText(item.getFecha());
     }
 
     @Override
     public int getItemCount() {
-        return historialList.size();
+        return lista != null ? lista.size() : 0;
     }
 
     static class HistorialViewHolder extends RecyclerView.ViewHolder {
-        TextView txtMateria, txtFecha, txtPorcentaje, txtNivel;
-        View circuloNivel;
+        TextView tvMateria, tvNivel, tvPorcentaje, tvFecha;
 
         public HistorialViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtMateria = itemView.findViewById(R.id.txtMateria);
-            txtFecha = itemView.findViewById(R.id.txtFecha);
-            txtPorcentaje = itemView.findViewById(R.id.txtPorcentaje);
-            txtNivel = itemView.findViewById(R.id.txtNivel);
-            circuloNivel = itemView.findViewById(R.id.circuloNivel);
+            tvMateria = itemView.findViewById(R.id.tvMateria);
+            tvNivel = itemView.findViewById(R.id.tvNivel);
+            tvPorcentaje = itemView.findViewById(R.id.tvPorcentaje);
+            tvFecha = itemView.findViewById(R.id.tvFecha);
         }
     }
 }

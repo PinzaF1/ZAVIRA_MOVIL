@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Botón Crear Reto -->
+        <Button
+            android:id="@+id/btnCrearReto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Crear Reto"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Botón Aceptar Reto -->
+        <Button
+            android:id="@+id/btnAceptarReto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aceptar Reto"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Botón Responder Ronda -->
+        <Button
+            android:id="@+id/btnResponderRonda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Responder Ronda"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Botón Ver Estado -->
+        <Button
+            android:id="@+id/btnVerEstado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ver Estado"
+            android:layout_marginBottom="16dp" />
+
+        <!-- TextView para mostrar información del reto -->
+        <TextView
+            android:id="@+id/tvEstado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aquí se mostrará el estado del reto"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:padding="8dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="16dp"
+            android:minHeight="100dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -13,7 +13,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "https://zavira-backend.onrender.com/"; // ⚠️ con / al final
+    private static final String BASE_URL = "https://overvaliantly-discourseless-delilah.ngrok-free.dev/"; // ⚠️ con / al final
     private static Retrofit retrofit;
 
     public static Retrofit getInstance(Context context) {

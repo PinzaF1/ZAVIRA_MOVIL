@@ -9,10 +9,15 @@ import com.example.zavira_movil.model.LoginRequest;
 
 import com.example.zavira_movil.model.KolbRequest;
 import com.example.zavira_movil.model.KolbResponse;
+import com.example.zavira_movil.model.MateriaDetalle;
 import com.example.zavira_movil.model.PreguntasKolb;
 import com.example.zavira_movil.model.MateriaProgreso;
 import com.example.zavira_movil.model.ProgresoMateria;
 import com.example.zavira_movil.model.ResumenGeneral;
+import com.example.zavira_movil.model.Reto;
+import com.example.zavira_movil.model.RetoEstado;
+import com.example.zavira_movil.model.RetoRespuesta;
+import com.example.zavira_movil.model.RetoRonda;
 
 
 import java.util.List;
@@ -72,46 +77,36 @@ public interface ApiService {
     Call<ResponseBody> eliminarFoto();
 
 
-    // movil progreso
 
-    // GET /movil/progreso/resumen
-    Call<ResumenGeneral> getProgresoGeneral(
-            @Header("Authorization") String authorization
-    );
-
-    // GET /movil/progreso/materias
-    Call<List<ProgresoMateria>> getProgresoMaterias(
-            @Header("Authorization") String authorization
-    );
-
-
-    // GET /movil/progreso/historial
-    Call<List<HistorialItem>> getHistorial(
-            @Header("Authorization") String authorization,
-            @Query("materia") String materia,
-            @Query("page") Integer page,
-            @Query("limit") Integer limit,
-            @Query("desde") String desde,
-            @Query("hasta") String hasta
-    );
 
         // ---------- Progreso Móvil ----------
         @GET("movil/progreso/resumen")
-        Call<ResumenGeneral> getProgresoGeneral();
+        Call<ResumenGeneral> getResumen();
 
-        @GET("movil/progreso/materias")
-        Call<List<MateriaProgreso>> getProgresoMaterias();
+    @GET("movil/progreso/materias")
+    Call<List<MateriaDetalle>> getMaterias();
 
-        @GET("movil/progreso/historial")
-        Call<List<HistorialItem>> getHistorial();
-
-        @GET("movil/progreso/historial/{id}")
-        Call<HistorialItem> getHistorialDetalle(@Path("id") int idSesion);
+    @GET("movil/progreso/historial")
+    Call<List<HistorialItem>> getHistorial();
 
 
-    // GET /movil/progreso/historial/{id_sesion}
-    Call<List<HistorialItem>> getHistorialDetalle(
-            @Header("Authorization") String authorization,
-            @Path("id_sesion") String idSesion
-    );
+        // retos 1 vs 1
+
+        @POST("movil/retos")
+        Call<Reto> crearReto(@Body Reto reto);
+
+    // 2. Aceptar un reto
+    @POST("movil/retos/{id_reto}/aceptar")
+    Call<RetoEstado> aceptarReto(@Path("id_reto") int idReto);
+
+    // 3. Responder una ronda
+    @POST("movil/retos/ronda")
+    Call<RetoRespuesta> responderRonda(@Body RetoRonda ronda);
+
+    // 4. Ver estado de un reto
+    @GET("movil/retos/{id_reto}")
+    Call<RetoEstado> estadoReto(@Path("id_reto") int idReto);
+
+
+
 }

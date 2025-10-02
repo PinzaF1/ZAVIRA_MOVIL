@@ -17,6 +17,7 @@ import com.example.zavira_movil.model.HistorialItem;
 import com.example.zavira_movil.remote.ApiService;
 import com.example.zavira_movil.remote.RetrofitClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -25,40 +26,44 @@ import retrofit2.Response;
 
 public class FragmentHistorial extends Fragment {
 
-    private RecyclerView recyclerView;
-    private HistorialAdapter adapter;
+    private RecyclerView recyclerHistorial;
+    private HistorialAdapter historialAdapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_historial, container, false);
 
-        // Inicializar RecyclerView
-        recyclerView = view.findViewById(R.id.recyclerHistorial);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        // Configuración RecyclerView
+        recyclerHistorial = view.findViewById(R.id.recyclerHistorial);
+        recyclerHistorial.setLayoutManager(new LinearLayoutManager(getContext()));
+        historialAdapter = new HistorialAdapter(new ArrayList<>());
+        recyclerHistorial.setAdapter(historialAdapter);
 
-        // Llamar al API
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
-        Call<List<HistorialItem>> call = api.getHistorial();
-        call.enqueue(new Callback<List<HistorialItem>>() {
+        // Cargar datos desde API
+        cargarHistorial();
+
+        return view;
+    }
+
+    private void cargarHistorial() {
+        ApiService apiService = RetrofitClient.getInstance(getContext()).create(ApiService.class);
+        apiService.getHistorial().enqueue(new Callback<List<HistorialItem>>() {
             @Override
             public void onResponse(Call<List<HistorialItem>> call, Response<List<HistorialItem>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<HistorialItem> historial = response.body();
-
-                    // Pasar datos al adapter
-                    adapter = new HistorialAdapter(requireContext(), historial);
-                    recyclerView.setAdapter(adapter);
+                    historialAdapter.setLista(historial);
+                    historialAdapter.notifyDataSetChanged();
                 }
             }
 
             @Override
             public void onFailure(Call<List<HistorialItem>> call, Throwable t) {
-                t.printStackTrace(); // Si hay error lo ves en Logcat
+                // Manejo de error
             }
         });
-
-        return view;
     }
 }

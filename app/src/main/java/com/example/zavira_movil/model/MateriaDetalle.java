@@ -3,17 +3,18 @@ package com.example.zavira_movil.model;
 import com.google.gson.annotations.SerializedName;
 
 public class MateriaDetalle {
+
     @SerializedName("nombre")
     private String nombre;
 
     @SerializedName("porcentaje")
     private int porcentaje;
 
-    public String getNombre() {
-        return nombre;
-    }
+    @SerializedName("etiqueta")
+    private String etiqueta;
 
-    public int getPorcentaje() {
-        return porcentaje;
-    }
+    // Getters
+    public String getNombre() { return nombre; }
+    public int getPorcentaje() { return porcentaje; }
+    public String getEtiqueta() { return etiqueta; }
 }

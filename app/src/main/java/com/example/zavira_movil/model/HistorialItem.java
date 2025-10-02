@@ -4,25 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class HistorialItem {
 
-    @SerializedName("titulo")
-    private String titulo;
-
-    @SerializedName("detalle")
-    private String detalle;
-
-    @SerializedName(value = "fecha", alternate = {"created_at", "ultima_vez"})
-    private String fecha;
-
-    public String getTitulo() { return titulo; }
-    public String getDetalle() { return detalle; }
-    public String getFecha() { return fecha; }
-
-    public void setTitulo(String titulo) { this.titulo = titulo; }
-    public void setDetalle(String detalle) { this.detalle = detalle; }
-    public void setFecha(String fecha) { this.fecha = fecha; }
-
-    @SerializedName("id")
-    private int id;
+    @SerializedName("intentoId")
+    private String intentoId;
 
     @SerializedName("materia")
     private String materia;
@@ -30,23 +13,20 @@ public class HistorialItem {
     @SerializedName("porcentaje")
     private int porcentaje;
 
+    @SerializedName("nivel")
+    private String nivel;
+
     @SerializedName("fecha")
-    private String fecha; // Ej: "2025-10-01"
+    private String fecha;
 
-    public int getId() {
-        return id;
-    }
+    @SerializedName("detalleDisponible")
+    private boolean detalleDisponible;
 
-    public String getMateria() {
-        return materia;
-    }
-
-    public int getPorcentaje() {
-        return porcentaje;
-    }
-
-    public String getFecha() {
-        return fecha;
-    }
-
+    // Getters
+    public String getIntentoId() { return intentoId; }
+    public String getMateria() { return materia; }
+    public int getPorcentaje() { return porcentaje; }
+    public String getNivel() { return nivel; }
+    public String getFecha() { return fecha; }
+    public boolean isDetalleDisponible() { return detalleDisponible; }
 }

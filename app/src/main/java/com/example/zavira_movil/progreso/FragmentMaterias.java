@@ -12,11 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zavira_movil.R;
-import com.example.zavira_movil.adapter.ProgresoAdapter;
-import com.example.zavira_movil.model.MateriaProgreso;
+import com.example.zavira_movil.adapter.MateriasAdapter;
+import com.example.zavira_movil.model.MateriaDetalle;
 import com.example.zavira_movil.remote.ApiService;
 import com.example.zavira_movil.remote.RetrofitClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -25,41 +26,39 @@ import retrofit2.Response;
 
 public class FragmentMaterias extends Fragment {
 
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerMaterias;
+    private MateriasAdapter materiaAdapter;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_materias, container, false);
-        recyclerView = view.findViewById(R.id.recyclerViewMaterias);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        recyclerMaterias = view.findViewById(R.id.recyclerMaterias);
+        recyclerMaterias.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        materiaAdapter = new MateriasAdapter(new ArrayList<>());
+        recyclerMaterias.setAdapter(materiaAdapter);
+
+        cargarMaterias();
+
         return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Aquí va tu código para consumir la API
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
-        Call<List<MateriaProgreso>> call = api.getProgresoMaterias();
-        call.enqueue(new Callback<List<MateriaProgreso>>() {
+    private void cargarMaterias() {
+        ApiService apiService = RetrofitClient.getInstance(getContext()).create(ApiService.class);
+        apiService.getMaterias().enqueue(new Callback<List<MateriaDetalle>>() {
             @Override
-            public void onResponse(Call<List<MateriaProgreso>> call, Response<List<MateriaProgreso>> response) {
-                if(response.isSuccessful() && response.body() != null){
-                    List<MateriaProgreso> materias = response.body();
-
-                    // Pasamos la lista al Adapter
-                    ProgresoAdapter adapter = new ProgresoAdapter(materias);
-                    recyclerView.setAdapter(adapter);
+            public void onResponse(Call<List<MateriaDetalle>> call, Response<List<MateriaDetalle>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<MateriaDetalle> materias = response.body();
+                    materiaAdapter.setLista(materias);
+                    materiaAdapter.notifyDataSetChanged();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<MateriaProgreso>> call, Throwable t) {
-                t.printStackTrace(); // Si hay error lo ves en Logcat
-            }
+            public void onFailure(Call<List<MateriaDetalle>> call, Throwable t) {}
         });
     }
 }

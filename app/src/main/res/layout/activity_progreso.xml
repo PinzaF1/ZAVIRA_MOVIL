@@ -1,56 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:orientation="vertical"
+    android:layout_marginTop="50dp"
+    tools:context=".ProgresoActivity">
 
-    <!-- TabLayout para las pestañas -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabMode="fixed"
-        app:tabGravity="fill"
-        app:tabIndicatorColor="@color/purple_500"
-        app:tabSelectedTextColor="@color/purple_500"
-        app:tabTextColor="@android:color/darker_gray"
-        app:tabIndicatorHeight="3dp" />
+        android:layout_height="wrap_content"/>
 
-    <!-- Contenedor "General" -->
-    <LinearLayout
-        android:id="@+id/generalContainer"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progresoGeneral"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="false"
-            app:trackThickness="8dp"
-            app:indicatorSize="64dp"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
-            android:id="@+id/textoProgreso"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0%"
-            android:textSize="18sp"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="center_horizontal" />
-    </LinearLayout>
-
-    <!-- FrameLayout para Materias / Historial -->
-    <FrameLayout
-        android:id="@+id/contenedorTabs"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
-
+        android:layout_weight="1"/>
 </LinearLayout>

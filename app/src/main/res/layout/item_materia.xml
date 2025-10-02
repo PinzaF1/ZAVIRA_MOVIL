@@ -1,93 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="8dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    android:background="@color/white">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvNombreMateria"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre Materia"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvEtiqueta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Etiqueta"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/tvProgreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0%"
+        android:textSize="14sp"/>
+
+    <ProgressBar
+        android:id="@+id/progressMateria"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
-
-        <!-- Nombre de la materia -->
-        <TextView
-            android:id="@+id/txtMateria"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Matemáticas"
-            android:textStyle="bold"
-            android:textSize="16sp"/>
-
-        <!-- Fecha -->
-        <TextView
-            android:id="@+id/txtFecha"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="01/10/2025"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="4dp"/>
-
-        <!-- Barra de progreso con porcentaje -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="8dp">
-
-            <ProgressBar
-                android:id="@+id/progressMateria"
-                style="@android:style/Widget.ProgressBar.Horizontal"
-                android:layout_width="0dp"
-                android:layout_height="12dp"
-                android:layout_weight="1"
-                android:max="100"
-                android:progress="75"
-                android:progressTint="@color/azul"
-                android:backgroundTint="@color/lightGray"/>
-
-            <TextView
-                android:id="@+id/txtPorcentaje"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="75%"
-                android:textSize="14sp"
-                android:layout_marginStart="8dp"/>
-        </LinearLayout>
-
-        <!-- Nivel con color -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="8dp">
-
-            <View
-                android:id="@+id/circuloNivel"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_marginEnd="8dp"
-                android:background="@color/red"
-                android:layout_marginTop="2dp"
-                android:backgroundTint="@color/red"
-                android:clipToOutline="true"/>
-
-            <TextView
-                android:id="@+id/txtNivel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Básico"
-                android:textSize="14sp"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+        android:max="100"
+        android:progress="0"/>
+</LinearLayout>

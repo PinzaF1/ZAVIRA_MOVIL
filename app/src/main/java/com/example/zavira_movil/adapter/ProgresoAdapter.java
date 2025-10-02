@@ -1,6 +1,5 @@
 package com.example.zavira_movil.adapter;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,54 +16,48 @@ import java.util.List;
 
 public class ProgresoAdapter extends RecyclerView.Adapter<ProgresoAdapter.ViewHolder> {
 
-    private final List<MateriaProgreso> listaMaterias;
+    private List<MateriaProgreso> lista;
 
-    public ProgresoAdapter(List<MateriaProgreso> listaMaterias) {
-        this.listaMaterias = listaMaterias;
+    public ProgresoAdapter(List<MateriaProgreso> lista) {
+        this.lista = lista;
+    }
+
+    public void setLista(List<MateriaProgreso> nuevaLista) {
+        this.lista = nuevaLista;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_materia, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        MateriaProgreso m = listaMaterias.get(position);
-
-        holder.tvNombre.setText(m.getNombre());  // Nombre de la materia
-        holder.tvPorcentaje.setText(m.getPorcentaje() + "%"); // Porcentaje
-        holder.progressBar.setProgress(m.getPorcentaje()); // Barra de progreso
-
-        // Color según porcentaje
-        int p = m.getPorcentaje();
-        int color;
-        if (p >= 75) color = Color.parseColor("#1976D2"); // azul
-        else if (p >= 60) color = Color.parseColor("#388E3C"); // verde
-        else color = Color.parseColor("#D32F2F"); // rojo
-
-        holder.progressBar.getProgressDrawable().setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
-        holder.tvPorcentaje.setTextColor(color);
+        MateriaProgreso item = lista.get(position);
+        holder.txtNombre.setText(item.getNombre());
+        holder.txtProgreso.setText(item.getPorcentaje() + "%");
+        holder.txtEtiqueta.setText(item.getEtiqueta());
+        holder.progress.setProgress(item.getPorcentaje());
     }
 
     @Override
     public int getItemCount() {
-        return listaMaterias == null ? 0 : listaMaterias.size();
+        return lista != null ? lista.size() : 0;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombre, tvPorcentaje, tvDescripcion;
-        ProgressBar progressBar;
+        TextView txtNombre, txtProgreso, txtEtiqueta;
+        ProgressBar progress;
 
-        ViewHolder(@NonNull View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
-            tvNombre = itemView.findViewById(R.id.txtNombreMateria);
-            tvPorcentaje = itemView.findViewById(R.id.txtProgreso);
-            tvDescripcion = itemView.findViewById(R.id.txtDescripcion);
-            progressBar = itemView.findViewById(R.id.progressMateria);
+            txtNombre   = itemView.findViewById(R.id.tvNombreMateria); // ID corregido
+            txtProgreso = itemView.findViewById(R.id.tvProgreso);
+            txtEtiqueta = itemView.findViewById(R.id.tvEtiqueta);
+            progress    = itemView.findViewById(R.id.progressMateria);
         }
     }
 }
