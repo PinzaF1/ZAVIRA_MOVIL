@@ -15,6 +15,13 @@ import com.example.zavira_movil.model.PreguntasKolb;
 import com.example.zavira_movil.model.ProgresoMateria;
 import com.example.zavira_movil.model.ResumenGeneral;
 
+import com.example.zavira_movil.model.RankingResponse;
+import com.example.zavira_movil.model.LogrosResponse;
+import com.example.zavira_movil.model.OtorgarAreaRequest;
+import com.example.zavira_movil.model.OtorgarAreaResponse;
+import com.example.zavira_movil.model.LogrosTodosResponse;
+
+
 
 import java.util.List;
 import java.util.Map;
@@ -99,5 +106,19 @@ public interface ApiService {
     Call<List<HistorialItem>> getHistorialDetalle(
             @Header("Authorization") String authorization,
             @Path("id_sesion") String idSesion
+
+
     );
+
+    @GET("movil/ranking")
+    Call<RankingResponse> getRanking();
+
+    @GET("movil/logros")
+    Call<LogrosResponse> getMisLogros();
+
+    @POST("movil/logros/otorgar-area")
+    Call<OtorgarAreaResponse> otorgarInsigniaArea(@Body OtorgarAreaRequest body);
+
+    @GET("movil/logros/todos")
+    Call<LogrosTodosResponse> getLogrosTodos();
 }
