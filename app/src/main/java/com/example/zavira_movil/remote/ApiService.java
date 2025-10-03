@@ -5,12 +5,19 @@ import com.example.zavira_movil.PreguntaAcademica;
 import com.example.zavira_movil.QuizCerrarRequest;
 import com.example.zavira_movil.QuizInicialResponse;
 import com.example.zavira_movil.QuizResponse;
+import com.example.zavira_movil.model.CerrarRequest;
+import com.example.zavira_movil.model.CerrarResponse;
 import com.example.zavira_movil.model.Estudiante;
 import com.example.zavira_movil.model.KolbResultado;
 import com.example.zavira_movil.model.LoginRequest;
+import com.example.zavira_movil.model.SimulacroRequest;
+import com.example.zavira_movil.model.SimulacroResponse;
+
 
 import com.example.zavira_movil.model.KolbRequest;
 import com.example.zavira_movil.model.KolbResponse;
+import com.example.zavira_movil.model.ParadaRequest;
+import com.example.zavira_movil.model.ParadaResponse;
 import com.example.zavira_movil.model.PreguntasKolb;
 
 
@@ -64,7 +71,15 @@ public interface ApiService {
     Call<ResponseBody> eliminarFoto();
 
     //Test y Niveles por Area
+    @POST("sesion/parada")
+    Call<ParadaResponse> crearParada(@Body ParadaRequest body);
 
+    @POST("sesion/cerrar")
+    Call<CerrarResponse> cerrarSesion(@Body CerrarRequest request);
 
+    @POST("movil/simulacro")
+    Call<SimulacroResponse> crearSimulacro(@Body SimulacroRequest request);
+    @POST("movil/simulacro/cerrar")
+    Call<CerrarResponse> cerrarSimulacro(@Body CerrarRequest request);
 
 }

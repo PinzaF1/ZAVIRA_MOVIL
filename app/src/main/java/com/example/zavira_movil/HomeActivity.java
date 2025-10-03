@@ -23,14 +23,14 @@ public class HomeActivity extends AppCompatActivity {
 
         // Acción campana
         binding.btnBell.setOnClickListener(v ->
-                Toast.makeText(this, "Notificaciones pronto ", Toast.LENGTH_SHORT).show());
+                Toast.makeText(this, "Notificaciones pronto 😊", Toast.LENGTH_SHORT).show());
 
         // Acción FAB perfil
         binding.fabPerfil.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
-        // Lista de materias
+        // Lista de materias (áreas ICFES con niveles y subtemas)
         binding.rvSubjects.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvSubjects.setAdapter(new SubjectAdapter(DemoData.subjects()));
+        binding.rvSubjects.setAdapter(new SubjectAdapter(DemoData.getSubjects()));
     }
 }
