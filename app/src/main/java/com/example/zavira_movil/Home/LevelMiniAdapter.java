@@ -42,6 +42,8 @@ public class LevelMiniAdapter extends RecyclerView.Adapter<LevelMiniAdapter.Hold
 
     @Override
     public void onBindViewHolder(@NonNull Holder h, int position) {
+        String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
+
         if (position < niveles.size()) {
             // ---------------- Niveles normales ----------------
             Level nivel = niveles.get(position);
@@ -49,7 +51,6 @@ public class LevelMiniAdapter extends RecyclerView.Adapter<LevelMiniAdapter.Hold
 
             h.txtLevel.setText(nivel.getTitle() != null ? nivel.getTitle() : "Nivel " + nivelNumero);
 
-            String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
             boolean enabled = ProgressLockManager.isLevelUnlocked(
                     h.itemView.getContext(),
                     userId,
@@ -77,7 +78,6 @@ public class LevelMiniAdapter extends RecyclerView.Adapter<LevelMiniAdapter.Hold
             // ---------------- Examen Final (25 preguntas) ----------------
             h.txtLevel.setText("Examen Final");
 
-            String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
             boolean unlocked = ProgressLockManager.getUnlockedLevel(
                     h.itemView.getContext(),
                     userId,

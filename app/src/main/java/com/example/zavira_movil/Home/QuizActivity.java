@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.zavira_movil.databinding.ActivityQuizBinding;
 import com.example.zavira_movil.local.ProgressLockManager;
-import com.example.zavira_movil.local.UserSession;   // ✅ Import agregado
+import com.example.zavira_movil.local.UserSession;
 import com.example.zavira_movil.model.CerrarRequest;
 import com.example.zavira_movil.model.CerrarResponse;
 import com.example.zavira_movil.model.ParadaRequest;
@@ -163,13 +163,11 @@ public class QuizActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
 
                 if (Boolean.TRUE.equals(r.aprueba)) {
-                    // ✅ Desbloquea siguiente nivel para este usuario
                     String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
                     ProgressLockManager.unlockNext(QuizActivity.this, userId, areaUi, nivel);
-
                     setResult(RESULT_OK);
                 }
-                finish(); // volvemos
+                finish();
             }
 
             @Override public void onFailure(Call<CerrarResponse> call, Throwable t) {
