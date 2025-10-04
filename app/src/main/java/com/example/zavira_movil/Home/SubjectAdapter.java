@@ -22,15 +22,22 @@ import java.util.List;
 
 /**
  * Muestra cada área (tarjeta). Al expandir, lista sus 5 niveles con botón "Comenzar"
- * usando LevelMiniAdapter.
+ * usando LevelMiniAdapter, y lanza actividades con un launcher que vive en la Activity contenedora.
  */
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.VH> {
 
+    /** Interfaz para lanzar Activities desde la Activity contenedora con ActivityResultLauncher */
+    public interface OnStartActivity {
+        void launch(Intent i);
+    }
+
     private final List<Subject> data;
     private final SparseBooleanArray expanded = new SparseBooleanArray(); // estado por card
+    private final OnStartActivity onStartActivity;
 
-    public SubjectAdapter(List<Subject> data) {
+    public SubjectAdapter(List<Subject> data, OnStartActivity onStartActivity) {
         this.data = (data == null) ? new ArrayList<>() : data;
+        this.onStartActivity = onStartActivity;
     }
 
     @NonNull @Override
@@ -55,11 +62,11 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.VH> {
             h.header.setBackgroundResource(s.headerDrawableRes);
         }
 
-        // ---- Recycler interno con los 5 niveles
+        // ---- Recycler interno con los 5 niveles (usa el launcher)
         if (h.rvInner.getLayoutManager() == null) {
             h.rvInner.setLayoutManager(new LinearLayoutManager(ctx));
         }
-        h.rvInner.setAdapter(new LevelMiniAdapter(s.levels, s)); // << aquí listamos los 5 niveles
+        h.rvInner.setAdapter(new LevelMiniAdapter(s.levels, s, onStartActivity));
 
         // ---- Expandir/colapsar
         boolean isExpanded = expanded.get(position, false);
@@ -78,23 +85,23 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.VH> {
         h.ivArrow.setOnClickListener(toggle);
         h.rowHeader.setOnClickListener(toggle);
 
-        // (Opcional) tocar toda la tarjeta abre una pantalla de detalle de niveles
+        // Tocar toda la tarjeta abre detalle de niveles con el mismo launcher
         h.itemView.setOnClickListener(v -> {
             Intent i = new Intent(ctx, SubjectDetailActivity.class);
             i.putExtra("subject", s);
-            ctx.startActivity(i);
+            onStartActivity.launch(i);
         });
     }
 
     @Override public int getItemCount() { return data.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        View header;                 // FrameLayout flHeader (fondo de color)
-        ImageView ivIcon, ivArrow;   // icono y flecha
+        View header;
+        ImageView ivIcon, ivArrow;
         TextView tvTitle, tvModules, tvPercent;
         ProgressBar progress;
-        RecyclerView rvInner;        // lista con los niveles
-        View rowHeader;              // la fila clickable (mismo contenedor del header)
+        RecyclerView rvInner;
+        View rowHeader;
 
         VH(@NonNull View v) {
             super(v);
@@ -105,8 +112,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.VH> {
             tvModules  = v.findViewById(R.id.tvModules);
             tvPercent  = v.findViewById(R.id.tvPercent);
             progress   = v.findViewById(R.id.progress);
-            rvInner    = v.findViewById(R.id.rvSubtopics); // usamos este id para la lista interna
-            rowHeader  = v.findViewById(R.id.flHeader);    // tocar el header despliega
+            rvInner    = v.findViewById(R.id.rvSubtopics);
+            rowHeader  = v.findViewById(R.id.flHeader);
         }
     }
 }

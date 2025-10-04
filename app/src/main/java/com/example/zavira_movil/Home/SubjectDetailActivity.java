@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.zavira_movil.R;
 import com.example.zavira_movil.databinding.ActivitySubjectDetailBinding;
 import com.example.zavira_movil.local.ProgressLockManager;
+import com.example.zavira_movil.local.UserSession;
+import com.example.zavira_movil.model.Level;   // ✅ ahora usamos el modelo externo
 import com.example.zavira_movil.model.Subject;
 import com.google.android.material.button.MaterialButton;
 
@@ -25,6 +29,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
     private ActivitySubjectDetailBinding binding;
     private LevelAdapter adapter;
     private Subject subject;
+
+    private ActivityResultLauncher<Intent> launcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,23 +43,42 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         binding.tvSubjectTitle.setText(subject.title);
         binding.rvLevels.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new LevelAdapter(subject.levels, subject);
+
+        // ✅ Registrar primero el launcher
+        launcher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && adapter != null) {
+                        adapter.notifyDataSetChanged(); // 🔄 refresca niveles desbloqueados
+                    }
+                }
+        );
+
+        // ✅ Después crear el adapter y pasarlo al RecyclerView
+        adapter = new LevelAdapter(subject.levels, subject, intent -> launcher.launch(intent));
         binding.rvLevels.setAdapter(adapter);
     }
 
-    @Override protected void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
-        if (adapter != null) adapter.notifyDataSetChanged(); // refresca bloqueo tras volver del quiz
+        if (adapter != null) adapter.notifyDataSetChanged(); // seguridad extra
     }
 
-    /** Lista “Nivel 1 … Nivel 5” + Examen Final */
+    /** Lista de niveles 1..5 + Examen Final */
     static class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.VH> {
-        private final List<Subject.Level> levels;
+        private final List<Level> levels;   // ✅ ahora usamos Level externo
         private final Subject subject;
+        private final OnStartActivity onStartActivity;
 
-        LevelAdapter(List<Subject.Level> levels, Subject subject) {
+        interface OnStartActivity {
+            void launch(Intent i);
+        }
+
+        LevelAdapter(List<Level> levels, Subject subject, OnStartActivity onStartActivity) {
             this.levels = levels;
             this.subject = subject;
+            this.onStartActivity = onStartActivity;
         }
 
         @NonNull @Override
@@ -67,7 +92,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull VH h, int pos) {
             if (pos < levels.size()) {
                 // ---------------- Niveles normales ----------------
-                Subject.Level l = levels.get(pos);
+                Level l = levels.get(pos);
                 int nivelNumero = pos + 1;
 
                 h.tvName.setText("Nivel " + nivelNumero);
@@ -76,8 +101,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         : "—";
                 h.tvSubtopic.setText(sub);
 
+                // ✅ usar también userId en ProgressLockManager
+                String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
                 boolean unlocked = ProgressLockManager.isLevelUnlocked(
-                        h.itemView.getContext(), subject.title, nivelNumero);
+                        h.itemView.getContext(), userId, subject.title, nivelNumero);
 
                 h.btnStart.setEnabled(unlocked);
                 h.btnStart.setAlpha(unlocked ? 1f : 0.5f);
@@ -89,7 +116,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     i.putExtra(QuizActivity.EXTRA_AREA, subject.title);
                     i.putExtra(QuizActivity.EXTRA_SUBTEMA, sub);
                     i.putExtra(QuizActivity.EXTRA_NIVEL, nivelNumero);
-                    v.getContext().startActivity(i);
+                    onStartActivity.launch(i);
                 });
 
             } else {
@@ -97,10 +124,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 h.tvName.setText("Examen Final");
                 h.tvSubtopic.setText("Simulacro de " + subject.title);
 
-                // 🔓 Siempre desbloqueado (modo prueba)
-                // Para modo real: usa esta línea en vez de la de abajo:
-                // boolean unlocked = ProgressLockManager.getUnlockedLevel(h.itemView.getContext(), subject.title) >= 5;
-                boolean unlocked = true;
+                String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
+                boolean unlocked = ProgressLockManager.getUnlockedLevel(
+                        h.itemView.getContext(), userId, subject.title) >= 5;
 
                 h.btnStart.setEnabled(unlocked);
                 h.btnStart.setAlpha(unlocked ? 1f : 0.5f);
@@ -110,13 +136,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     if (!unlocked) return;
                     Intent i = new Intent(v.getContext(), SimulacroActivity.class);
                     i.putExtra("area", subject.title);
-                    v.getContext().startActivity(i);
+                    onStartActivity.launch(i);
                 });
             }
         }
 
         @Override public int getItemCount() {
-            // niveles + examen final
             return (levels == null ? 0 : levels.size()) + 1;
         }
 

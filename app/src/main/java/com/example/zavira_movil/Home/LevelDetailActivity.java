@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.zavira_movil.databinding.ActivityLevelDetailBinding;
+import com.example.zavira_movil.model.Level;   // ✅ Importar el modelo externo
 import com.example.zavira_movil.model.Subject;
 
 /**
@@ -31,7 +32,8 @@ public class LevelDetailActivity extends AppCompatActivity {
             return;
         }
 
-        Subject.Level lvl = subject.levels.get(levelIndex);
+        // ✅ Usar el modelo externo Level
+        Level lvl = subject.levels.get(levelIndex);
 
         // Header a color por materia
         if (subject.headerDrawableRes != 0) {
@@ -53,5 +55,3 @@ public class LevelDetailActivity extends AppCompatActivity {
         binding.rvSubtopics.setAdapter(new SubtopicAdapter(lvl.subtopics, subject.title, nivelNumero));
     }
 }
-
-

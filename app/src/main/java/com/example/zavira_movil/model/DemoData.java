@@ -21,7 +21,6 @@ public class DemoData {
 
         // ========================= LECTURA CRÍTICA (área API = Lenguaje)
         Subject lect = subjectBase("Lectura crítica", R.drawable.ic_read_24, R.drawable.bg_header_reading);
-        // Nombres de subtema que existen en tu DB:
         lect.levels = Arrays.asList(
                 level("Nivel 1", "Comprensión lectora"),
                 level("Nivel 2", "Cohesión textual"),
@@ -31,7 +30,7 @@ public class DemoData {
         );
         list.add(lect);
 
-        // ========================= SOCIALES (área API = Sociales)
+        // ========================= SOCIALES
         Subject soc = subjectBase("Sociales y ciudadanas", R.drawable.ic_social_24, R.drawable.bg_header_social);
         soc.levels = Arrays.asList(
                 level("Nivel 1", "Geografía"),
@@ -42,9 +41,8 @@ public class DemoData {
         );
         list.add(soc);
 
-        // ========================= CIENCIAS NATURALES (área API = Ciencias)
+        // ========================= CIENCIAS NATURALES
         Subject cie = subjectBase("Ciencias naturales", R.drawable.ic_science_24, R.drawable.bg_header_science);
-        // Usar etiquetas amplias que tengas en banco (Biología/Química/Física/…)
         cie.levels = Arrays.asList(
                 level("Nivel 1", "Biología"),
                 level("Nivel 2", "Química"),
@@ -54,7 +52,7 @@ public class DemoData {
         );
         list.add(cie);
 
-        // ========================= INGLÉS (área API = Ingles)
+        // ========================= INGLÉS
         Subject eng = subjectBase("Inglés", R.drawable.ic_english_24, R.drawable.bg_header_english);
         eng.levels = Arrays.asList(
                 level("Nivel 1", "Reading básico"),
@@ -71,11 +69,17 @@ public class DemoData {
     // helpers
     private static Subject subjectBase(String title, int icon, int header) {
         Subject s = new Subject();
-        s.title = title; s.iconRes = icon; s.headerDrawableRes = header;
-        s.done = 0; s.total = 5; return s;
+        s.title = title;
+        s.iconRes = icon;
+        s.headerDrawableRes = header;
+        s.done = 0;
+        s.total = 5;
+        return s;
     }
-    private static Subject.Level level(String name, String subtopic) {
-        Subject.Level l = new Subject.Level(name);
+
+    // ✅ Ahora usamos Level externo, no Subject.Level
+    private static Level level(String name, String subtopic) {
+        Level l = new Level(name);
         l.subtopics.add(new Subject.Subtopic(subtopic));
         return l;
     }

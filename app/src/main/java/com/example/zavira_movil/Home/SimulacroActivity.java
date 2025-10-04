@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.zavira_movil.databinding.ActivitySimulacroBinding;
 import com.example.zavira_movil.local.ProgressLockManager;
+import com.example.zavira_movil.local.UserSession;  // ✅ Import agregado
 import com.example.zavira_movil.model.CerrarRequest;
 import com.example.zavira_movil.model.CerrarResponse;
 import com.example.zavira_movil.model.Question;
@@ -35,17 +36,13 @@ public class SimulacroActivity extends AppCompatActivity {
 
     private ActivitySimulacroBinding binding;
     private QuizQuestionsAdapter adapter;
-    private Integer idSesion;              // ID de la sesión activa del simulacro
-    private int intentosFallidos = 0;      // Para controlar retroceso de nivel
+    private Integer idSesion;
+    private int intentosFallidos = 0;
 
-    // Ejemplo: área y subtemas a enviar
+    // Por defecto, área y subtemas
     private String area = "Sociales";
     private List<String> subtemas = Arrays.asList(
-            "Geografía",
-            "Historia",
-            "Economía",
-            "Ciudadanía",
-            "Pensamiento social"
+            "Geografía", "Historia", "Economía", "Ciudadanía", "Pensamiento social"
     );
 
     @Override
@@ -59,20 +56,16 @@ public class SimulacroActivity extends AppCompatActivity {
         adapter = new QuizQuestionsAdapter(new ArrayList<>());
         binding.rvQuestions.setAdapter(adapter);
 
-        // Botón para enviar respuestas
         binding.btnEnviar.setOnClickListener(v -> enviar());
 
-        // Crear el simulacro automáticamente al abrir
         crearSimulacro();
     }
 
-    /** Mostrar u ocultar el loader */
     private void setLoading(boolean b) {
         binding.progress.setVisibility(b ? View.VISIBLE : View.GONE);
         binding.btnEnviar.setEnabled(!b);
     }
 
-    /** Llama al backend para crear un simulacro con 25 preguntas */
     private void crearSimulacro() {
         setLoading(true);
 
@@ -83,7 +76,6 @@ public class SimulacroActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SimulacroResponse> call, Response<SimulacroResponse> response) {
                 setLoading(false);
-
                 if (!response.isSuccessful() || response.body() == null) {
                     Toast.makeText(SimulacroActivity.this,
                             "⚠️ Error al crear simulacro. Código: " + response.code(),
@@ -96,7 +88,9 @@ public class SimulacroActivity extends AppCompatActivity {
 
                 List<Question> preguntas = sim.preguntas;
                 if (preguntas == null || preguntas.isEmpty()) {
-                    Toast.makeText(SimulacroActivity.this, "No hay preguntas disponibles", Toast.LENGTH_LONG).show();
+                    Toast.makeText(SimulacroActivity.this,
+                            "No hay preguntas disponibles",
+                            Toast.LENGTH_LONG).show();
                     finish();
                     return;
                 }
@@ -105,7 +99,6 @@ public class SimulacroActivity extends AppCompatActivity {
                     preguntas = preguntas.subList(0, 25);
                 }
 
-                // Mostrar preguntas en el RecyclerView
                 adapter = new QuizQuestionsAdapter(preguntas);
                 binding.rvQuestions.setAdapter(adapter);
             }
@@ -120,7 +113,6 @@ public class SimulacroActivity extends AppCompatActivity {
         });
     }
 
-    /** Envía las respuestas al backend para cerrar el simulacro */
     private void enviar() {
         if (idSesion == null) {
             Toast.makeText(this,
@@ -165,11 +157,16 @@ public class SimulacroActivity extends AppCompatActivity {
                 } else {
                     intentosFallidos++;
                     if (intentosFallidos >= 3) {
-                        ProgressLockManager.retrocederNivel(SimulacroActivity.this, area);
+                        // ✅ Ahora se pasa userId también
+                        String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
+                        ProgressLockManager.retrocederNivel(SimulacroActivity.this, userId, area);
+
                         intentosFallidos = 0;
-                        int nivelActual = ProgressLockManager.getUnlockedLevel(SimulacroActivity.this, area);
+                        int nivelActual = ProgressLockManager.getUnlockedLevel(
+                                SimulacroActivity.this, userId, area
+                        );
                         Toast.makeText(SimulacroActivity.this,
-                                "⚠️ Retrocedes un nivel por 3 intentos fallidos. Nivel actual: " + nivelActual,
+                                "⚠️ Retrocedes un nivel. Nivel actual: " + nivelActual,
                                 Toast.LENGTH_LONG).show();
                     }
                 }

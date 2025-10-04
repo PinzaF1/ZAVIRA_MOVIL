@@ -11,95 +11,103 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zavira_movil.R;
 import com.example.zavira_movil.local.ProgressLockManager;
+import com.example.zavira_movil.local.UserSession;
+import com.example.zavira_movil.model.Level;
 import com.example.zavira_movil.model.Subject;
-import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
-public class LevelMiniAdapter extends RecyclerView.Adapter<LevelMiniAdapter.VH> {
+/**
+ * Adapter para mostrar los niveles dentro de un Subject (ej: Matemáticas).
+ * Incluye los 5 niveles normales + el Examen Final (25 preguntas).
+ */
+public class LevelMiniAdapter extends RecyclerView.Adapter<LevelMiniAdapter.Holder> {
 
-    private final List<Subject.Level> levels;
+    private final List<Level> niveles;
     private final Subject subject;
+    private final SubjectAdapter.OnStartActivity launcher;
 
-    public LevelMiniAdapter(List<Subject.Level> levels, Subject subject) {
-        this.levels = levels;
+    public LevelMiniAdapter(List<Level> niveles, Subject subject, SubjectAdapter.OnStartActivity launcher) {
+        this.niveles = niveles;
         this.subject = subject;
+        this.launcher = launcher;
     }
 
     @NonNull
     @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_level_mini_row, parent, false);
-        return new VH(v);
+    public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_level, parent, false);
+        return new Holder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH h, int pos) {
-        if (pos < levels.size()) {
-            // -------- Niveles normales --------
-            Subject.Level l = levels.get(pos);
-            int nivelNumero = pos + 1;
+    public void onBindViewHolder(@NonNull Holder h, int position) {
+        if (position < niveles.size()) {
+            // ---------------- Niveles normales ----------------
+            Level nivel = niveles.get(position);
+            int nivelNumero = position + 1;
 
-            String sub = (l.subtopics != null && !l.subtopics.isEmpty())
-                    ? l.subtopics.get(0).title
-                    : "Subtema";
+            h.txtLevel.setText(nivel.getTitle() != null ? nivel.getTitle() : "Nivel " + nivelNumero);
 
-            h.tvLevelName.setText("Nivel " + nivelNumero + ": " + l.name);
-            h.tvLevelSubtopic.setText(sub);
-
+            String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
             boolean enabled = ProgressLockManager.isLevelUnlocked(
-                    h.itemView.getContext(), subject.title, nivelNumero);
+                    h.itemView.getContext(),
+                    userId,
+                    subject.title,
+                    nivelNumero
+            );
 
-            h.btnStart.setEnabled(enabled);
-            h.btnStart.setAlpha(enabled ? 1f : 0.4f);
-            h.btnStart.setText(enabled ? "Comenzar" : "Bloqueado");
+            h.itemView.setEnabled(enabled);
+            h.itemView.setAlpha(enabled ? 1f : 0.5f);
 
-            h.btnStart.setOnClickListener(v -> {
-                if (!enabled) return;
+            h.itemView.setOnClickListener(v -> {
+                if (!enabled || launcher == null) return;
+
                 Intent i = new Intent(v.getContext(), QuizActivity.class);
                 i.putExtra(QuizActivity.EXTRA_AREA, subject.title);
-                i.putExtra(QuizActivity.EXTRA_SUBTEMA, sub);
+                String subtema = (nivel.subtopics != null && !nivel.subtopics.isEmpty())
+                        ? nivel.subtopics.get(0).title
+                        : "";
+                i.putExtra(QuizActivity.EXTRA_SUBTEMA, subtema);
                 i.putExtra(QuizActivity.EXTRA_NIVEL, nivelNumero);
-                v.getContext().startActivity(i);
+                launcher.launch(i);
             });
 
         } else {
-            // -------- Examen Final --------
-            h.tvLevelName.setText("Examen Final");
-            h.tvLevelSubtopic.setText("Simulacro de " + subject.title);
+            // ---------------- Examen Final (25 preguntas) ----------------
+            h.txtLevel.setText("Examen Final");
 
-            boolean enabled = ProgressLockManager.getUnlockedLevel(
-                    h.itemView.getContext(), subject.title
-            ) >= 5;
+            String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
+            boolean unlocked = ProgressLockManager.getUnlockedLevel(
+                    h.itemView.getContext(),
+                    userId,
+                    subject.title
+            ) >= 5; // Se desbloquea al terminar nivel 5
 
-            h.btnStart.setEnabled(enabled);
-            h.btnStart.setAlpha(enabled ? 1f : 0.4f);
-            h.btnStart.setText(enabled ? "Comenzar" : "Bloqueado");
+            h.itemView.setEnabled(unlocked);
+            h.itemView.setAlpha(unlocked ? 1f : 0.5f);
 
-            h.btnStart.setOnClickListener(v -> {
-                if (!enabled) return;
+            h.itemView.setOnClickListener(v -> {
+                if (!unlocked || launcher == null) return;
                 Intent i = new Intent(v.getContext(), SimulacroActivity.class);
                 i.putExtra("area", subject.title);
-                v.getContext().startActivity(i);
+                launcher.launch(i);
             });
         }
     }
 
-    @Override public int getItemCount() {
-        // Niveles + examen final
-        return (levels == null ? 0 : levels.size()) + 1;
+    @Override
+    public int getItemCount() {
+        // 5 niveles + 1 examen final
+        return (niveles == null ? 0 : niveles.size()) + 1;
     }
 
-    static class VH extends RecyclerView.ViewHolder {
-        TextView tvLevelName, tvLevelSubtopic;
-        MaterialButton btnStart;
+    static class Holder extends RecyclerView.ViewHolder {
+        TextView txtLevel;
 
-        VH(@NonNull View v) {
-            super(v);
-            tvLevelName = v.findViewById(R.id.tvLevelName);
-            tvLevelSubtopic = v.findViewById(R.id.tvLevelSubtopic);
-            btnStart = v.findViewById(R.id.btnStart);
+        public Holder(@NonNull View itemView) {
+            super(itemView);
+            txtLevel = itemView.findViewById(R.id.txtLevel);
         }
     }
 }

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.zavira_movil.databinding.ActivityQuizBinding;
 import com.example.zavira_movil.local.ProgressLockManager;
+import com.example.zavira_movil.local.UserSession;   // ✅ Import agregado
 import com.example.zavira_movil.model.CerrarRequest;
 import com.example.zavira_movil.model.CerrarResponse;
 import com.example.zavira_movil.model.ParadaRequest;
@@ -24,7 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/** Pantalla de quiz: crea sesión, carga máx 10 preguntas, envía y desbloquea siguiente nivel si aprueba. */
+/** Crea sesión, carga máx 10 preguntas, envía y desbloquea siguiente nivel si aprueba. */
 public class QuizActivity extends AppCompatActivity {
 
     public static final String EXTRA_AREA    = "extra_area";     // área visible
@@ -38,7 +39,8 @@ public class QuizActivity extends AppCompatActivity {
     private String areaUi, subtemaUi;
     private int nivel;
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityQuizBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -47,7 +49,9 @@ public class QuizActivity extends AppCompatActivity {
         subtemaUi = getIntent().getStringExtra(EXTRA_SUBTEMA);
         nivel     = getIntent().getIntExtra(EXTRA_NIVEL, 1);
 
-        binding.tvAreaSubtema.setText((areaUi != null ? areaUi : "") + " • " + (subtemaUi != null ? subtemaUi : ""));
+        binding.tvAreaSubtema.setText(
+                (areaUi != null ? areaUi : "") + " • " + (subtemaUi != null ? subtemaUi : "")
+        );
 
         binding.rvQuestions.setLayoutManager(new LinearLayoutManager(this));
         adapter = new QuizQuestionsAdapter(new ArrayList<>());
@@ -83,7 +87,9 @@ public class QuizActivity extends AppCompatActivity {
             @Override public void onResponse(Call<ParadaResponse> call, Response<ParadaResponse> resp) {
                 setLoading(false);
                 if (!resp.isSuccessful() || resp.body() == null) {
-                    Toast.makeText(QuizActivity.this, "No se pudo crear la sesión (HTTP " + resp.code() + ")", Toast.LENGTH_LONG).show();
+                    Toast.makeText(QuizActivity.this,
+                            "No se pudo crear la sesión (HTTP " + resp.code() + ")",
+                            Toast.LENGTH_LONG).show();
                     finish();
                     return;
                 }
@@ -95,7 +101,9 @@ public class QuizActivity extends AppCompatActivity {
 
                 if (preguntas.size() > 10) preguntas = new ArrayList<>(preguntas.subList(0, 10));
                 if (preguntas.isEmpty()) {
-                    Toast.makeText(QuizActivity.this, "No hay preguntas para este subtema.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(QuizActivity.this,
+                            "No hay preguntas para este subtema.",
+                            Toast.LENGTH_LONG).show();
                     finish();
                     return;
                 }
@@ -106,7 +114,9 @@ public class QuizActivity extends AppCompatActivity {
 
             @Override public void onFailure(Call<ParadaResponse> call, Throwable t) {
                 setLoading(false);
-                Toast.makeText(QuizActivity.this, "Error de red: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(QuizActivity.this,
+                        "Error de red: " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
                 finish();
             }
         });
@@ -141,23 +151,32 @@ public class QuizActivity extends AppCompatActivity {
             @Override public void onResponse(Call<CerrarResponse> call, Response<CerrarResponse> response) {
                 setLoading(false);
                 if (!response.isSuccessful() || response.body() == null) {
-                    Toast.makeText(QuizActivity.this, "No se pudo cerrar la sesión.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(QuizActivity.this,
+                            "No se pudo cerrar la sesión.",
+                            Toast.LENGTH_LONG).show();
                     return;
                 }
                 CerrarResponse r = response.body();
                 Integer puntaje = r.puntaje;
-                Toast.makeText(QuizActivity.this, "Puntaje: " + (puntaje != null ? puntaje : 0) + "%", Toast.LENGTH_LONG).show();
+                Toast.makeText(QuizActivity.this,
+                        "Puntaje: " + (puntaje != null ? puntaje : 0) + "%",
+                        Toast.LENGTH_LONG).show();
 
                 if (Boolean.TRUE.equals(r.aprueba)) {
-                    // Desbloqueo inmediato del siguiente nivel
-                    ProgressLockManager.unlockNext(QuizActivity.this, areaUi, nivel);
+                    // ✅ Desbloquea siguiente nivel para este usuario
+                    String userId = String.valueOf(UserSession.getInstance().getIdUsuario());
+                    ProgressLockManager.unlockNext(QuizActivity.this, userId, areaUi, nivel);
+
+                    setResult(RESULT_OK);
                 }
-                finish(); // volvemos y la lista se refresca en onResume
+                finish(); // volvemos
             }
 
             @Override public void onFailure(Call<CerrarResponse> call, Throwable t) {
                 setLoading(false);
-                Toast.makeText(QuizActivity.this, "Fallo al cerrar: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(QuizActivity.this,
+                        "Fallo al cerrar: " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -13,6 +15,15 @@ import com.example.zavira_movil.model.DemoData;
 
 public class HomeActivity extends AppCompatActivity {
     private ActivityHomeBinding binding;
+    private SubjectAdapter adapter;
+
+    // ✅ Nuevo: ActivityResultLauncher
+    private final ActivityResultLauncher<Intent> launcher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && adapter != null) {
+                    adapter.notifyDataSetChanged(); // 🔄 refresca niveles desbloqueados
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +40,9 @@ public class HomeActivity extends AppCompatActivity {
         binding.fabPerfil.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
-        // Lista de materias (áreas ICFES con niveles y subtemas)
+        // Lista de materias con launcher
         binding.rvSubjects.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvSubjects.setAdapter(new SubjectAdapter(DemoData.getSubjects()));
+        adapter = new SubjectAdapter(DemoData.getSubjects(), intent -> launcher.launch(intent));
+        binding.rvSubjects.setAdapter(adapter);
     }
 }
