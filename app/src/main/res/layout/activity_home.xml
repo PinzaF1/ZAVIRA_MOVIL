@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+>
 
     <!-- Top bar -->
     <com.google.android.material.card.MaterialCardView
@@ -25,7 +25,6 @@
             android:paddingStart="16dp"
             android:paddingEnd="12dp">
 
-            <!-- Logo -->
             <ImageView
                 android:id="@+id/ivAppLogo"
                 android:layout_width="40dp"
@@ -33,7 +32,6 @@
                 android:src="@drawable/ic_logo_z"
                 android:contentDescription="@string/app_name" />
 
-            <!-- Nombre de la app -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -59,7 +57,6 @@
                     android:textColor="#6B7280" />
             </LinearLayout>
 
-            <!-- Campana -->
             <ImageButton
                 android:id="@+id/btnBell"
                 android:layout_width="44dp"
@@ -71,19 +68,20 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- RecyclerView -->
+    <!-- Lista de materias -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSubjects"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         app:layout_constraintTop_toBottomOf="@id/topBar"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- FAB de Perfil -->
+    <!-- FAB Perfil -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabPerfil"
         android:layout_width="wrap_content"
@@ -94,5 +92,32 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="12dp" />
+
+    <!-- Divisor superior fino de la barra -->
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#E5E7EB"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- BottomNavigationView PLANA -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:background="@android:color/white"
+        android:paddingTop="4dp"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemIconSize="22dp"
+        app:itemIconTint="@color/bnv_tint"
+        app:itemTextColor="@color/bnv_tint"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_bottom_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
