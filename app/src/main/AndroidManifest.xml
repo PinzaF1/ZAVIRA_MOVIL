@@ -22,19 +22,39 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZAVIRA_MOVIL"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".Home.NotificationsActivity"
             android:exported="false" />
+
         <!-- Lanzador -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
+            <!-- Abre la app normalmente (animación → login) -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Login / flujo principal -->
+
+            <!-- Deep Link para abrir la app desde el QR -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- TU dominio publicado en GitHub Pages -->
+                <data
+                    android:scheme="https"
+                    android:host="pinzaf1.github.io"
+                    android:pathPrefix="/EDUEXCE_MOVIL_MOVIL" />
+            </intent-filter>
+
+        </activity>
+
+        <!-- Login / flujo principal -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
@@ -57,7 +77,6 @@
             android:exported="false" />
         <activity
             android:name=".niveleshome.SimulacroActivity"
-
             android:exported="false" />
         <activity
             android:name=".HislaConocimiento.IslasActivity"
@@ -67,7 +86,9 @@
             android:exported="false" />
         <activity
             android:name=".Perfil.Modelo3DRAActivity"
-            android:exported="false" /> <!-- Islas / Simulacros -->
+            android:exported="false" />
+
+        <!-- Islas / Simulacros -->
         <activity
             android:name=".HislaConocimiento.IslaSimulacroActivity"
             android:exported="false"
@@ -80,6 +101,7 @@
             android:name=".HislaConocimiento.IslaResultadoActivity"
             android:exported="false"
             android:label="Resultados Simulacro" />
+
         <activity
             android:name=".InfoAcademico"
             android:exported="false" />
@@ -91,10 +113,14 @@
             android:exported="false" />
         <activity
             android:name=".InfoTestActivity"
-            android:exported="false" /> <!-- Ranking -->
+            android:exported="false" />
+
+        <!-- Ranking -->
         <activity
             android:name=".ui.ranking.RankingLogrosActivity"
-            android:exported="false" /> <!-- Resultados / tests sueltos -->
+            android:exported="false" />
+
+        <!-- Resultados / tests sueltos -->
         <activity
             android:name=".TestActivity"
             android:exported="false" />
@@ -104,7 +130,7 @@
         <activity
             android:name=".HislaConocimiento.IslaModalityActivity"
             android:exported="false" />
-        
+
         <!-- Servicio de Firebase Cloud Messaging -->
         <service
             android:name=".notifications.MyFirebaseMessagingService"
@@ -113,7 +139,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        
+
         <!-- Metadata para el canal de notificaciones por defecto -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -124,7 +150,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
-        
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -134,6 +160,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
     </application>
 
 </manifest>
