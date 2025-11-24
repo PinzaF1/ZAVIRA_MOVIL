@@ -20,23 +20,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Contenedor cuadrado para el logo -->
-
-            <!-- Texto "EDUEXCE" en negro -->
+            <!-- CONTENEDOR LOGO CENTRADO -->
             <FrameLayout
                 android:id="@+id/containerLogo"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:background="@android:color/transparent"
                 android:padding="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.505"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintVertical_bias="0.155">
 
-                <!-- Logo EduExce -->
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -45,8 +42,7 @@
                     android:src="@drawable/iconoeduexce" />
             </FrameLayout>
 
-            <!-- Contenedor del formulario centrado -->
-
+            <!-- TEXTO CENTRADO -->
             <TextView
                 android:id="@+id/tvEduExce"
                 android:layout_width="174dp"
@@ -57,26 +53,27 @@
                 android:textColor="@color/brand_blue"
                 android:textSize="34sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.548"
+                app:layout_constraintTop_toBottomOf="@id/containerLogo"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/containerLogo" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5" />
 
+            <!-- FORMULARIO CENTRADO -->
             <LinearLayout
                 android:id="@+id/llFormulario"
-                android:layout_width="351dp"
-                android:layout_height="300dp"
+                android:layout_width="336dp"
+                android:layout_height="280dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="48dp"
                 android:layout_marginEnd="32dp"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvEduExce"
-                app:layout_constraintVertical_bias="0.051">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintVertical_bias="0.0">
 
                 <!-- Campo Documento -->
                 <com.google.android.material.textfield.TextInputLayout
@@ -146,7 +143,7 @@
                         android:textSize="16sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Botón de inicio de sesión azul -->
+                <!-- Botón Login -->
                 <Button
                     android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
@@ -159,7 +156,7 @@
                     android:textStyle="bold"
                     app:cornerRadius="8dp" />
 
-                <!-- Loader -->
+                <!-- Olvidaste contraseña -->
                 <TextView
                     android:id="@+id/tvOlvideContra"
                     android:layout_width="wrap_content"
