@@ -281,14 +281,85 @@ public class ConfiguracionFragment extends Fragment {
 
         btnConfirmar.setOnClickListener(v -> {
             // Acción real de cerrar sesión
+            logoutWithUnregister(dialog);
+        });
+
+        dialog.show();
+    }
+
+    /**
+     * Intenta desregistrar el token FCM en el servidor y luego realiza el logout local.
+     * Siempre que falle la petición, igual se realiza el logout local (comportamiento "best-effort").
+     */
+    private void logoutWithUnregister(android.app.Dialog confirmDialog) {
+        // Mostrar loading
+        Dialog loading = showLoading();
+
+        // Obtener token FCM guardado
+        String fcmToken = new com.example.zavira_movil.notifications.NotificationHelper(requireContext()).getSavedToken();
+        if (fcmToken == null) {
+            // No hay token FCM: finalizar logout inmediato
+            if (loading.isShowing()) loading.dismiss();
             com.example.zavira_movil.local.TokenManager.clearAll(requireContext());
             Intent i = new Intent(requireContext(), LoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
             requireActivity().finish();
-            dialog.dismiss();
-        });
+            confirmDialog.dismiss();
+            return;
+        }
 
-        dialog.show();
+        try {
+            String deviceId = android.provider.Settings.Secure.getString(
+                    requireContext().getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID
+            );
+
+            org.json.JSONObject jsonBody = new org.json.JSONObject();
+            jsonBody.put("token", fcmToken);
+            jsonBody.put("device_id", deviceId);
+            jsonBody.put("platform", "android");
+
+            okhttp3.RequestBody body = okhttp3.RequestBody.create(
+                    jsonBody.toString(),
+                    okhttp3.MediaType.parse("application/json")
+            );
+
+            ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+            api.unregisterFCMToken(body).enqueue(new retrofit2.Callback<Void>() {
+                @Override
+                public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                    // Ignorar éxito/fallo y finalizar logout
+                    if (loading.isShowing()) loading.dismiss();
+                    com.example.zavira_movil.local.TokenManager.clearAll(requireContext());
+                    Intent i = new Intent(requireContext(), LoginActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+                    requireActivity().finish();
+                    confirmDialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                    // Best-effort: igualmente cerrar sesión localmente
+                    if (loading.isShowing()) loading.dismiss();
+                    com.example.zavira_movil.local.TokenManager.clearAll(requireContext());
+                    Intent i = new Intent(requireContext(), LoginActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+                    requireActivity().finish();
+                    confirmDialog.dismiss();
+                }
+            });
+        } catch (Exception e) {
+            if (loading.isShowing()) loading.dismiss();
+            com.example.zavira_movil.local.TokenManager.clearAll(requireContext());
+            Intent i = new Intent(requireContext(), LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            requireActivity().finish();
+            confirmDialog.dismiss();
+        }
     }
 }
+

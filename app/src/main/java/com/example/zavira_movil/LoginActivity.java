@@ -325,68 +325,16 @@ public class LoginActivity extends AppCompatActivity {
                     Log.w("FCM_TOKEN", "⚠️ No se pudo obtener el token FCM");
                     return;
                 }
-                
-                // ⚠️ TEMPORAL: Mostrar token completo para testing con Firebase Console
+
+                // Guardado y envío con reintentos (best-effort)
+                notificationHelper.sendTokenToServer(token, 3);
+
+                // Mostrar token para debugging (mantener por ahora)
                 Log.d("FCM_TOKEN", "📱 Token FCM completo: " + token);
                 Log.d("FCM_TOKEN", "===================================");
                 Log.d("FCM_TOKEN", "COPIA ESTE TOKEN PARA FIREBASE CONSOLE:");
                 Log.d("FCM_TOKEN", token);
                 Log.d("FCM_TOKEN", "===================================");
-
-                // Verificar autenticación
-                String authToken = TokenManager.getToken(LoginActivity.this);
-                if (authToken == null) {
-                    Log.w("FCM_TOKEN", "⚠️ No hay token de autenticación");
-                    return;
-                }
-                
-                try {
-                    // Obtener device_id único del dispositivo
-                    String deviceId = Settings.Secure.getString(
-                        getContentResolver(), 
-                        Settings.Secure.ANDROID_ID
-                    );
-                    
-                    // Construir body según el formato esperado por el backend
-                    JSONObject jsonBody = new JSONObject();
-                    jsonBody.put("token", token);
-                    jsonBody.put("device_id", deviceId);
-                    jsonBody.put("platform", "android");
-                    
-                    RequestBody body = RequestBody.create(
-                        jsonBody.toString(),
-                        MediaType.parse("application/json")
-                    );
-                    
-                    Log.d("FCM_TOKEN", "📤 Enviando token al servidor...");
-                    
-                    ApiService apiService = RetrofitClient.getInstance(LoginActivity.this).create(ApiService.class);
-                    Call<Void> call = apiService.registerFCMToken(body);
-                    
-                    call.enqueue(new Callback<Void>() {
-                        @Override
-                        public void onResponse(Call<Void> call, Response<Void> response) {
-                            if (response.isSuccessful()) {
-                                Log.d("FCM_TOKEN", "✅ Token FCM registrado exitosamente en el servidor");
-                            } else {
-                                try {
-                                    String errorBody = response.errorBody() != null ? 
-                                        response.errorBody().string() : "Sin detalles";
-                                    Log.e("FCM_TOKEN", "❌ Error al registrar token: " + response.code() + " - " + errorBody);
-                                } catch (Exception e) {
-                                    Log.e("FCM_TOKEN", "❌ Error al registrar token: " + response.code());
-                                }
-                            }
-                        }
-                        
-                        @Override
-                        public void onFailure(Call<Void> call, Throwable t) {
-                            Log.e("FCM_TOKEN", "❌ Fallo de red al registrar token FCM", t);
-                        }
-                    });
-                } catch (Exception e) {
-                    Log.e("FCM_TOKEN", "❌ Error al preparar el token para enviar", e);
-                }
             }
         });
     }

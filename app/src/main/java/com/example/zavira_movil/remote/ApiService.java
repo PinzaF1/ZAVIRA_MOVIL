@@ -270,4 +270,11 @@ public interface ApiService {
     // ---------- Notificaciones FCM ----------
     @POST("movil/fcm-token")
     Call<Void> registerFCMToken(@Body okhttp3.RequestBody body);
+
+    // Permitir desregistrar/eliminar el token FCM en el backend.
+    // Usamos @HTTP con hasBody=true porque algunos backends esperan un body JSON en la
+    // petición DELETE (si el backend no soporta esto, la llamada fallará y el cliente
+    // debe manejarlo). El body esperado seguirá el mismo formato que el POST.
+    @retrofit2.http.HTTP(method = "DELETE", path = "movil/fcm-token", hasBody = true)
+    Call<Void> unregisterFCMToken(@Body okhttp3.RequestBody body);
 }

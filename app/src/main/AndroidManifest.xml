@@ -21,7 +21,14 @@
         android:roundIcon="@drawable/robot"
         android:supportsRtl="true"
         android:theme="@style/Theme.ZAVIRA_MOVIL"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:name=".App">
+        <!-- Receiver global para manejar sesión expirada enviada por RetrofitClient -->
+        <receiver android:name=".SessionExpiredReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.zavira_movil.ACTION_SESSION_EXPIRED" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".Home.NotificationsActivity"
             android:exported="false" />
