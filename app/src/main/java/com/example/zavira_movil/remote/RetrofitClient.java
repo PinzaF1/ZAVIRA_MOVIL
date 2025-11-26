@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class RetrofitClient {
 
-    // ✅ URL NGROK ACTUALIZADA (con soporte OpenAI/IA)
+    //  URL NGROK ACTUALIZADA (con soporte OpenAI/IA)
     private static final String BASE_URL = "https://gillian-semiluminous-blubberingly.ngrok-free.dev/";
 
     // DEBUG LOCAL (comentado hasta resolver firewall):

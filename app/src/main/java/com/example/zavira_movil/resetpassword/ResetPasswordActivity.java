@@ -97,6 +97,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
         }
     }
 
+
+
     private void initViews() {
         viewFlipper = findViewById(R.id.viewFlipper);
         btnBack = findViewById(R.id.btnBack);
@@ -127,6 +129,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
         indicatorStep2 = findViewById(R.id.indicatorStep2);
         indicatorStep3 = findViewById(R.id.indicatorStep3);
     }
+
+
+    // no
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> onBackPressed());

@@ -121,9 +121,12 @@
         <activity
             android:name=".ResultActivity"
             android:exported="false" />
+
         <activity
             android:name=".HislaConocimiento.IslaModalityActivity"
             android:exported="false" /> <!-- Servicio de Firebase Cloud Messaging -->
+
+
         <service
             android:name=".notifications.MyFirebaseMessagingService"
             android:exported="false">

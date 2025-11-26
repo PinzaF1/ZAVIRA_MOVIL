@@ -67,7 +67,7 @@
             android:padding="16dp"
             app:cornerRadius="12dp" />
 
-        <!-- Botón No -->
+        <!-- Botón de No , la olvide-->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNoRecuerdo"
             android:layout_width="match_parent"
