@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/white"
-        android:padding="20dp">
+        android:padding="24dp">
 
         <!-- Título -->
         <TextView
@@ -19,17 +19,28 @@
             android:textStyle="bold"
             android:textSize="20sp"
             android:textColor="#111827"
-            android:paddingBottom="8dp"/>
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Subtítulo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="¿Recuerdas tu contraseña actual?"
+            android:textSize="16sp"
+            android:textColor="#6B7280"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"/>
 
         <!-- ===== Campo 1 ===== -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Contraseña Actual"
-            android:textSize="13sp"
-            android:textColor="#6B7280"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"/>
+            android:textSize="14sp"
+            android:textColor="#374151"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -37,49 +48,63 @@
             app:hintEnabled="false"
             app:hintAnimationEnabled="false"
             app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:endIconMode="password_toggle">
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:boxStrokeColor="#D1D5DB"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etActual"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12dp"
+                android:textSize="14sp"
                 android:hint="Ingresa tu contraseña actual"
+                android:textColor="#374151"
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- ===== Campo 2 ===== -->
+        <!-- Línea divisoria -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E5E7EB"
+            android:layout_marginVertical="16dp"/>
+
+        <!-- Sección Nueva Contraseña -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Nueva Contraseña"
-            android:textSize="13sp"
-            android:textColor="#6B7280"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="6dp"/>
+            android:textSize="16sp"
+            android:textColor="#111827"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
 
+        <!-- ===== Campo 2 ===== -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hintEnabled="false"
             app:hintAnimationEnabled="false"
             app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:endIconMode="password_toggle">
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:boxStrokeColor="#D1D5DB"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNueva"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12dp"
+                android:textSize="14sp"
                 android:hint="Mínimo 8 caracteres"
+                android:textColor="#374151"
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -88,10 +113,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Confirmar Nueva Contraseña"
-            android:textSize="13sp"
-            android:textColor="#6B7280"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="6dp"/>
+            android:textSize="14sp"
+            android:textColor="#374151"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -99,18 +124,21 @@
             app:hintEnabled="false"
             app:hintAnimationEnabled="false"
             app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:endIconMode="password_toggle">
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:boxStrokeColor="#D1D5DB"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="24dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etConfirmar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12dp"
+                android:textSize="14sp"
                 android:hint="Repite la nueva contraseña"
+                android:textColor="#374151"
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -119,31 +147,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="end"
-            android:layout_marginTop="18dp">
+            android:gravity="end">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelar"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="0dp"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:layout_weight="1"
-                android:textColor="@android:color/black"
-                android:text="Cancelar"/>
-
-            <Space
-                android:layout_width="12dp"
-                android:layout_height="12dp" />
+                android:text="Cancelar"
+                android:textColor="#6B7280"
+                android:textSize="14sp"
+                app:backgroundTint="@android:color/transparent"
+                android:layout_marginEnd="16dp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGuardar"
                 style="@style/Widget.Material3.Button"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="Guardar "
-                android:textColor="@android:color/black"
-                app:backgroundTint="@color/blue"/>
+                android:text="Guardar"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="#2563EB"/>
+
         </LinearLayout>
 
     </LinearLayout>

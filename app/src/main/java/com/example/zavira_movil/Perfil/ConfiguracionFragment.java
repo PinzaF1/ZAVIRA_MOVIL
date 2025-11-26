@@ -39,17 +39,16 @@ public class ConfiguracionFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_configuracion, container, false);
+        return inflater.inflate(R.layout.dialog_menu_configuracion, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        View rowCambiar = view.findViewById(R.id.rowCambiarContrasena);
-        if (rowCambiar != null) rowCambiar.setOnClickListener(v -> mostrarDialogoCambio());
+        View rowCambiar = view.findViewById(R.id.btnCambiarContrasena);        if (rowCambiar != null) rowCambiar.setOnClickListener(v -> mostrarDialogoCambio());
 
-        View rowLogout = view.findViewById(R.id.rowCerrarSesion);
+        View rowLogout = view.findViewById(R.id.btnCerrarSesion);
         if (rowLogout != null) rowLogout.setOnClickListener(v -> confirmarCerrarSesion());
     }
 
@@ -73,21 +72,42 @@ public class ConfiguracionFragment extends Fragment {
     // Cambiar contraseña
     // ---------------------------------------------------------------------
     private void mostrarDialogoCambio() {
-        // Primero preguntar si recuerda su contraseña
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Cambiar Contraseña")
-                .setMessage("¿Recuerdas tu contraseña actual?")
-                .setPositiveButton("Sí, la recuerdo", (d, w) -> {
-                    // Flujo normal: pedir contraseña actual
-                    mostrarDialogoCambioNormal();
-                })
-                .setNeutralButton("No, la olvidé", (d, w) -> {
-                    // Ir a recuperación de contraseña
-                    Intent intent = new Intent(requireContext(), com.example.zavira_movil.resetpassword.ResetPasswordActivity.class);
-                    startActivity(intent);
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
+        // Inflar el layout personalizado
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_cambiar_contrasena_inicial, null);
+
+        // Crear el diálogo
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Configurar fondo transparente para respetar las esquinas redondeadas
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        // Configurar los botones
+        MaterialButton btnSiRecuerdo = dialogView.findViewById(R.id.btnSiRecuerdo);
+        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelar);
+        MaterialButton btnNoRecuerdo = dialogView.findViewById(R.id.btnNoRecuerdo);
+
+        btnSiRecuerdo.setOnClickListener(v -> {
+            mostrarDialogoCambioNormal();
+            dialog.dismiss();
+        });
+
+        btnCancelar.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        btnNoRecuerdo.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), com.example.zavira_movil.resetpassword.ResetPasswordActivity.class);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     /**

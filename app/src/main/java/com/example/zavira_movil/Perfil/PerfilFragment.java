@@ -143,10 +143,10 @@ public class PerfilFragment extends Fragment {
                 statusDot.setX(fotoX + fotoWidth - 8);
                 statusDot.setY(fotoY + fotoHeight - 8);
             });
-            
+
             statusDot.setOnTouchListener(new android.view.View.OnTouchListener() {
                 private float dX, dY;
-                
+
                 @Override
                 public boolean onTouch(View v, android.view.MotionEvent event) {
                     switch (event.getActionMasked()) {
@@ -165,7 +165,7 @@ public class PerfilFragment extends Fragment {
                 }
             });
         }
-        
+
         // Icono de configuración - mostrar menú contextual
         View iconSettings = binding.getRoot().findViewById(R.id.iconSettings);
         if (iconSettings != null) {
@@ -176,24 +176,24 @@ public class PerfilFragment extends Fragment {
         View btnEditarContacto = binding.getRoot().findViewById(R.id.btnEditarContacto);
         if (btnEditarContacto != null) {
             btnEditarContacto.setOnClickListener(v -> {
-            if (perfilUserId == null) {
-                android.widget.Toast.makeText(requireContext(), "No se puede editar: sin ID de usuario", android.widget.Toast.LENGTH_SHORT).show();
-                return;
-            }
-            abrirEditorContacto();
-        });
+                if (perfilUserId == null) {
+                    android.widget.Toast.makeText(requireContext(), "No se puede editar: sin ID de usuario", android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                abrirEditorContacto();
+            });
         }
 
-        // Click en "Cambiar contraseña"
-        View rowCambiarContrasena = binding.getRoot().findViewById(R.id.rowCambiarContrasena);
-        if (rowCambiarContrasena != null) {
-            rowCambiarContrasena.setOnClickListener(v -> mostrarDialogoCambio());
+        // Click en "Cambiar contraseña" - CORREGIDO: usar btnCambiarContrasena
+        View btnCambiarContrasena = binding.getRoot().findViewById(R.id.btnCambiarContrasena);
+        if (btnCambiarContrasena != null) {
+            btnCambiarContrasena.setOnClickListener(v -> mostrarDialogoCambio());
         }
 
-        // Click en "Cerrar sesión"
-        View rowCerrarSesion = binding.getRoot().findViewById(R.id.rowCerrarSesion);
-        if (rowCerrarSesion != null) {
-            rowCerrarSesion.setOnClickListener(v -> confirmarCerrarSesion());
+        // Click en "Cerrar sesión" - CORREGIDO: usar btnCerrarSesion
+        View btnCerrarSesion = binding.getRoot().findViewById(R.id.btnCerrarSesion);
+        if (btnCerrarSesion != null) {
+            btnCerrarSesion.setOnClickListener(v -> confirmarCerrarSesion());
         }
 
         cargarPerfil();
@@ -216,7 +216,7 @@ public class PerfilFragment extends Fragment {
                 .setText(binding.tvEstilo.getText());
         ((android.widget.TextView) dialogView.findViewById(R.id.tvFechaSheet))
                 .setText(binding.tvFechaKolb.getText());
-        
+
         // Mostrar la descripción si está guardada, sino obtenerla del API
         TextView tvDescripcionSheet = dialogView.findViewById(R.id.tvDescripcionSheet);
         if (tvDescripcionSheet != null) {
@@ -249,7 +249,7 @@ public class PerfilFragment extends Fragment {
                 });
             }
         }
-        
+
         ((android.widget.TextView) dialogView.findViewById(R.id.tvCaracteristicasSheet))
                 .setText(binding.tvCaracteristicas.getText());
         ((android.widget.TextView) dialogView.findViewById(R.id.tvRecomendacionesSheet))
@@ -272,27 +272,27 @@ public class PerfilFragment extends Fragment {
                 requireActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
                 int screenWidth = displayMetrics.widthPixels;
                 int screenHeight = displayMetrics.heightPixels;
-                
+
                 // Ancho: 85% de la pantalla (los márgenes laterales se aplicarán al CardView)
                 layoutParams.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                
+
                 // Altura máxima: 80% de la pantalla (deja 10% arriba y 10% abajo)
                 int maxHeight = (int) (screenHeight * 0.8);
                 layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                
+
                 // Calcular márgenes verticales (10% arriba y 10% abajo)
                 int verticalMargin = (int) (screenHeight * 0.1);
-                
+
                 layoutParams.gravity = android.view.Gravity.CENTER;
                 dialog.getWindow().setAttributes(layoutParams);
-                
+
                 // Fondo transparente para que se vea el card con bordes redondeados
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 // Dim background
                 dialog.getWindow().setDimAmount(0.6f);
             }
         });
-        
+
         // Helper para limitar altura del ScrollView y aplicar márgenes al CardView
         dialogView.post(() -> {
             android.util.DisplayMetrics dm = new android.util.DisplayMetrics();
@@ -300,7 +300,7 @@ public class PerfilFragment extends Fragment {
             int screenHeight = dm.heightPixels;
             int maxHeight = (int) (screenHeight * 0.8); // 80% de altura (deja 10% arriba y 10% abajo)
             int verticalMargin = (int) (screenHeight * 0.1); // 10% de margen arriba y abajo
-            
+
             // Encontrar el MaterialCardView (raíz del layout)
             com.google.android.material.card.MaterialCardView cardView = null;
             if (dialogView instanceof com.google.android.material.card.MaterialCardView) {
@@ -308,15 +308,15 @@ public class PerfilFragment extends Fragment {
             } else if (dialogView instanceof android.view.ViewGroup) {
                 cardView = findCardView((android.view.ViewGroup) dialogView);
             }
-            
+
             if (cardView != null) {
                 // Aplicar márgenes al CardView para crear espacio arriba y abajo
-                android.view.ViewGroup.MarginLayoutParams cardParams = 
-                    (android.view.ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+                android.view.ViewGroup.MarginLayoutParams cardParams =
+                        (android.view.ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
                 if (cardParams == null) {
                     cardParams = new android.view.ViewGroup.MarginLayoutParams(
-                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
                     );
                 }
                 cardParams.topMargin = verticalMargin;
@@ -325,7 +325,7 @@ public class PerfilFragment extends Fragment {
                 cardParams.rightMargin = (int) (dm.widthPixels * 0.075);
                 cardView.setLayoutParams(cardParams);
             }
-            
+
             // Limitar altura del ScrollView
             ScrollView sv = dialogView.findViewById(R.id.scrollViewKolb);
             if (sv == null) {
@@ -367,7 +367,7 @@ public class PerfilFragment extends Fragment {
         }
         return null;
     }
-    
+
     private com.google.android.material.card.MaterialCardView findCardView(android.view.ViewGroup parent) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             android.view.View child = parent.getChildAt(i);
@@ -461,24 +461,24 @@ public class PerfilFragment extends Fragment {
     private void setPhoto(@NonNull Uri uri) {
         // Limpiar cache de Glide para forzar recarga
         Glide.with(requireContext()).clear(binding.icon);
-        
+
         // PRIMERO: Guardar la foto localmente para que esté disponible inmediatamente
         File saved = copyUriToInternalFile(uri, fileNameForUser());
         if (saved != null && saved.exists()) {
             // Guardar la ruta inmediatamente
             guardarPathFoto(saved.getAbsolutePath());
-            
+
             // Cargar la foto desde el archivo guardado (más confiable que el URI)
-        Glide.with(requireContext())
+            Glide.with(requireContext())
                     .load(saved)
-                .placeholder(R.drawable.usuario)
+                    .placeholder(R.drawable.usuario)
                     .skipMemoryCache(true) // No usar cache en memoria
                     .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE) // No usar cache en disco
-                .into(binding.icon);
+                    .into(binding.icon);
 
             // Notificar INMEDIATAMENTE a otras pantallas que la foto se actualizó
             notificarFotoActualizada(saved.getAbsolutePath());
-            
+
             // Subir foto al servidor en segundo plano
             subirFotoAlServidor(saved);
         } else {
@@ -491,14 +491,14 @@ public class PerfilFragment extends Fragment {
                     .into(binding.icon);
         }
     }
-    
+
     private void notificarFotoActualizada(String fotoPath) {
         // Enviar broadcast para notificar que la foto se actualizó
         android.content.Intent intent = new android.content.Intent("com.example.zavira_movil.FOTO_ACTUALIZADA");
         intent.putExtra("foto_path", fotoPath);
         requireContext().sendBroadcast(intent);
     }
-    
+
     private void subirFotoAlServidor(@NonNull File fotoFile) {
         if (!fotoFile.exists()) {
             Log.e("PERFIL_UPLOAD", "El archivo no existe: " + fotoFile.getAbsolutePath());
@@ -729,17 +729,17 @@ public class PerfilFragment extends Fragment {
                     return;
                 }
                 KolbResultado r = resp.body();
-                
+
                 // Log para debug
                 android.util.Log.d("PROFILE_KOLB", "Estilo recibido: " + (r.getEstilo() != null ? r.getEstilo() : "null"));
                 android.util.Log.d("PROFILE_KOLB", "Fecha recibida: " + (r.getFecha() != null ? r.getFecha() : "null"));
                 android.util.Log.d("PROFILE_KOLB", "Descripción recibida: " + (r.getDescripcion() != null ? r.getDescripcion() : "null"));
-                
+
                 binding.tvEstilo.setText(safe(r.getEstilo()));
                 binding.tvFechaKolb.setText(formatearFechaFlexible(r.getFecha()));
                 binding.tvCaracteristicas.setText(limpiarTexto(r.getCaracteristicas()));
                 binding.tvRecomendaciones.setText(limpiarTexto(r.getRecomendaciones()));
-                
+
                 // Guardar la descripción para usarla en el diálogo
                 descripcionKolb = r.getDescripcion();
             }
@@ -764,7 +764,7 @@ public class PerfilFragment extends Fragment {
         TextInputEditText etDireccion = content.findViewById(R.id.etDireccion);
         MaterialButton btnGuardar     = content.findViewById(R.id.btnGuardar);
         MaterialButton btnCancelar    = content.findViewById(R.id.btnCancelar);
-        
+
         // Obtener los TextInputLayout para cambiar el color del borde al enfocar
         TextInputLayout tilCorreo = (TextInputLayout) etCorreo.getParent().getParent();
         TextInputLayout tilTelefono = (TextInputLayout) etTelefono.getParent().getParent();
@@ -781,7 +781,7 @@ public class PerfilFragment extends Fragment {
             if (v == etCorreo) til = tilCorreo;
             else if (v == etTelefono) til = tilTelefono;
             else if (v == etDireccion) til = tilDireccion;
-            
+
             if (til != null) {
                 if (hasFocus) {
                     til.setBoxStrokeColor(Color.parseColor("#2563EB"));
@@ -790,7 +790,7 @@ public class PerfilFragment extends Fragment {
                 }
             }
         };
-        
+
         etCorreo.setOnFocusChangeListener(focusListener);
         etTelefono.setOnFocusChangeListener(focusListener);
         etDireccion.setOnFocusChangeListener(focusListener);
@@ -1002,11 +1002,11 @@ public class PerfilFragment extends Fragment {
     // ---------------------------------------------------------------------
     private void mostrarMenuConfiguracion(View anchor) {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_menu_configuracion, null);
-        
+
         AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
                 .create();
-        
+
         // Cambiar contraseña
         View btnCambiarContrasena = dialogView.findViewById(R.id.btnCambiarContrasena);
         if (btnCambiarContrasena != null) {
@@ -1015,7 +1015,7 @@ public class PerfilFragment extends Fragment {
                 mostrarDialogoCambio();
             });
         }
-        
+
         // Cerrar sesión
         View btnCerrarSesion = dialogView.findViewById(R.id.btnCerrarSesion);
         if (btnCerrarSesion != null) {
@@ -1024,38 +1024,59 @@ public class PerfilFragment extends Fragment {
                 confirmarCerrarSesion();
             });
         }
-        
+
         dialog.show();
-        
+
         // Ajustar el tamaño y estilo del diálogo
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(
-                (int) (getResources().getDisplayMetrics().widthPixels * 0.85),
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.85),
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT
             );
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
     }
 
     // ---------------------------------------------------------------------
-    // Cambiar contraseña
+    // Cambiar contraseña - CORREGIDO: USAR DISEÑO PERSONALIZADO
     // ---------------------------------------------------------------------
     private void mostrarDialogoCambio() {
-        // Primero preguntar si recuerda su contraseña
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Cambiar Contraseña")
-                .setMessage("¿Recuerdas tu contraseña actual?")
-                .setPositiveButton("Sí, la recuerdo", (d, w) -> {
-                    // Flujo normal: pedir contraseña actual
-                    mostrarDialogoCambioNormal();
-                })
-                .setNeutralButton("No, la olvidé", (d, w) -> {
-                    // Ir a recuperación de contraseña
-                    Intent intent = new Intent(requireContext(), com.example.zavira_movil.resetpassword.ResetPasswordActivity.class);
-                    startActivity(intent);
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
+        // Inflar el layout personalizado
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_cambiar_contrasena_inicial, null);
+
+        // Crear el diálogo
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Configurar fondo transparente para respetar las esquinas redondeadas
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        // Configurar los botones
+        MaterialButton btnSiRecuerdo = dialogView.findViewById(R.id.btnSiRecuerdo);
+        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelar);
+        MaterialButton btnNoRecuerdo = dialogView.findViewById(R.id.btnNoRecuerdo);
+
+        btnSiRecuerdo.setOnClickListener(v -> {
+            mostrarDialogoCambioNormal();
+            dialog.dismiss();
+        });
+
+        btnCancelar.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        btnNoRecuerdo.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), com.example.zavira_movil.resetpassword.ResetPasswordActivity.class);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     /**

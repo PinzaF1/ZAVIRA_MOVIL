@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#3988FF"> <!-- ✅ CAMBIA: Fondo azul sólido -->
+
+    <!-- Fondo principal -->
+    <ImageView
+        android:id="@+id/bgSplash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/fondo" />
+
+    <ImageView
+        android:id="@+id/bgBlurred"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="centerCrop"
+    android:src="@drawable/fondo_borroso" />
+
+
+    <ImageView
+        android:id="@+id/imgMapa"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:src="@drawable/mapa" />
+
+</FrameLayout>
