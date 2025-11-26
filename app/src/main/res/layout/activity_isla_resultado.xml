@@ -149,20 +149,5 @@
             android:backgroundTint="@null"
             app:backgroundTint="@null" />
 
-        <Button
-            android:id="@+id/btnRepetir"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="16dp"
-            android:text="Repetir Simulacro"
-            android:textAllCaps="false"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:textSize="16sp"
-            android:background="@drawable/bg_button_white_black_border"
-            android:backgroundTint="@null"
-            app:backgroundTint="@null" />
-
     </LinearLayout>
 </ScrollView>

@@ -56,7 +56,6 @@ public class IslaResultadoActivity extends AppCompatActivity {
         tvPorcentaje = findViewById(R.id.tvPorcentaje);
         contAreas    = findViewById(R.id.contAreas);
         btnFinalizar = findViewById(R.id.btnFinalizar);
-        btnRepetir   = findViewById(R.id.btnRepetir);
         ivTrophyGif  = findViewById(R.id.ivTrophyGif);
         
         // Buscar o crear TextView para tiempo total (modalidad fácil)
@@ -113,7 +112,7 @@ public class IslaResultadoActivity extends AppCompatActivity {
         verificarGanador();
 
         btnFinalizar.setOnClickListener(v -> {
-            Intent i = new Intent(IslaResultadoActivity.this, IslaModalityActivity.class);
+            Intent i = new Intent(IslaResultadoActivity.this, com.example.zavira_movil.niveleshome.MapaActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(i);
             finish();

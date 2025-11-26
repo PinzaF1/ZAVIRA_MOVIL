@@ -47,8 +47,6 @@ public class IslaModalityActivity extends AppCompatActivity {
 
         cardFacil   = findViewById(R.id.cardFacil);
         cardDificil = findViewById(R.id.cardDificil);
-        checkFacil  = findViewById(R.id.checkFacil);
-        checkDificil= findViewById(R.id.checkDificil);
         btnIniciar  = findViewById(R.id.btnIniciar);
 
         if (savedInstanceState != null) {
