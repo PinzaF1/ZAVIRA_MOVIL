@@ -1,0 +1,161 @@
+openapi: 3.0.3
+info:
+  title: FCM Tokens API (minimal)
+  version: 1.0.0
+  description: Especificación mínima OpenAPI para los endpoints que usa la app móvil (registro/desregistro de tokens FCM y envío debug).
+servers:
+  - url: https://churnable-nimbly-norbert.ngrok-free.dev
+    description: ngrok / entorno de pruebas
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    FcmTokenRegister:
+      type: object
+      required:
+        - token
+        - device_id
+        - platform
+      properties:
+        token:
+          type: string
+          description: Token FCM entregado por Firebase
+        device_id:
+          type: string
+          description: Identificador del dispositivo (ANDROID_ID / UUID)
+        platform:
+          type: string
+          enum: [android, ios]
+        app_version:
+          type: string
+          description: Versión de la app
+    DeleteTokenResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        message:
+          type: string
+    RegisterTokenResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        created:
+          type: boolean
+    DebugSendRequest:
+      type: object
+      required:
+        - mode
+      properties:
+        mode:
+          type: string
+          description: 'Modo de envío: "tokens" | "topic"'
+        tokens:
+          type: array
+          items:
+            type: string
+          description: Array de tokens cuando mode == tokens
+        topic:
+          type: string
+          description: Topic cuando mode == topic
+        title:
+          type: string
+        body:
+          type: string
+        data:
+          type: object
+          additionalProperties:
+            type: string
+paths:
+  /movil/fcm-token:
+    post:
+      summary: Registrar o actualizar token FCM
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FcmTokenRegister'
+            example:
+              token: "fcm_token_example_ABC"
+              device_id: "abc123"
+              platform: "android"
+              app_version: "1.0.0"
+      responses:
+        '200':
+          description: Token registrado o actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterTokenResponse'
+        '400':
+          description: Petición inválida
+        '401':
+          description: No autorizado (token inválido/expirado)
+    delete:
+      summary: Desactivar/eliminar token FCM (idempotente)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+          description: Token FCM a desactivar
+      responses:
+        '200':
+          description: Token desactivado (idempotente)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteTokenResponse'
+        '400':
+          description: Petición inválida
+        '401':
+          description: No autorizado
+  /debug/send-notification:
+    post:
+      summary: Envío de notificación de prueba (solo admin / dev)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebugSendRequest'
+            example:
+              mode: "tokens"
+              tokens: ["fcm_token_example_ABC"]
+              title: "Prueba"
+              body: "Mensaje de prueba"
+              data:
+                screen: "notificaciones"
+      responses:
+        '200':
+          description: Resultado del envío
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  sent_count:
+                    type: integer
+        '403':
+          description: Debug disabled o falta permisos
+        '401':
+          description: No autorizado
+security:
+  - bearerAuth: []
+
+# Nota: esta especificación es minimal y sirve para integrar rápido en la app móvil.
+# Usadla como base para generar clientes o documentar al equipo móvil.

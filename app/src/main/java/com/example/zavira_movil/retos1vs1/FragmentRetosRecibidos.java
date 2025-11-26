@@ -361,6 +361,112 @@ public class FragmentRetosRecibidos extends Fragment {
         }, 500); // 500ms de delay para asegurar que el backend procesó el rechazo
     }
 
+    /**
+     * Muestra un diálogo de confirmación para aceptar el reto
+     * Este método se llama cuando el usuario toca la notificación
+     */
+    public void mostrarDialogoRetoDesdeNotificacion(String retoId, String retadorNombre, String area) {
+        if (!isAdded() || getActivity() == null) {
+            android.util.Log.w("FragmentRetosRecibidos", "⚠️ Fragment no está listo para mostrar diálogo");
+            return;
+        }
+
+        android.util.Log.d("FragmentRetosRecibidos", "🎮 Mostrando diálogo para reto ID: " + retoId);
+
+        // Buscar el reto en la lista actual
+        RetoListItem retoEncontrado = null;
+        if (adapter != null && adapter.getData() != null) {
+            for (RetoListItem reto : adapter.getData()) {
+                if (reto.getIdReto() != null && String.valueOf(reto.getIdReto()).equals(retoId)) {
+                    retoEncontrado = reto;
+                    break;
+                }
+            }
+        }
+
+        // Si no se encontró el reto en la lista actual, recargar primero
+        if (retoEncontrado == null) {
+            android.util.Log.d("FragmentRetosRecibidos", "🔄 Reto no encontrado en lista, recargando...");
+            cargar();
+
+            // Intentar de nuevo después de recargar
+            new Handler().postDelayed(() -> {
+                RetoListItem retoRecargado = null;
+                if (adapter != null && adapter.getData() != null) {
+                    for (RetoListItem reto : adapter.getData()) {
+                        if (reto.getIdReto() != null && String.valueOf(reto.getIdReto()).equals(retoId)) {
+                            retoRecargado = reto;
+                            break;
+                        }
+                    }
+                }
+
+                if (retoRecargado != null) {
+                    mostrarDialogoDeConfirmacion(retoRecargado, retadorNombre, area);
+                } else {
+                    android.util.Log.w("FragmentRetosRecibidos", "⚠️ Reto aún no encontrado después de recargar");
+                    Toast.makeText(requireContext(), "Cargando reto...", Toast.LENGTH_SHORT).show();
+                }
+            }, 1000);
+            return;
+        }
+
+        // Mostrar el diálogo inmediatamente
+        mostrarDialogoDeConfirmacion(retoEncontrado, retadorNombre, area);
+    }
+
+    /**
+     * Muestra el diálogo de confirmación con diseño atractivo
+     */
+    private void mostrarDialogoDeConfirmacion(RetoListItem reto, String retadorNombre, String area) {
+        if (!isAdded() || getActivity() == null) {
+            return;
+        }
+
+        // Crear diálogo personalizado
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+
+        // Inflar layout personalizado
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_aceptar_reto, null);
+
+        // Configurar vistas del diálogo
+        TextView tvTitulo = dialogView.findViewById(R.id.tvTituloReto);
+        TextView tvRetador = dialogView.findViewById(R.id.tvRetador);
+        TextView tvArea = dialogView.findViewById(R.id.tvArea);
+        android.widget.Button btnAceptar = dialogView.findViewById(R.id.btnAceptarReto);
+        android.widget.Button btnRechazar = dialogView.findViewById(R.id.btnRechazarReto);
+
+        // Configurar textos
+        tvTitulo.setText("¡Tienes un nuevo reto!");
+        tvRetador.setText("🎮 " + (retadorNombre != null ? retadorNombre : "Desconocido") + " te ha retado");
+        tvArea.setText("📚 Área: " + (area != null ? area : "Desconocida"));
+
+        builder.setView(dialogView);
+        android.app.AlertDialog dialog = builder.create();
+
+        // Hacer el fondo transparente para que se vea el diseño personalizado
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        // Configurar botón Aceptar
+        btnAceptar.setOnClickListener(v -> {
+            android.util.Log.d("FragmentRetosRecibidos", "✅ Usuario aceptó el reto");
+            dialog.dismiss();
+            aceptarYIrSala(reto);
+        });
+
+        // Configurar botón Rechazar
+        btnRechazar.setOnClickListener(v -> {
+            android.util.Log.d("FragmentRetosRecibidos", "❌ Usuario rechazó el reto");
+            dialog.dismiss();
+            rechazarReto(reto);
+        });
+
+        dialog.show();
+        android.util.Log.d("FragmentRetosRecibidos", "✅ Diálogo mostrado correctamente");
+    }
+
     private void mostrarCargando(boolean s) {
         // No mostrar el ProgressBar de carga (se ve feo según el usuario)
         if (pb != null) pb.setVisibility(View.GONE);

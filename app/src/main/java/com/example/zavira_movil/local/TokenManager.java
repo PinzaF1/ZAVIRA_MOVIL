@@ -3,8 +3,7 @@ package com.example.zavira_movil.local;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
-
-import com.example.zavira_movil.LoginActivity;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -32,8 +31,8 @@ public class TokenManager {
     }
 
     /** Alias de saveToken */
-    public static void setToken(LoginActivity loginActivity, String token) {
-        saveToken(loginActivity, token);
+    public static void setToken(Context ctx, String token) {
+        saveToken(ctx, token);
     }
 
     /** Guarda userId explícitamente */
@@ -104,7 +103,7 @@ public class TokenManager {
             }
             return -1;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.w("TokenManager", "Error al extraer userId del JWT", e);
             return -1;
         }
     }

@@ -52,6 +52,8 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         private ImageView notificationIcon;
         private TextView notificationTitle;
         private TextView notificationMessage;
+        private View retadorContainer;
+        private TextView retadorNombre;
         private View notificationInfoContainer;
         private TextView notificationArea;
         private TextView notificationScore;
@@ -64,6 +66,8 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             notificationIcon = itemView.findViewById(R.id.notificationIcon);
             notificationTitle = itemView.findViewById(R.id.notificationTitle);
             notificationMessage = itemView.findViewById(R.id.notificationMessage);
+            retadorContainer = itemView.findViewById(R.id.retadorContainer);
+            retadorNombre = itemView.findViewById(R.id.retadorNombre);
             notificationInfoContainer = itemView.findViewById(R.id.notificationInfoContainer);
             notificationArea = itemView.findViewById(R.id.notificationArea);
             notificationScore = itemView.findViewById(R.id.notificationScore);
@@ -72,6 +76,13 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         }
         
         public void bind(NotificationItem notification, int position) {
+            android.util.Log.d("NotificationsAdapter", "🎨 Binding notificación #" + position);
+            android.util.Log.d("NotificationsAdapter", "  • Tipo: " + notification.getTipo());
+            android.util.Log.d("NotificationsAdapter", "  • Título: " + notification.getTitle());
+            android.util.Log.d("NotificationsAdapter", "  • Mensaje: " + notification.getMessage());
+            android.util.Log.d("NotificationsAdapter", "  • Retador: " + notification.getRetadorNombre());
+            android.util.Log.d("NotificationsAdapter", "  • Área: " + notification.getArea());
+
             notificationTitle.setText(notification.getTitle());
             notificationMessage.setText(notification.getMessage());
             notificationTime.setText(notification.getTimeAgo());
@@ -81,8 +92,20 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             notificationIcon.setImageResource(style.iconRes);
             iconBackground.setBackgroundResource(style.backgroundRes);
             
+            // Mostrar información del retador si es una notificación de reto
+            if ("reto_recibido".equals(notification.getTipo()) && notification.getRetadorNombre() != null) {
+                android.util.Log.d("NotificationsAdapter", "  ✅ Mostrando chip de retador");
+                retadorContainer.setVisibility(View.VISIBLE);
+                retadorNombre.setText("🎮 " + notification.getRetadorNombre() + " te ha retado");
+            } else {
+                android.util.Log.d("NotificationsAdapter", "  ⚠️ NO mostrando chip de retador (tipo=" +
+                    notification.getTipo() + ", retadorNombre=" + notification.getRetadorNombre() + ")");
+                retadorContainer.setVisibility(View.GONE);
+            }
+
             // Mostrar información adicional si está disponible
             if (notification.getArea() != null && notification.getPuntaje() != null) {
+                android.util.Log.d("NotificationsAdapter", "  ✅ Mostrando área y puntaje");
                 notificationInfoContainer.setVisibility(View.VISIBLE);
                 notificationArea.setText(notification.getArea());
                 notificationScore.setText(notification.getPuntaje() + "%");
@@ -100,6 +123,8 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     notificationScore.setTextColor(Color.parseColor("#22C55E"));
                 }
             } else {
+                android.util.Log.d("NotificationsAdapter", "  ⚠️ NO mostrando área y puntaje (area=" +
+                    notification.getArea() + ", puntaje=" + notification.getPuntaje() + ")");
                 notificationInfoContainer.setVisibility(View.GONE);
             }
             
@@ -141,7 +166,9 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             String puntajeStr = notification.getPuntaje();
             
             // Estilo según el tipo de notificación
-            if ("puntaje_bajo_inmediato".equals(tipo)) {
+            if ("reto_recibido".equals(tipo)) {
+                return new NotificationStyle(R.drawable.ic_notification_reto, R.drawable.bg_circle_gray);
+            } else if ("puntaje_bajo_inmediato".equals(tipo)) {
                 return new NotificationStyle(R.drawable.ic_notification_alert, R.drawable.bg_circle_gray);
             } else if ("recordatorio_practica".equals(tipo)) {
                 return new NotificationStyle(R.drawable.ic_notification_warning, R.drawable.bg_circle_gray);

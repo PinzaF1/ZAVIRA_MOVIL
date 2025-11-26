@@ -41,25 +41,71 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         
-        Log.d(TAG, "Mensaje recibido de: " + remoteMessage.getFrom());
-        
+        // LOG CRÍTICO: Confirmar que este método SE ESTÁ LLAMANDO
+        Log.e(TAG, "⚡⚡⚡ onMessageReceived() LLAMADO ⚡⚡⚡");
+        Log.e(TAG, "⚡ Timestamp: " + System.currentTimeMillis());
+        Log.e(TAG, "⚡ Thread: " + Thread.currentThread().getName());
+
+        Log.d(TAG, "========================================");
+        Log.d(TAG, "🔔 NOTIFICACIÓN FCM RECIBIDA");
+        Log.d(TAG, "========================================");
+        Log.d(TAG, "De: " + remoteMessage.getFrom());
+        Log.d(TAG, "ID Mensaje: " + remoteMessage.getMessageId());
+
+        // DIAGNÓSTICO: Verificar si hay notificación Y datos
+        boolean tieneNotificacion = remoteMessage.getNotification() != null;
+        boolean tieneDatos = remoteMessage.getData() != null && !remoteMessage.getData().isEmpty();
+
+        Log.d(TAG, "📊 TIPO DE MENSAJE:");
+        Log.d(TAG, "  • Tiene 'notification': " + tieneNotificacion);
+        Log.d(TAG, "  • Tiene 'data': " + tieneDatos);
+        Log.d(TAG, "  • Tamaño de data: " + (remoteMessage.getData() != null ? remoteMessage.getData().size() : 0));
+        Log.d(TAG, "----------------------------------------");
+
         // Verificar si el mensaje contiene datos
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Datos del mensaje: " + remoteMessage.getData());
-            handleDataMessage(remoteMessage.getData());
+            Log.d(TAG, "----------------------------------------");
+            Log.d(TAG, "📦 DATOS COMPLETOS DEL MENSAJE:");
+            Map<String, String> data = remoteMessage.getData();
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                Log.d(TAG, "  • " + entry.getKey() + " = " + entry.getValue());
+            }
+            Log.d(TAG, "----------------------------------------");
+
+            // Verificar campos específicos de reto
+            String tipo = data.get("tipo");
+            String retadorNombre = data.get("retador_nombre");
+            String area = data.get("area");
+            String retoId = data.get("reto_id");
+            String retadorId = data.get("retador_id");
+
+            Log.d(TAG, "🎮 CAMPOS DE RETO DETECTADOS:");
+            Log.d(TAG, "  • tipo: " + tipo);
+            Log.d(TAG, "  • retador_nombre: " + retadorNombre);
+            Log.d(TAG, "  • area: " + area);
+            Log.d(TAG, "  • reto_id: " + retoId);
+            Log.d(TAG, "  • retador_id: " + retadorId);
+            Log.d(TAG, "----------------------------------------");
+
+            handleDataMessage(data);
         }
         
         // Verificar si el mensaje contiene una notificación
         if (remoteMessage.getNotification() != null) {
             String title = remoteMessage.getNotification().getTitle();
             String body = remoteMessage.getNotification().getBody();
-            Log.d(TAG, "Notificación recibida - Título: " + title + ", Cuerpo: " + body);
-            
+            Log.d(TAG, "📬 NOTIFICACIÓN VISUAL:");
+            Log.d(TAG, "  • Título: " + title);
+            Log.d(TAG, "  • Cuerpo: " + body);
+            Log.d(TAG, "----------------------------------------");
+
             // Guardar la notificación en el historial
             saveNotificationToHistory(title, body, remoteMessage.getData());
             
             sendNotification(title, body, remoteMessage.getData());
         }
+
+        Log.d(TAG, "========================================");
     }
     
     @Override
@@ -75,16 +121,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
     
     private void handleDataMessage(Map<String, String> data) {
+        Log.d(TAG, "🔄 handleDataMessage() - Procesando mensaje de datos");
+
         String title = data.get("title");
         String message = data.get("message");
-        String type = data.get("type");
-        
-        if (title == null) title = getString(R.string.notification_title);
-        if (message == null) message = getString(R.string.notification_message);
-        
+        String type = data.get("tipo");
+
+        Log.d(TAG, "  • title extraído: " + title);
+        Log.d(TAG, "  • message extraído: " + message);
+        Log.d(TAG, "  • tipo extraído: " + type);
+
+        if (title == null) {
+            title = getString(R.string.notification_title);
+            Log.d(TAG, "  ⚠️ Title era null, usando default: " + title);
+        }
+        if (message == null) {
+            message = getString(R.string.notification_message);
+            Log.d(TAG, "  ⚠️ Message era null, usando default: " + message);
+        }
+
+        Log.d(TAG, "  ✅ Guardando notificación en historial...");
         // Guardar la notificación en el historial
         saveNotificationToHistory(title, message, data);
         
+        Log.d(TAG, "  ✅ Enviando notificación visual...");
         sendNotification(title, message, data);
     }
     
@@ -178,6 +238,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             return 0xFFF59E0B; // Naranja para recordatorios
         } else if ("logro_desbloqueado".equals(tipo)) {
             return 0xFF22C55E; // Verde para logros
+        } else if ("reto_recibido".equals(tipo)) {
+            return 0xFF8B5CF6; // Morado para retos
         }
         
         // Color según el puntaje si está disponible
@@ -204,23 +266,71 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void saveNotificationToHistory(String title, String message, Map<String, String> data) {
         try {
+            Log.d(TAG, "💾 saveNotificationToHistory() - Iniciando...");
+            Log.d(TAG, "  • title: " + title);
+            Log.d(TAG, "  • message: " + message);
+
             NotificationStorage notificationStorage = new NotificationStorage(this);
             
             String tipo = data != null ? data.get("tipo") : null;
             String area = data != null ? data.get("area") : null;
             String puntaje = data != null ? data.get("puntaje") : null;
             
-            NotificationItem item = new NotificationItem(
-                title,
-                message,
-                tipo,
-                area,
-                puntaje,
-                System.currentTimeMillis()
-            );
-            
+            // Campos específicos para retos
+            String retadorId = data != null ? data.get("retador_id") : null;
+            String retadorNombre = data != null ? data.get("retador_nombre") : null;
+            String retadorFoto = data != null ? data.get("retador_foto") : null;
+            String retoId = data != null ? data.get("reto_id") : null;
+
+            Log.d(TAG, "  📊 Datos extraídos:");
+            Log.d(TAG, "    • tipo: " + tipo);
+            Log.d(TAG, "    • area: " + area);
+            Log.d(TAG, "    • puntaje: " + puntaje);
+            Log.d(TAG, "    • retador_id: " + retadorId);
+            Log.d(TAG, "    • retador_nombre: " + retadorNombre);
+            Log.d(TAG, "    • retador_foto: " + retadorFoto);
+            Log.d(TAG, "    • reto_id: " + retoId);
+
+            NotificationItem item;
+
+            // Si es una notificación de reto, usar el constructor extendido
+            if ("reto_recibido".equals(tipo) || retadorId != null) {
+                Log.d(TAG, "  🎮 Detectado como RETO, usando constructor extendido");
+                item = new NotificationItem(
+                    title,
+                    message,
+                    tipo != null ? tipo : "reto_recibido",
+                    area,
+                    puntaje,
+                    System.currentTimeMillis(),
+                    retadorId,
+                    retadorNombre,
+                    retadorFoto,
+                    retoId
+                );
+                Log.d(TAG, "  ✅ NotificationItem de RETO creado:");
+                Log.d(TAG, "    • tipo: " + item.getTipo());
+                Log.d(TAG, "    • retadorNombre: " + item.getRetadorNombre());
+                Log.d(TAG, "    • area: " + item.getArea());
+                Log.d(TAG, "    • retoId: " + item.getRetoId());
+            } else {
+                Log.d(TAG, "  📝 Detectado como notificación NORMAL");
+                // Notificación normal (puntaje, logros, etc.)
+                item = new NotificationItem(
+                    title,
+                    message,
+                    tipo,
+                    area,
+                    puntaje,
+                    System.currentTimeMillis()
+                );
+            }
+
+            Log.d(TAG, "  💾 Guardando en NotificationStorage...");
             notificationStorage.saveNotification(item);
-            Log.d(TAG, "✅ Notificación guardada en el historial");
+            Log.d(TAG, "  ✅ Notificación guardada exitosamente");
+            Log.d(TAG, "  📊 Total de notificaciones: " + notificationStorage.getAllNotifications().size());
+            Log.d(TAG, "  📊 Notificaciones no leídas: " + notificationStorage.getUnreadCount());
 
             // Enviar broadcast para actualizar el badge en HomeActivity
             Intent intent = new Intent("com.example.zavira_movil.UPDATE_NOTIFICATION_BADGE");

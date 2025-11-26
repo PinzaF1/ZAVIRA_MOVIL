@@ -9,6 +9,12 @@ public class NotificationItem {
     private long timestamp;
     private boolean isRead;
     
+    // Campos para notificaciones de retos
+    private String retadorId;
+    private String retadorNombre;
+    private String retadorFoto;
+    private String retoId;
+
     public NotificationItem() {
     }
     
@@ -22,6 +28,22 @@ public class NotificationItem {
         this.isRead = false;
     }
     
+    // Constructor extendido para retos
+    public NotificationItem(String title, String message, String tipo, String area, String puntaje,
+                          long timestamp, String retadorId, String retadorNombre, String retadorFoto, String retoId) {
+        this.title = title;
+        this.message = message;
+        this.tipo = tipo;
+        this.area = area;
+        this.puntaje = puntaje;
+        this.timestamp = timestamp;
+        this.isRead = false;
+        this.retadorId = retadorId;
+        this.retadorNombre = retadorNombre;
+        this.retadorFoto = retadorFoto;
+        this.retoId = retoId;
+    }
+
     // Getters y Setters
     public String getTitle() {
         return title;
@@ -79,6 +101,39 @@ public class NotificationItem {
         isRead = read;
     }
     
+    // Getters y Setters para retos
+    public String getRetadorId() {
+        return retadorId;
+    }
+
+    public void setRetadorId(String retadorId) {
+        this.retadorId = retadorId;
+    }
+
+    public String getRetadorNombre() {
+        return retadorNombre;
+    }
+
+    public void setRetadorNombre(String retadorNombre) {
+        this.retadorNombre = retadorNombre;
+    }
+
+    public String getRetadorFoto() {
+        return retadorFoto;
+    }
+
+    public void setRetadorFoto(String retadorFoto) {
+        this.retadorFoto = retadorFoto;
+    }
+
+    public String getRetoId() {
+        return retoId;
+    }
+
+    public void setRetoId(String retoId) {
+        this.retoId = retoId;
+    }
+
     /**
      * Retorna un texto formateado del tiempo transcurrido
      */
