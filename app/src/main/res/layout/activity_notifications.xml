@@ -55,7 +55,55 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Botón "Marcar todas como leídas" -->
+    <!-- Barra de acciones -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:id="@+id/actionBar"
+        tools:visibility="visible">
+
+        <!-- Botón "Limpiar antiguas" -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClearOld"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="🗑️ Limpiar antiguas"
+            android:textSize="12sp"
+            android:textColor="#EF4444"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:strokeColor="#FEE2E2"
+            app:strokeWidth="1dp"
+            app:cornerRadius="8dp"
+            android:textAllCaps="false"
+            app:iconTint="#EF4444"/>
+
+        <!-- Botón "Marcar todas como leídas" -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMarkAllAsRead"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="✓ Marcar leídas"
+            android:textSize="12sp"
+            android:textColor="#3B82F6"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:strokeColor="#DBEAFE"
+            app:strokeWidth="1dp"
+            app:cornerRadius="8dp"
+            android:textAllCaps="false"
+            app:iconTint="#3B82F6"/>
+    </LinearLayout>
+
+    <!-- Botón "Marcar todas como leídas" (legacy - mantener para compatibilidad) -->
     <TextView
         android:id="@+id/tvMarkAllAsRead"
         android:layout_width="match_parent"
@@ -73,7 +121,7 @@
         android:textSize="14sp"
         android:textStyle="bold"
         android:visibility="gone"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <!-- RecyclerView para notificaciones -->
     <androidx.recyclerview.widget.RecyclerView

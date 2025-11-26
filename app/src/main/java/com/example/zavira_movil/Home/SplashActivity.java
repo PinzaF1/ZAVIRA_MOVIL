@@ -17,6 +17,6 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             startActivity(new Intent(SplashActivity.this, HomeActivity.class));
             finish(); // evita regresar al splash
-        }, 10000); // 2,000 ms = 2 segundos
+        }, 6000); // 2,000 ms = 2 segundos
     }
 }

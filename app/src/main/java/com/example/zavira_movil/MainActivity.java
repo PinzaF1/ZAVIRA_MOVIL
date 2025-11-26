@@ -1,19 +1,34 @@
 package com.example.zavira_movil;
 
+import android.Manifest;
+
 import android.animation.ObjectAnimator;
+
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+
+import android.util.Log;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.zavira_movil.Home.HomeActivity;
 import com.example.zavira_movil.local.TokenManager;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    private static final int REQUEST_NOTIFICATION_PERMISSION = 101;
+    private static final String TAG = "MainActivity";
 
     private static final String TEXT_TO_WRITE = "EduExce";
     private static final int DELAY_BETWEEN_LETTERS = 150; // Milisegundos entre letras
@@ -25,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imgLogo;
     private Handler handler;
     private int currentLetterIndex = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +66,11 @@ public class MainActivity extends AppCompatActivity {
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(imgLogo, "alpha", 0f, 1f);
         fadeIn.setDuration(LOGO_ANIMATION_DURATION);
         fadeIn.start();
+
+
+        // 🔔 CRÍTICO: Solicitar permisos de notificaciones en Android 13+
+        solicitarPermisosNotificaciones();
+
 
         // 2. Después de que aparezca el logo, empezar a escribir el texto
         handler.postDelayed(() -> {
@@ -78,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void navigateToNextScreen() {
+
         TokenManager tokenManager = new TokenManager();
         String token = tokenManager.getToken(this);
 
@@ -94,12 +116,51 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
+
+    /**
+     * Solicita permisos de notificaciones para Android 13+ (API 33+)
+     */
+    private void solicitarPermisosNotificaciones() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                Log.w(TAG, "⚠️ Permiso POST_NOTIFICATIONS NO concedido - Solicitando...");
+
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        REQUEST_NOTIFICATION_PERMISSION
+                );
+            } else {
+                Log.d(TAG, "✅ Permiso POST_NOTIFICATIONS YA concedido");
+            }
+        } else {
+            Log.d(TAG, "✅ Android < 13 - Permiso POST_NOTIFICATIONS no requerido");
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "✅ Usuario CONCEDIÓ permiso POST_NOTIFICATIONS");
+            } else {
+                Log.e(TAG, "❌ Usuario DENEGÓ permiso POST_NOTIFICATIONS");
+                Log.e(TAG, "⚠️ Las notificaciones FCM NO funcionarán sin este permiso");
+            }
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         // Limpiar handlers para evitar memory leaks
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
+
         }
     }
 }

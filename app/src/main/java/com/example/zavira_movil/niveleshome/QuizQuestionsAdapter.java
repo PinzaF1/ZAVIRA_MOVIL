@@ -39,10 +39,10 @@ public class QuizQuestionsAdapter extends RecyclerView.Adapter<QuizQuestionsAdap
         h.group.setOnCheckedChangeListener(null);
         h.group.clearCheck();
 
-        set(h.rbA, q, 0);
-        set(h.rbB, q, 1);
-        set(h.rbC, q, 2);
-        set(h.rbD, q, 3);
+        set(h.rbA, q, 0, "A");
+        set(h.rbB, q, 1, "B");
+        set(h.rbC, q, 2, "C");
+        set(h.rbD, q, 3, "D");
 
         String saved = marcadas.get(pos);
         if ("A".equals(saved)) h.rbA.setChecked(true);
@@ -60,15 +60,17 @@ public class QuizQuestionsAdapter extends RecyclerView.Adapter<QuizQuestionsAdap
         });
     }
 
-    private void set(RadioButton rb, Question q, int i) {
+    private void set(RadioButton rb, Question q, int i, String letra) {
         if (q.opciones != null && q.opciones.size() > i && q.opciones.get(i) != null) {
             rb.setVisibility(View.VISIBLE);
-            rb.setText(q.opciones.get(i).text != null ? q.opciones.get(i).text : "");
+            // SOLO mostrar la letra (A, B, C, D), NO el texto completo
+            rb.setText(letra);
         } else {
             rb.setVisibility(View.GONE);
             rb.setText("");
         }
     }
+
     private String keyOf(Question q, int i) {
         if (q.opciones != null && q.opciones.size() > i && q.opciones.get(i) != null) {
             return q.opciones.get(i).key;
