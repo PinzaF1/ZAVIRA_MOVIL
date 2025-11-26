@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.zavira_movil.Home.HomeActivity;
+import com.example.zavira_movil.Home.SplashActivity;
 import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -46,7 +47,7 @@ public class ResultadoAcademicoActivity extends AppCompatActivity {
         containerPuntajesPorArea = findViewById(R.id.containerPuntajesPorArea);
 
         findViewById(R.id.btnIrHome).setOnClickListener(v -> {
-            Intent i = new Intent(ResultadoAcademicoActivity.this, HomeActivity.class);
+            Intent i = new Intent(ResultadoAcademicoActivity.this, SplashActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
             finish();

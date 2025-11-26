@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:text="1."
             android:textStyle="bold"
+            android:layout_marginTop="5dp"
             android:textColor="#111827"
             android:textSize="15sp"/>
 
@@ -27,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
+            android:layout_marginTop="5dp"
             android:text="Matemáticas • Subtema"
             android:textStyle="bold"
             android:textColor="#111827"
@@ -37,7 +39,7 @@
         android:id="@+id/tvEnunciado"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="10dp"
         android:text="Enunciado…"
         android:textColor="#111827"
         android:textSize="16sp"/>
@@ -47,7 +49,7 @@
         android:id="@+id/btnOp1"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:text="A. Opción 1"
         android:textAllCaps="false"
         android:textSize="15sp"
@@ -60,7 +62,7 @@
         android:id="@+id/btnOp2"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:text="B. Opción 2"
         android:textAllCaps="false"
         android:textSize="15sp"
@@ -73,7 +75,7 @@
         android:id="@+id/btnOp3"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:text="C. Opción 3"
         android:textAllCaps="false"
         android:textSize="15sp"
@@ -86,7 +88,7 @@
         android:id="@+id/btnOp4"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:text="D. Opción 4"
         android:textAllCaps="false"
         android:textSize="15sp"
@@ -95,8 +97,4 @@
         android:backgroundTint="@null"
         app:backgroundTint="@null" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_marginTop="10dp"/>
 </LinearLayout>
