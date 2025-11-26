@@ -43,6 +43,13 @@ public class RecibidosAdapter extends RecyclerView.Adapter<RecibidosAdapter.VH> 
         notifyDataSetChanged();
     }
 
+    /**
+     * Obtiene la lista actual de retos
+     */
+    public List<RetoListItem> getData() {
+        return data;
+    }
+
     public void removeAt(int position) {
         if (position >= 0 && position < data.size()) {
             data.remove(position);

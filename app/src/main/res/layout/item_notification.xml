@@ -83,6 +83,39 @@
             android:maxLines="3"
             android:ellipsize="end" />
 
+        <!-- Información del retador (solo visible en notificaciones de retos) -->
+        <LinearLayout
+            android:id="@+id/retadorContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            android:background="@drawable/bg_chip_purple"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_usuario"
+                app:tint="#8B5CF6"
+                android:contentDescription="@string/app_name"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/retadorNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre del Retador"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#8B5CF6"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
         <!-- Info adicional (área y puntaje) -->
         <LinearLayout
             android:id="@+id/notificationInfoContainer"

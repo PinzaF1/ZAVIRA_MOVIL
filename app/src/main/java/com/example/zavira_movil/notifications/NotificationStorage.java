@@ -28,8 +28,14 @@ public class NotificationStorage {
      * Guarda una nueva notificación
      */
     public void saveNotification(NotificationItem notification) {
+        android.util.Log.d("NotificationStorage", "📥 saveNotification() llamado");
+        android.util.Log.d("NotificationStorage", "  • Tipo: " + notification.getTipo());
+        android.util.Log.d("NotificationStorage", "  • Título: " + notification.getTitle());
+        android.util.Log.d("NotificationStorage", "  • Retador: " + notification.getRetadorNombre());
+
         List<NotificationItem> notifications = getAllNotifications();
-        
+        android.util.Log.d("NotificationStorage", "  • Notificaciones actuales: " + notifications.size());
+
         // Agregar al inicio de la lista
         notifications.add(0, notification);
         
@@ -40,7 +46,12 @@ public class NotificationStorage {
         
         // Guardar en SharedPreferences
         String json = gson.toJson(notifications);
-        prefs.edit().putString(KEY_NOTIFICATIONS, json).apply();
+        android.util.Log.d("NotificationStorage", "  • JSON generado (primeros 200 chars): " +
+            (json.length() > 200 ? json.substring(0, 200) + "..." : json));
+
+        boolean success = prefs.edit().putString(KEY_NOTIFICATIONS, json).commit();
+        android.util.Log.d("NotificationStorage", "  • Guardado exitoso: " + success);
+        android.util.Log.d("NotificationStorage", "  • Total notificaciones ahora: " + notifications.size());
     }
     
     /**
@@ -120,6 +131,47 @@ public class NotificationStorage {
 
         String json = gson.toJson(notifications);
         prefs.edit().putString(KEY_NOTIFICATIONS, json).apply();
+    }
+
+    /**
+     * Elimina una notificación específica por posición
+     */
+    public void deleteNotification(int position) {
+        List<NotificationItem> notifications = getAllNotifications();
+
+        if (position >= 0 && position < notifications.size()) {
+            notifications.remove(position);
+
+            String json = gson.toJson(notifications);
+            prefs.edit().putString(KEY_NOTIFICATIONS, json).apply();
+        }
+    }
+
+    /**
+     * Elimina notificaciones antiguas (más viejas que X días)
+     */
+    public int deleteOlderThan(int days) {
+        List<NotificationItem> notifications = getAllNotifications();
+        long now = System.currentTimeMillis();
+        long daysInMillis = days * 24L * 60L * 60L * 1000L;
+
+        List<NotificationItem> filtered = new ArrayList<>();
+        int deletedCount = 0;
+
+        for (NotificationItem notification : notifications) {
+            if (now - notification.getTimestamp() <= daysInMillis) {
+                filtered.add(notification);
+            } else {
+                deletedCount++;
+            }
+        }
+
+        if (deletedCount > 0) {
+            String json = gson.toJson(filtered);
+            prefs.edit().putString(KEY_NOTIFICATIONS, json).apply();
+        }
+
+        return deletedCount;
     }
 
     /**

@@ -50,6 +50,33 @@ public class RetosFragment extends Fragment {
                 tab.setText(position == 0 ? "Crear Reto" : "Recibidos")
         ).attach();
 
+        // Verificar si hay un índice de tab inicial específico (desde notificación)
+        if (getArguments() != null) {
+            int initialTabIndex = getArguments().getInt("initial_tab_index", -1);
+            if (initialTabIndex >= 0 && initialTabIndex < 2) {
+                android.util.Log.d("RetosFragment", "📱 Cambiando a tab con índice: " + initialTabIndex);
+
+                // Usar post para asegurar que el ViewPager esté completamente inicializado
+                viewPager.post(() -> {
+                    viewPager.setCurrentItem(initialTabIndex, false);
+                    android.util.Log.d("RetosFragment", "✅ Tab cambiado a índice: " + initialTabIndex);
+
+                    // NUEVO: Si hay un ID de reto, notificar al fragment de Recibidos
+                    String retoId = getArguments().getString("reto_id");
+                    if (retoId != null && initialTabIndex == 1) {
+                        android.util.Log.d("RetosFragment", "📱 Notificando al fragment Recibidos sobre reto ID: " + retoId);
+
+                        // Esperar un poco más para que el fragment de Recibidos esté completamente cargado
+                        viewPager.postDelayed(() -> {
+                            notificarFragmentRecibidos(retoId,
+                                getArguments().getString("retador_nombre"),
+                                getArguments().getString("area"));
+                        }, 500);
+                    }
+                });
+            }
+        }
+
         // Mostrar/ocultar overlay según backstack de este fragment (hijos)
         if (overlayContainer != null) {
             getChildFragmentManager().addOnBackStackChangedListener(() -> {
@@ -59,6 +86,52 @@ public class RetosFragment extends Fragment {
         }
     }
     
+    /**
+     * Notifica al fragment de Recibidos para que muestre el diálogo del reto
+     */
+    private void notificarFragmentRecibidos(String retoId, String retadorNombre, String area) {
+        try {
+            android.util.Log.d("RetosFragment", "🔍 Buscando fragment Recibidos para mostrar diálogo");
+
+            // ViewPager2 almacena fragments de manera diferente
+            // Intentar obtenerlo directamente del adapter
+            ViewPager2 viewPager = getView().findViewById(R.id.viewPager);
+
+            if (viewPager != null && viewPager.getAdapter() != null) {
+                // Asegurarnos de estar en el tab correcto (índice 1 = Recibidos)
+                if (viewPager.getCurrentItem() != 1) {
+                    android.util.Log.d("RetosFragment", "📱 Cambiando a tab Recibidos");
+                    viewPager.setCurrentItem(1, false);
+                }
+
+                // Esperar un poco más para que el fragment esté completamente cargado
+                viewPager.postDelayed(() -> {
+                    // Buscar todos los fragments hijo
+                    java.util.List<Fragment> fragments = getChildFragmentManager().getFragments();
+                    android.util.Log.d("RetosFragment", "📋 Total fragments encontrados: " + fragments.size());
+
+                    for (Fragment f : fragments) {
+                        android.util.Log.d("RetosFragment", "🔎 Fragment: " + f.getClass().getSimpleName());
+
+                        if (f instanceof com.example.zavira_movil.retos1vs1.FragmentRetosRecibidos && f.isAdded()) {
+                            android.util.Log.d("RetosFragment", "✅ Fragment Recibidos encontrado, mostrando diálogo");
+
+                            ((com.example.zavira_movil.retos1vs1.FragmentRetosRecibidos) f)
+                                .mostrarDialogoRetoDesdeNotificacion(retoId, retadorNombre, area);
+                            return;
+                        }
+                    }
+
+                    android.util.Log.w("RetosFragment", "⚠️ Fragment Recibidos no encontrado en la lista");
+                }, 800); // Aumentar delay a 800ms
+            } else {
+                android.util.Log.w("RetosFragment", "⚠️ ViewPager no encontrado o sin adapter");
+            }
+        } catch (Exception e) {
+            android.util.Log.e("RetosFragment", "❌ Error al notificar fragment Recibidos", e);
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();

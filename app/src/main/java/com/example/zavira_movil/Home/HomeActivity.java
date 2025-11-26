@@ -172,6 +172,10 @@ public class HomeActivity extends AppCompatActivity {
             android.util.Log.d("HomeActivity", "Forzando color azul en postDelayed 500ms: #3988FF");
         }, 500);
         
+        // 🔄 ALTERNATIVA FCM: Iniciar servicio de polling para detectar nuevos retos
+        // Este servicio funciona como fallback cuando FCM no llega correctamente
+        iniciarServicioPollingRetos();
+
         // La barra de navegación del sistema se mantiene visible (comportamiento por defecto)
         // No se modifica para que muestre la hora, batería, etc. normalmente
         
@@ -399,6 +403,79 @@ public class HomeActivity extends AppCompatActivity {
         // IMPORTANTE: Asumir que está completado inicialmente para evitar bloqueos mientras se verifica
         testKolbCompletado = true;
         verificarTestKolb();
+
+        // Manejar navegación desde notificaciones
+        manejarIntentoDeNotificacion(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        // Manejar navegación cuando la app ya está abierta y se toca una notificación
+        manejarIntentoDeNotificacion(intent);
+    }
+
+    /**
+     * Maneja la navegación desde notificaciones de retos
+     */
+    private void manejarIntentoDeNotificacion(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
+        String openTab = intent.getStringExtra("open_tab");
+
+        if ("retos".equals(openTab)) {
+            android.util.Log.d("HomeActivity", "📱 Navegando a Retos desde notificación");
+
+            // Seleccionar el tab de Retos en el BottomNavigationView
+            binding.bottomNav.setSelectedItemId(R.id.nav_retos);
+
+            // Crear y mostrar el fragment de Retos
+            RetosFragment retosFragment = new RetosFragment();
+
+            // Verificar si hay un índice de tab específico (0 = Crear Reto, 1 = Recibidos)
+            int retosTabIndex = intent.getIntExtra("retos_tab_index", -1);
+
+            // NUEVO: Verificar si hay un ID de reto específico para abrir el diálogo
+            String retoId = intent.getStringExtra("reto_id");
+            String retadorNombre = intent.getStringExtra("retador_nombre");
+            String area = intent.getStringExtra("area");
+
+            if (retosTabIndex >= 0) {
+                android.util.Log.d("HomeActivity", "📱 Navegando a tab de Retos con índice: " + retosTabIndex);
+
+                // Pasar los argumentos al fragment
+                android.os.Bundle args = new android.os.Bundle();
+                args.putInt("initial_tab_index", retosTabIndex);
+
+                // NUEVO: Pasar el ID del reto y datos adicionales
+                if (retoId != null) {
+                    args.putString("reto_id", retoId);
+                    args.putString("retador_nombre", retadorNombre);
+                    args.putString("area", area);
+                    android.util.Log.d("HomeActivity", "📱 Pasando reto ID al fragment: " + retoId);
+                }
+
+                retosFragment.setArguments(args);
+            }
+
+            // Configurar visibilidad y mostrar el fragment
+            isRetosActive = true;
+            applyTabVisibility(false, true);
+            show(retosFragment);
+
+            // Limpiar los extras del intent para que no se repita la navegación
+            intent.removeExtra("open_tab");
+            intent.removeExtra("retos_tab_index");
+            intent.removeExtra("reto_id");
+            intent.removeExtra("retador_nombre");
+            intent.removeExtra("area");
+
+            android.util.Log.d("HomeActivity", "✅ Navegación a Retos completada");
+        }
     }
     
     @Override
@@ -959,6 +1036,35 @@ public class HomeActivity extends AppCompatActivity {
                 android.util.Log.w("HomeActivity", "Error al desregistrar receiver", e);
             }
         }
+
+        // Detener servicio de polling de retos
+        detenerServicioPollingRetos();
+    }
+
+    /**
+     * Inicia el servicio de polling de retos como alternativa a FCM
+     */
+    private void iniciarServicioPollingRetos() {
+        try {
+            Intent serviceIntent = new Intent(this, com.example.zavira_movil.services.RetosPollingService.class);
+            startService(serviceIntent);
+            android.util.Log.d("HomeActivity", "✅ Servicio de polling de retos iniciado");
+        } catch (Exception e) {
+            android.util.Log.e("HomeActivity", "❌ Error al iniciar servicio de polling", e);
+        }
+    }
+
+    /**
+     * Detiene el servicio de polling de retos
+     */
+    private void detenerServicioPollingRetos() {
+        try {
+            Intent serviceIntent = new Intent(this, com.example.zavira_movil.services.RetosPollingService.class);
+            stopService(serviceIntent);
+            android.util.Log.d("HomeActivity", "⚠️ Servicio de polling de retos detenido");
+        } catch (Exception e) {
+            android.util.Log.e("HomeActivity", "❌ Error al detener servicio de polling", e);
+        }
     }
 
     private void applyTabVisibility(boolean isIslas, boolean isRetos) {
@@ -1304,6 +1410,83 @@ public class HomeActivity extends AppCompatActivity {
                 tvNotificationBadge.setVisibility(View.GONE);
             }
         }
+    }
+
+    /**
+     * 🔍 Verifica y muestra el token FCM para debugging
+     */
+    private void verificarTokenFCM() {
+        android.util.Log.d("HomeActivity", "========================================");
+        android.util.Log.d("HomeActivity", "🔍 VERIFICACIÓN DE TOKEN FCM");
+        android.util.Log.d("HomeActivity", "========================================");
+
+        // Obtener token de SharedPreferences
+        android.content.SharedPreferences prefs = getSharedPreferences("fcm_prefs", MODE_PRIVATE);
+        String fcmToken = prefs.getString("fcm_token", null);
+
+        if (fcmToken != null && !fcmToken.isEmpty()) {
+            android.util.Log.d("HomeActivity", "✅ TOKEN FCM ENCONTRADO:");
+            android.util.Log.d("HomeActivity", "  📱 Token: " + fcmToken);
+            android.util.Log.d("HomeActivity", "  📏 Longitud: " + fcmToken.length() + " caracteres");
+
+            // Mostrar primeros y últimos caracteres para verificación
+            String inicio = fcmToken.length() > 20 ? fcmToken.substring(0, 20) : fcmToken;
+            String fin = fcmToken.length() > 20 ? fcmToken.substring(fcmToken.length() - 20) : "";
+            android.util.Log.d("HomeActivity", "  🔑 Inicio: " + inicio + "...");
+            android.util.Log.d("HomeActivity", "  🔑 Fin: ..." + fin);
+        } else {
+            android.util.Log.e("HomeActivity", "❌ NO SE ENCONTRÓ TOKEN FCM");
+            android.util.Log.e("HomeActivity", "  ⚠️ Esto significa que:");
+            android.util.Log.e("HomeActivity", "     1. Firebase no generó el token");
+            android.util.Log.e("HomeActivity", "     2. O el token no se guardó correctamente");
+            android.util.Log.e("HomeActivity", "  🔧 Solución:");
+            android.util.Log.e("HomeActivity", "     - Verifica google-services.json");
+            android.util.Log.e("HomeActivity", "     - Verifica que Firebase está configurado");
+            android.util.Log.e("HomeActivity", "     - Reinstala la app");
+        }
+
+        // Verificar si el usuario está autenticado
+        android.content.SharedPreferences authPrefs = getSharedPreferences("auth_prefs", MODE_PRIVATE);
+        String authToken = authPrefs.getString("token", null);
+        Integer userId = authPrefs.getInt("id_usuario", -1);
+
+        android.util.Log.d("HomeActivity", "----------------------------------------");
+        android.util.Log.d("HomeActivity", "👤 INFORMACIÓN DEL USUARIO:");
+        android.util.Log.d("HomeActivity", "  • ID Usuario: " + userId);
+        android.util.Log.d("HomeActivity", "  • Autenticado: " + (authToken != null ? "SÍ" : "NO"));
+
+        if (authToken != null) {
+            String tokenCorto = authToken.length() > 30 ? authToken.substring(0, 30) + "..." : authToken;
+            android.util.Log.d("HomeActivity", "  • JWT Token: " + tokenCorto);
+        }
+
+        android.util.Log.d("HomeActivity", "========================================");
+
+        // Intentar obtener el token directamente de Firebase
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    String firebaseToken = task.getResult();
+                    android.util.Log.d("HomeActivity", "🔥 TOKEN DIRECTO DE FIREBASE:");
+                    android.util.Log.d("HomeActivity", "  📱 Token: " + firebaseToken);
+
+                    // Comparar con el token guardado
+                    if (fcmToken != null && !fcmToken.equals(firebaseToken)) {
+                        android.util.Log.w("HomeActivity", "⚠️ ADVERTENCIA: El token guardado NO coincide con el token de Firebase");
+                        android.util.Log.w("HomeActivity", "  • Token guardado: " + (fcmToken.length() > 30 ? fcmToken.substring(0, 30) + "..." : fcmToken));
+                        android.util.Log.w("HomeActivity", "  • Token Firebase: " + (firebaseToken.length() > 30 ? firebaseToken.substring(0, 30) + "..." : firebaseToken));
+                    } else if (fcmToken == null) {
+                        android.util.Log.i("HomeActivity", "ℹ️ Token de Firebase obtenido, pero no estaba guardado. Guardando...");
+                        // Guardar el token
+                        prefs.edit().putString("fcm_token", firebaseToken).apply();
+                    }
+                } else {
+                    android.util.Log.e("HomeActivity", "❌ ERROR al obtener token de Firebase:");
+                    if (task.getException() != null) {
+                        android.util.Log.e("HomeActivity", "  • Error: " + task.getException().getMessage());
+                    }
+                }
+            });
     }
 
     /**

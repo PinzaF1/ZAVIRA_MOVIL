@@ -121,6 +121,12 @@
             </intent-filter>
         </service>
         
+        <!-- Servicio alternativo de polling para retos (fallback cuando FCM no funciona) -->
+        <service
+            android:name=".services.RetosPollingService"
+            android:exported="false"
+            android:enabled="true" />
+
         <!-- Metadata para el canal de notificaciones por defecto -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

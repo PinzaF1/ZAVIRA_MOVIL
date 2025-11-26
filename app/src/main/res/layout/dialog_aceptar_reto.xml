@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="24dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@android:color/white">
+
+        <!-- Icono decorativo -->
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_launcher_foreground"
+            android:contentDescription="Icono de reto"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTituloReto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="¡Tienes un nuevo reto!"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#1E293B"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Nombre del retador -->
+        <TextView
+            android:id="@+id/tvRetador"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎮 Juan Pérez te ha retado"
+            android:textSize="16sp"
+            android:textColor="#334155"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Área del reto -->
+        <TextView
+            android:id="@+id/tvArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📚 Área: Matemáticas"
+            android:textSize="16sp"
+            android:textColor="#334155"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Botones -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Botón Aceptar (destacado) -->
+            <Button
+                android:id="@+id/btnAceptarReto"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="¡ACEPTO EL RETO! 🚀"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/btn_aceptar_reto"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp"/>
+
+            <!-- Botón Rechazar (secundario) -->
+            <Button
+                android:id="@+id/btnRechazarReto"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="No, gracias"
+                android:textSize="14sp"
+                android:textColor="#64748B"
+                android:background="@drawable/btn_rechazar_reto"
+                style="?android:attr/borderlessButtonStyle"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+
