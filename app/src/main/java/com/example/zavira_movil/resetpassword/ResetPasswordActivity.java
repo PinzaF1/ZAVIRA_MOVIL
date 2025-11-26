@@ -72,17 +72,29 @@ public class ResetPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reset_password);
+        android.util.Log.d("ResetPasswordActivity", "onCreate: Iniciando actividad");
+        try {
+            setContentView(R.layout.activity_reset_password);
+            android.util.Log.d("ResetPasswordActivity", "onCreate: Layout inflado correctamente");
 
-        // Inicializar API
-        api = RetrofitClient.getInstance(this).create(ApiService.class);
+            // Inicializar API
+            api = RetrofitClient.getInstance(this).create(ApiService.class);
+            android.util.Log.d("ResetPasswordActivity", "onCreate: API inicializada");
 
-        // Inicializar vistas
-        initViews();
-        setupListeners();
+            // Inicializar vistas
+            initViews();
+            android.util.Log.d("ResetPasswordActivity", "onCreate: Vistas inicializadas");
 
-        // Mostrar paso 1
-        showStep(0);
+            setupListeners();
+            android.util.Log.d("ResetPasswordActivity", "onCreate: Listeners configurados");
+
+            // Mostrar paso 1
+            showStep(0);
+            android.util.Log.d("ResetPasswordActivity", "onCreate: Paso 1 mostrado - Actividad lista");
+        } catch (Exception e) {
+            android.util.Log.e("ResetPasswordActivity", "Error en onCreate", e);
+            throw e; // Re-lanzar para que el sistema lo maneje
+        }
     }
 
     private void initViews() {
@@ -505,10 +517,29 @@ public class ResetPasswordActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        android.util.Log.d("ResetPasswordActivity", "onResume: Actividad en primer plano");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        android.util.Log.d("ResetPasswordActivity", "onPause: Actividad en segundo plano");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        android.util.Log.d("ResetPasswordActivity", "onStop: Actividad detenida");
+    }
     
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        android.util.Log.d("ResetPasswordActivity", "onDestroy: Actividad destruida");
         // Limpiar timers al destruir la actividad
         stopCountDownTimer();
         if (resendTimer != null) {

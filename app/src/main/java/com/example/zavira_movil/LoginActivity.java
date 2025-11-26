@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
+
+import com.example.zavira_movil.Home.SplashActivity;
 import com.example.zavira_movil.R;
 
 import androidx.annotation.Nullable;
@@ -499,35 +501,34 @@ public class LoginActivity extends AppCompatActivity {
 
     private void verificarDiagnostico() {
         ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
-        
+
         api.diagnosticoProgreso().enqueue(new Callback<DiagnosticoInicial>() {
             @Override
             public void onResponse(Call<DiagnosticoInicial> call, Response<DiagnosticoInicial> response) {
                 Intent intent;
 
                 if (response.isSuccessful() && response.body() != null && response.body().tieneDiagnostico) {
-                    // Si ya completó el diagnóstico, ir a Home
-                    // Y sincronizar progreso desde el backend
-                    intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    
+                    // ✅ AMBOS TESTS COMPLETOS - Ir a SPLASH ACTIVITY
+                    intent = new Intent(LoginActivity.this, SplashActivity.class);
+
                     // Sincronizar progreso inmediatamente después de verificar diagnóstico
                     int userId = TokenManager.getUserId(LoginActivity.this);
                     if (userId > 0) {
                         com.example.zavira_movil.sincronizacion.ProgresoSincronizador.getInstance()
-                            .sincronizarDesdeBackend(LoginActivity.this, String.valueOf(userId));
+                                .sincronizarDesdeBackend(LoginActivity.this, String.valueOf(userId));
                     }
                 } else if (response.code() == 404 || (response.body() != null && !response.body().tieneDiagnostico)) {
                     // Si no ha completado el diagnóstico, ir a InfoAcademico
                     intent = new Intent(LoginActivity.this, InfoAcademico.class);
                 } else {
-                    // Otro error - ir a Home para que verifique allí
-                    intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    
+                    // Otro error - ir a SPLASH para que verifique allí
+                    intent = new Intent(LoginActivity.this, SplashActivity.class);
+
                     // Intentar sincronizar aunque haya error
                     int userId = TokenManager.getUserId(LoginActivity.this);
                     if (userId > 0) {
                         com.example.zavira_movil.sincronizacion.ProgresoSincronizador.getInstance()
-                            .sincronizarDesdeBackend(LoginActivity.this, String.valueOf(userId));
+                                .sincronizarDesdeBackend(LoginActivity.this, String.valueOf(userId));
                     }
                 }
 
@@ -538,19 +539,18 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<DiagnosticoInicial> call, Throwable t) {
-                // En caso de error de red, redirigir a Home por defecto
-                // HomeActivity verificará nuevamente y mostrará el estado correcto
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                // En caso de error de red, redirigir a SPLASH por defecto
+                Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-                
+
                 // Intentar sincronizar aunque haya error de red
                 int userId = TokenManager.getUserId(LoginActivity.this);
                 if (userId > 0) {
                     com.example.zavira_movil.sincronizacion.ProgresoSincronizador.getInstance()
-                        .sincronizarDesdeBackend(LoginActivity.this, String.valueOf(userId));
+                            .sincronizarDesdeBackend(LoginActivity.this, String.valueOf(userId));
                 }
-                
+
                 finish();
             }
         });

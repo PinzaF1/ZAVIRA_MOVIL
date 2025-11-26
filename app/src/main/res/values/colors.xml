@@ -167,6 +167,11 @@
         <color name="warning">#D9822B</color>
         <color name="card_shadow">#1A000000</color>
 
+    <color name="desconocido"> #3988FF</color>
+
+
+    #3988FF
+
  
         <color name="card_surface_neutral">#F5F6FA</color>
         <color name="card_stroke_neutral">#E5E9F0</color>

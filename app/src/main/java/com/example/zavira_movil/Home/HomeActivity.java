@@ -50,6 +50,9 @@ public class HomeActivity extends AppCompatActivity {
     private boolean diagnosticoInicialCompletado = true; // Inicializar como true para evitar bloqueos prematuras
     private boolean isRetosActive = false; // Track si Retos está activo
 
+    private android.os.Handler backgroundHandler;
+    private Runnable hideBackgroundRunnable;
+
     private ActivityResultLauncher<Intent> launcher;
 
     private static final Fragment BLANK_FRAGMENT = new Fragment();
@@ -59,7 +62,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Inicializar ActivityResultLauncher
         launcher = registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -80,7 +83,7 @@ public class HomeActivity extends AppCompatActivity {
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        
+
         // NO usar EdgeToEdge.enable() porque está sobrescribiendo el color
         // En su lugar, configurar manualmente los insets
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
@@ -89,23 +92,23 @@ public class HomeActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(azulStatusBar);
             return insets;
         });
-        
+
         // FORZAR el color azul INMEDIATAMENTE después de setContentView
         getWindow().setStatusBarColor(azulStatusBar);
         int colorDespuesSetContent = getWindow().getStatusBarColor();
-        android.util.Log.d("HomeActivity", "Color DESPUÉS de setContentView: " + String.format("#%08X", colorDespuesSetContent) + 
+        android.util.Log.d("HomeActivity", "Color DESPUÉS de setContentView: " + String.format("#%08X", colorDespuesSetContent) +
             " (esperado: #3988FF)");
-        
+
         // Usar WindowInsetsController para establecer el color (Android 11+)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            androidx.core.view.WindowInsetsControllerCompat windowInsetsController = 
+            androidx.core.view.WindowInsetsControllerCompat windowInsetsController =
                 androidx.core.view.WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
             if (windowInsetsController != null) {
                 getWindow().setStatusBarColor(azulStatusBar);
                 windowInsetsController.setAppearanceLightStatusBars(false); // Texto blanco sobre fondo azul
             }
         }
-        
+
         // Usar ViewTreeObserver para forzar el color cuando la ventana esté completamente lista
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -115,16 +118,16 @@ public class HomeActivity extends AppCompatActivity {
                     int currentColor = getWindow().getStatusBarColor();
                     if (currentColor != azulStatusBar) {
                         getWindow().setStatusBarColor(azulStatusBar);
-                        android.util.Log.d("HomeActivity", "ViewTreeObserver: Color corregido de " + 
+                        android.util.Log.d("HomeActivity", "ViewTreeObserver: Color corregido de " +
                             String.format("#%08X", currentColor) + " a #3988FF");
                     }
                 }
             }
         });
-        
+
         // Configurar status bar con color azul (#3988FF)
         setupStatusBarColor(false);
-        
+
         // Usar Handler para forzar el color azul de manera continua y verificar que se mantenga
         android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
         Runnable forceBlueColor = new Runnable() {
@@ -133,48 +136,48 @@ public class HomeActivity extends AppCompatActivity {
                 if (!isRetosActive) {
                     int currentColor = getWindow().getStatusBarColor();
                     getWindow().setStatusBarColor(azulStatusBar);
-                    
+
                     // Verificar si el color realmente cambió
                     int newColor = getWindow().getStatusBarColor();
                     if (newColor != azulStatusBar) {
-                        android.util.Log.e("HomeActivity", "ERROR: Color no se estableció correctamente. Esperado: #3988FF, Actual: " + 
+                        android.util.Log.e("HomeActivity", "ERROR: Color no se estableció correctamente. Esperado: #3988FF, Actual: " +
                             String.format("#%08X", newColor));
                     } else if (currentColor != azulStatusBar) {
-                        android.util.Log.d("HomeActivity", "Color corregido: " + String.format("#%08X", currentColor) + " -> " + 
+                        android.util.Log.d("HomeActivity", "Color corregido: " + String.format("#%08X", currentColor) + " -> " +
                             String.format("#%08X", azulStatusBar));
                     }
-                    
+
                     // Programar siguiente verificación en 50ms (más frecuente)
                     handler.postDelayed(this, 50);
                 }
             }
         };
         handler.postDelayed(forceBlueColor, 50);
-        
+
         // También forzar en múltiples momentos específicos
         getWindow().getDecorView().post(() -> {
             getWindow().setStatusBarColor(azulStatusBar);
             android.util.Log.d("HomeActivity", "Forzando color azul en post: #3988FF");
         });
-        
+
         getWindow().getDecorView().postDelayed(() -> {
             getWindow().setStatusBarColor(azulStatusBar);
             android.util.Log.d("HomeActivity", "Forzando color azul en postDelayed 50ms: #3988FF");
         }, 50);
-        
+
         getWindow().getDecorView().postDelayed(() -> {
             getWindow().setStatusBarColor(azulStatusBar);
             android.util.Log.d("HomeActivity", "Forzando color azul en postDelayed 200ms: #3988FF");
         }, 200);
-        
+
         getWindow().getDecorView().postDelayed(() -> {
             getWindow().setStatusBarColor(azulStatusBar);
             android.util.Log.d("HomeActivity", "Forzando color azul en postDelayed 500ms: #3988FF");
         }, 500);
-        
+
         // La barra de navegación del sistema se mantiene visible (comportamiento por defecto)
         // No se modifica para que muestre la hora, batería, etc. normalmente
-        
+
         // IMPORTANTE: NO modificar el padding del header para que se mantenga fijo
         // El header debe tener un paddingTop fijo (32dp) y no cambiar cuando se cambia de pestaña
         View headerContainer = findViewById(R.id.header_container);
@@ -182,7 +185,7 @@ public class HomeActivity extends AppCompatActivity {
             // NO aplicar listener de WindowInsets para mantener el header fijo
             // El paddingTop de 32dp en el XML es suficiente
         }
-        
+
         // IMPORTANTE: Configurar el contenedor de fragments
         // Cuando el header está oculto, el fragment debe empezar desde el top (sin padding)
         FrameLayout fragmentContainer = findViewById(R.id.fragmentContainer);
@@ -193,7 +196,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Verificar si el fragment actual es FragmentDetalleSimulacro
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
                 boolean isDetalleSimulacro = currentFragment instanceof com.example.zavira_movil.detalleprogreso.FragmentDetalleSimulacro;
-                
+
                 if (header != null && header.getVisibility() == View.VISIBLE) {
                     // Si el header está visible (Home), el fragment no debe tener padding
                     // porque el header ya maneja los insets
@@ -211,7 +214,7 @@ public class HomeActivity extends AppCompatActivity {
                 return insets;
             });
         }
-        
+
         // Hacer el avatar circular y agregar click listener para navegar a Perfil
         ImageView ivAvatar = findViewById(R.id.ivAvatar);
         if (ivAvatar != null) {
@@ -229,7 +232,7 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
             });
         }
-        
+
         // Configurar click listener para el ícono de notificaciones
         ImageView ivNotifications = findViewById(R.id.ivNotifications);
         if (ivNotifications != null) {
@@ -298,12 +301,12 @@ public class HomeActivity extends AppCompatActivity {
 
         // Cargar nombre del usuario en el header
         cargarNombreUsuario();
-        
+
         // IMPORTANTE: Asumir que ambos tests están completados inicialmente
         // Esto evita que se muestre el mensaje de bloqueo antes de verificar el backend
         testKolbCompletado = true;
         diagnosticoInicialCompletado = true;
-        
+
         // Configurar click listeners para las islas DESPUÉS de que las vistas estén infladas
         // Usar post para asegurar que las vistas estén completamente renderizadas
         binding.getRoot().post(() -> {
@@ -317,7 +320,7 @@ public class HomeActivity extends AppCompatActivity {
         // Bottom navigation - habilitado por defecto, solo se bloquea si la verificación confirma que falta algo
         binding.bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            
+
             // Solo verificar si la verificación del backend confirmó que falta algo
             if (!testKolbCompletado) {
                 // Redirigir silenciosamente al test de Kolb (sin mostrar mensaje)
@@ -335,7 +338,7 @@ public class HomeActivity extends AppCompatActivity {
                 finish();
                 return false;
             }
-            
+
             // Si ambos están completos, permitir la acción
             return false;
         });
@@ -350,11 +353,11 @@ public class HomeActivity extends AppCompatActivity {
                 bundle.putInt("id_sesion", idSesion);
                 bundle.putString("materia", intent.getStringExtra("materia"));
                 bundle.putInt("initial_tab", intent.getIntExtra("initial_tab", 0));
-                
-                com.example.zavira_movil.detalleprogreso.FragmentDetalleSimulacro fragment = 
+
+                com.example.zavira_movil.detalleprogreso.FragmentDetalleSimulacro fragment =
                     new com.example.zavira_movil.detalleprogreso.FragmentDetalleSimulacro();
                 fragment.setArguments(bundle);
-                
+
                 // Navegar a la pestaña de Progreso primero
                 binding.bottomNav.setSelectedItemId(R.id.nav_progreso);
                 // Mostrar el fragment de detalle
@@ -374,7 +377,7 @@ public class HomeActivity extends AppCompatActivity {
                 binding.bottomNav.setSelectedItemId(R.id.nav_islas);
             }
         }
-        
+
         // CRÍTICO: Asegurar que UserSession esté sincronizado con TokenManager
         try {
             int userId = com.example.zavira_movil.local.TokenManager.getUserId(this);
@@ -382,7 +385,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Sincronizar UserSession con TokenManager (fuente única de verdad)
                 com.example.zavira_movil.local.UserSession.getInstance().setIdUsuario(userId);
                 android.util.Log.d("HomeActivity", "UserSession sincronizado con userId: " + userId);
-                
+
                 // Sincronizar progreso desde el backend (niveles y vidas) - esto es independiente
                 // Esto se hace primero para que los datos estén disponibles
                 com.example.zavira_movil.sincronizacion.ProgresoSincronizador.getInstance()
@@ -393,35 +396,35 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             android.util.Log.e("HomeActivity", "Error al sincronizar progreso", e);
         }
-        
+
         // Verificar si el usuario completó el test de Kolb PRIMERO (no depende de sincronización)
         // Esto debe hacerse siempre desde el backend, no desde datos locales
         // IMPORTANTE: Asumir que está completado inicialmente para evitar bloqueos mientras se verifica
         testKolbCompletado = true;
         verificarTestKolb();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
-        
+
         // Recargar foto del usuario en el header
         cargarNombreUsuario();
-        
+
         // Actualizar badge de notificaciones
         updateNotificationBadge();
 
         // La barra de navegación del sistema se mantiene visible (comportamiento por defecto)
         // No se modifica para que muestre la hora, batería, etc. normalmente
-        
+
         // IMPORTANTE: Verificar qué fragment está visible actualmente
         // Si es RetosFragment, establecer color naranja; de lo contrario, azul
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         boolean isRetosVisible = currentFragment instanceof com.example.zavira_movil.ui.ranking.progreso.RetosFragment;
-        
+
         // Actualizar isRetosActive basado en el fragment visible
         isRetosActive = isRetosVisible;
-        
+
         // Restaurar el color correcto de la status bar según el fragment visible
         // La barra de estado del sistema (hora y batería) DEBE ser azul cuando no está en Retos
         int azulStatusBar = android.graphics.Color.parseColor("#3988FF");
@@ -437,9 +440,9 @@ public class HomeActivity extends AppCompatActivity {
                 getWindow().setStatusBarColor(azulStatusBar);
             }
         }, 50);
-        
+
         // Nota: topBar fue eliminado del layout, se usa header_container ahora
-        
+
         // Sincronizar niveles desde el backend cuando el usuario vuelve a la app
         // Esto asegura que los niveles desbloqueados estén actualizados
         try {
@@ -447,17 +450,17 @@ public class HomeActivity extends AppCompatActivity {
             if (userId > 0) {
                 // CRÍTICO: Sincronizar UserSession con TokenManager en cada onResume
                 com.example.zavira_movil.local.UserSession.getInstance().setIdUsuario(userId);
-                
+
                 // Verificar si ha pasado mucho tiempo desde la última sincronización (más de 5 minutos)
                 long lastSync = com.example.zavira_movil.sincronizacion.ProgresoSincronizador.getInstance()
                     .getLastSyncTimestamp(this);
                 long now = System.currentTimeMillis();
                 long timeSinceLastSync = now - lastSync;
                 long fiveMinutes = 5 * 60 * 1000; // 5 minutos en milisegundos
-                
+
                 // Sincronizar si no hay timestamp de última sincronización o si pasaron más de 5 minutos
                 if (lastSync == 0 || timeSinceLastSync > fiveMinutes) {
-                    android.util.Log.d("HomeActivity", "Sincronizando niveles desde backend (última sync: " + 
+                    android.util.Log.d("HomeActivity", "Sincronizando niveles desde backend (última sync: " +
                         (lastSync == 0 ? "nunca" : (timeSinceLastSync / 1000) + " segundos atrás") + ")");
                     com.example.zavira_movil.sincronizacion.ProgresoSincronizador.getInstance()
                         .sincronizarDesdeBackend(this, String.valueOf(userId));
@@ -468,7 +471,7 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             android.util.Log.e("HomeActivity", "Error al sincronizar progreso en onResume", e);
         }
-        
+
         // Verificar ambos tests al volver a la actividad solo si no están completos
         // Esto asegura que las interacciones estén bloqueadas si falta algún test
         if (!testKolbCompletado || !diagnosticoInicialCompletado) {
@@ -477,7 +480,7 @@ public class HomeActivity extends AppCompatActivity {
             verificarTestKolb();
         }
     }
-    
+
     private void verificarTestKolb() {
         ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
         android.util.Log.d("HomeActivity", "Verificando test de Kolb desde el backend...");
@@ -485,13 +488,13 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<KolbResultado> call, Response<KolbResultado> response) {
                 android.util.Log.d("HomeActivity", "Respuesta Kolb - código: " + response.code() + ", exitoso: " + response.isSuccessful());
-                
+
                 // Verificar si el test de Kolb está completado
                 if (response.isSuccessful() && response.body() != null) {
                     KolbResultado resultado = response.body();
                     String estilo = resultado.getEstilo();
                     android.util.Log.d("HomeActivity", "Test de Kolb - Estilo recibido: " + (estilo != null ? estilo : "null"));
-                    
+
                     // Si tiene estilo (no null y no vacío), está completado
                     if (estilo != null && !estilo.trim().isEmpty()) {
                         android.util.Log.d("HomeActivity", "Test de Kolb completado. Estilo: " + estilo);
@@ -523,7 +526,7 @@ public class HomeActivity extends AppCompatActivity {
                     verificarDiagnosticoInicial();
                 }
             }
-            
+
             @Override
             public void onFailure(Call<KolbResultado> call, Throwable t) {
                 // En caso de error de red, NO bloquear - asumir que está completado
@@ -535,7 +538,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     private void verificarDiagnosticoInicial() {
         ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
         android.util.Log.d("HomeActivity", "Verificando diagnóstico inicial desde el backend...");
@@ -569,7 +572,7 @@ public class HomeActivity extends AppCompatActivity {
                     habilitarInteracciones();
                 }
             }
-            
+
             @Override
             public void onFailure(Call<DiagnosticoInicial> call, Throwable t) {
                 // En caso de error de red, no bloquear - asumir que está completado
@@ -581,16 +584,16 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     private void bloquearInteracciones() {
         // Verificar nuevamente antes de bloquear - puede que la verificación haya fallado
         // Solo bloquear si realmente no está completado (404 confirmado)
         android.util.Log.d("HomeActivity", "bloquearInteracciones() - testKolbCompletado: " + testKolbCompletado + ", diagnosticoInicialCompletado: " + diagnosticoInicialCompletado);
-        
+
         // Deshabilitar clicks en las islas
         setupIslandsClickListeners();
     }
-    
+
     private void habilitarInteracciones() {
         // SOLO habilitar si AMBOS tests están completos
         if (!testKolbCompletado || !diagnosticoInicialCompletado) {
@@ -598,13 +601,13 @@ public class HomeActivity extends AppCompatActivity {
             bloquearInteracciones();
             return;
         }
-        
+
         // Restaurar interacciones normales en las islas
         setupIslandsClickListeners();
-        
+
         setupBottomNav(binding.bottomNav);
     }
-    
+
     /**
      * Configura los click listeners para los hotspots invisibles sobre el fondo
      * Cada hotspot abre el mapa completo de su materia correspondiente (MapaActivity)
@@ -613,14 +616,14 @@ public class HomeActivity extends AppCompatActivity {
     private void setupIslandsClickListeners() {
         // Obtener las materias de DemoData una vez - hacerla final para usar en lambdas
         final List<com.example.zavira_movil.model.Subject> subjects = DemoData.getSubjects();
-        
+
         // Buscar cada materia y hacerla final para usar en lambdas
         com.example.zavira_movil.model.Subject subjectMatematicas = null;
         com.example.zavira_movil.model.Subject subjectLectura = null;
         com.example.zavira_movil.model.Subject subjectSociales = null;
         com.example.zavira_movil.model.Subject subjectCiencias = null;
         com.example.zavira_movil.model.Subject subjectIngles = null;
-        
+
         for (com.example.zavira_movil.model.Subject s : subjects) {
             String title = s.title.toLowerCase();
             android.util.Log.d("HomeActivity", "Buscando materia: " + s.title);
@@ -641,21 +644,21 @@ public class HomeActivity extends AppCompatActivity {
                 android.util.Log.d("HomeActivity", "Inglés encontrada: " + s.title);
             }
         }
-        
+
         // Verificar que Ciencias se encontró correctamente
         if (subjectCiencias == null) {
             android.util.Log.e("HomeActivity", "ERROR CRÍTICO: No se encontró la materia de Ciencias en DemoData");
         } else {
             android.util.Log.d("HomeActivity", "Ciencias configurada correctamente: " + subjectCiencias.title);
         }
-        
+
         // Hacer las variables finales para usar en lambdas
         final com.example.zavira_movil.model.Subject finalMatematicas = subjectMatematicas;
         final com.example.zavira_movil.model.Subject finalLectura = subjectLectura;
         final com.example.zavira_movil.model.Subject finalSociales = subjectSociales;
         final com.example.zavira_movil.model.Subject finalCiencias = subjectCiencias;
         final com.example.zavira_movil.model.Subject finalIngles = subjectIngles;
-        
+
         // Hotspot Isla del Conocimiento - Abre el mapa de Conocimiento
         // Crear un Subject temporal para Conocimiento
         final com.example.zavira_movil.model.Subject subjectConocimiento = new com.example.zavira_movil.model.Subject();

@@ -18,3 +18,6 @@ adb logcat -s MapaActivity:D ProgressLockManager:D
 
 
 
+
+
+
