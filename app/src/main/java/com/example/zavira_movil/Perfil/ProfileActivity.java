@@ -12,15 +12,12 @@ import com.example.zavira_movil.LoginActivity;
 import com.example.zavira_movil.R;
 import com.example.zavira_movil.local.TokenManager;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.tabs.TabLayout;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private static final String KEY_SELECTED = "selected_tab";
     private static final int TAB_PERFIL = 0;   // índice
     private static final int TAB_CONFIG = 1;
-
-    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,12 +54,14 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        int idx = tabLayout.getSelectedTabPosition();
-        if (idx == TabLayout.Tab.INVALID_POSITION) idx = TAB_PERFIL;
-        outState.putInt(KEY_SELECTED, idx);
+
+        // Como NO hay TabLayout en tu XML, guardamos siempre la pestaña Perfil
+        outState.putInt(KEY_SELECTED, TAB_PERFIL);
     }
 
-    private void swapTo(int tabIndex) { swapTo(tabIndex, true); }
+    private void swapTo(int tabIndex) {
+        swapTo(tabIndex, true);
+    }
 
     private void swapTo(int tabIndex, boolean force) {
         Fragment target;
