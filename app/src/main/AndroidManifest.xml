@@ -148,7 +148,6 @@
 
         <!-- Metadata para el canal de notificaciones por defecto -->
 
-        </service> <!-- Metadata para el canal de notificaciones por defecto -->
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

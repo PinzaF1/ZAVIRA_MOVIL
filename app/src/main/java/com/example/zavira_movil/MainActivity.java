@@ -1,6 +1,5 @@
 package com.example.zavira_movil;
 
- feature/notificaciones
 import android.Manifest;
 
 import android.animation.ObjectAnimator;
@@ -152,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "❌ Usuario DENEGÓ permiso POST_NOTIFICATIONS");
                 Log.e(TAG, "⚠️ Las notificaciones FCM NO funcionarán sin este permiso");
             }
+        }
+    }
 
     @Override
     protected void onDestroy() {
