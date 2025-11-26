@@ -30,16 +30,34 @@
             </intent-filter>
         </receiver>
         <activity
-            android:name=".Home.NotificationsActivity"
+            android:name=".Home.SplashActivity"
             android:exported="false" />
-        <!-- Lanzador -->
+        <activity
+            android:name=".Home.NotificationsActivity"
+            android:exported="false" /> <!-- Lanzador -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
+            <!-- Abre la app normalmente (animación → login) -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Deep Link para abrir la app desde el QR -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- TU dominio publicado en GitHub Pages -->
+                <data
+                    android:host="pinzaf1.github.io"
+                    android:pathPrefix="/EDUEXCE_MOVIL_MOVIL"
+                    android:scheme="https" />
             </intent-filter>
         </activity> <!-- Login / flujo principal -->
         <activity
@@ -50,6 +68,9 @@
             android:name=".resetpassword.ResetPasswordActivity"
             android:exported="false"
             android:label="Recuperar Contraseña" />
+        <!-- ELIMINAR ESTA LÍNEA DUPLICADA:
+        <activity android:name=".Home.SplashActivity" android:exported="false" />
+        -->
         <activity
             android:name=".Home.HomeActivity"
             android:exported="false" />
@@ -64,7 +85,6 @@
             android:exported="false" />
         <activity
             android:name=".niveleshome.SimulacroActivity"
-
             android:exported="false" />
         <activity
             android:name=".HislaConocimiento.IslasActivity"
@@ -110,15 +130,14 @@
             android:exported="false" />
         <activity
             android:name=".HislaConocimiento.IslaModalityActivity"
-            android:exported="false" />
-        
-        <!-- Servicio de Firebase Cloud Messaging -->
+            android:exported="false" /> <!-- Servicio de Firebase Cloud Messaging -->
         <service
             android:name=".notifications.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
+
         </service>
         
         <!-- Servicio alternativo de polling para retos (fallback cuando FCM no funciona) -->
@@ -128,6 +147,9 @@
             android:enabled="true" />
 
         <!-- Metadata para el canal de notificaciones por defecto -->
+
+        </service> <!-- Metadata para el canal de notificaciones por defecto -->
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/iconoeduexce" />
@@ -137,7 +159,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
-        
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

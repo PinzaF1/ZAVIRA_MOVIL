@@ -15,10 +15,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class RetrofitClient {
 
+
     // URL por defecto (actualmente apuntando al ngrok que solicitaste)
     private static volatile String baseUrl = "https://churnable-nimbly-norbert.ngrok-free.dev/";
 
     // Puedes cambiarla en tiempo de ejecución con setBaseUrl("https://...")
+
+    // ✅ URL NGROK ACTUALIZADA (con soporte OpenAI/IA)
+    private static final String BASE_URL = "https://gillian-semiluminous-blubberingly.ngrok-free.dev/";
+
+    // DEBUG LOCAL (comentado hasta resolver firewall):
+    // private static final String BASE_URL = "http://192.168.1.5:3333/";
+    
+    // EMULADOR: Descomentar si usas emulador
+    // private static final String BASE_URL = "http://10.0.2.2:3333/";
+    
+    // DISPOSITIVO FÍSICO: Descomenta y reemplaza con IP de tu PC
+    // private static final String BASE_URL = "http://192.168.X.X:3333/";
+    
 
     private static Retrofit retrofit;
     private static Context appContext; // para leer el token
