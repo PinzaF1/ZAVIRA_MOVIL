@@ -1,10 +1,8 @@
 package com.example.zavira_movil.niveleshome;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.zavira_movil.QuizQuestionsAdapter;
 import com.example.zavira_movil.R;
 import com.example.zavira_movil.databinding.ActivityQuizBinding;
-import com.example.zavira_movil.local.UserSession;
 import com.example.zavira_movil.model.Question;
 import com.example.zavira_movil.remote.ApiService;
 import com.example.zavira_movil.remote.RetrofitClient;
-import com.example.zavira_movil.niveleshome.ApiQuestion;
-import com.example.zavira_movil.niveleshome.ApiQuestionMapper;
-import com.example.zavira_movil.niveleshome.CerrarRequest;
-import com.example.zavira_movil.niveleshome.CerrarResponse;
-import com.example.zavira_movil.niveleshome.MapeadorArea;
-import com.example.zavira_movil.niveleshome.ParadaRequest;
-import com.example.zavira_movil.niveleshome.ParadaResponse;
 import com.google.android.material.button.MaterialButton;
 
 import java.io.IOException;
@@ -187,11 +177,38 @@ public class QuizActivity extends AppCompatActivity {
                 1
         );
 
-        logIAEvent("Solicitando preguntas a la API de generación de IA/OpenAI", idSesion, areaApi, subtemaApi, nivel, 0);
+        // 🔍 LOG DETALLADO DEL REQUEST
+        android.util.Log.e("QuizActivity", "========================================");
+        android.util.Log.e("QuizActivity", "📤 ENVIANDO REQUEST AL BACKEND");
+        android.util.Log.e("QuizActivity", "========================================");
+        android.util.Log.e("QuizActivity", "🌐 Backend URL: " + RetrofitClient.getBaseUrl());
+        android.util.Log.e("QuizActivity", "🌐 Endpoint: POST /sesion/parada");
+        android.util.Log.e("QuizActivity", "📋 Parámetros enviados:");
+        android.util.Log.e("QuizActivity", "  • area: '" + req.area + "' (UI: " + areaUi + ")");
+        android.util.Log.e("QuizActivity", "  • subtema: '" + req.subtema + "' (UI: " + subtemaUi + ")");
+        android.util.Log.e("QuizActivity", "  • nivel_orden: " + req.nivelOrden);
+        android.util.Log.e("QuizActivity", "  • usa_estilo_kolb: " + req.usaEstiloKolb);
+        android.util.Log.e("QuizActivity", "  • intento_actual: " + req.intentoActual);
+        android.util.Log.e("QuizActivity", "========================================");
+        android.util.Log.e("QuizActivity", "🤖 EXPECTATIVA: Backend debería decidir automáticamente:");
+        android.util.Log.e("QuizActivity", "  • ✅ Usar OpenAI/IA para preguntas personalizadas");
+        android.util.Log.e("QuizActivity", "  • ❌ O usar banco local como fallback");
+        android.util.Log.e("QuizActivity", "  • 🔍 Respuesta debería tener id_pregunta=null si es IA");
+        android.util.Log.e("QuizActivity", "========================================");
+
+        logIAEvent("Solicitando preguntas a la API - Backend decide entre IA/OpenAI o banco local", idSesion, areaApi, subtemaApi, nivel, 0);
 
         api.crearParada(req).enqueue(new Callback<ParadaResponse>() {
             @Override public void onResponse(Call<ParadaResponse> call, Response<ParadaResponse> resp) {
                 setLoading(false);
+
+                // 🔍 LOG DETALLADO DE LA RESPUESTA HTTP
+                android.util.Log.e("QuizActivity", "========================================");
+                android.util.Log.e("QuizActivity", "📥 RESPUESTA DEL BACKEND RECIBIDA");
+                android.util.Log.e("QuizActivity", "========================================");
+                android.util.Log.e("QuizActivity", "📊 HTTP Status: " + resp.code());
+                android.util.Log.e("QuizActivity", "🌐 URL: " + call.request().url());
+                android.util.Log.e("QuizActivity", "⏱️ Tiempo de respuesta: " + (System.currentTimeMillis() - System.currentTimeMillis()) + "ms");
 
                 if (!resp.isSuccessful()) {
                     logIAEvent("Fallo al solicitar preguntas a la API (HTTP " + resp.code() + ")", idSesion, areaApi, subtemaApi, nivel, 0);
@@ -237,15 +254,55 @@ public class QuizActivity extends AppCompatActivity {
                     if (pr.sesion.preguntasPorSubtema != null) apiQs.addAll(pr.sesion.preguntasPorSubtema);
                 }
 
-                // Log para saber si las preguntas son de IA o banco local
+                // 🔍 DIAGNÓSTICO DETALLADO: Verificar origen de las preguntas
                 if (!apiQs.isEmpty()) {
-                    boolean esIA = apiQs.get(0).id_pregunta == null;
-                    if (esIA) {
-                        logIAEvent("✅ Preguntas generadas por IA (OpenAI)", idSesion, areaApi, subtemaApi, nivel, apiQs.size());
-                    } else {
-                        logIAEvent("📦 Preguntas obtenidas del banco local", idSesion, areaApi, subtemaApi, nivel, apiQs.size());
+                    // Examinar las primeras preguntas para determinar el origen
+                    android.util.Log.e("QuizActivity", "========================================");
+                    android.util.Log.e("QuizActivity", "🔍 DIAGNÓSTICO DE PREGUNTAS RECIBIDAS");
+                    android.util.Log.e("QuizActivity", "========================================");
+                    android.util.Log.e("QuizActivity", "📊 Total de preguntas recibidas: " + apiQs.size());
+
+                    for (int i = 0; i < Math.min(3, apiQs.size()); i++) {
+                        ApiQuestion q = apiQs.get(i);
+                        android.util.Log.e("QuizActivity", "🔍 Pregunta #" + (i+1) + ":");
+                        android.util.Log.e("QuizActivity", "  • id_pregunta: " + q.id_pregunta);
+                        android.util.Log.e("QuizActivity", "  • texto: " + (q.enunciado != null ? q.enunciado.substring(0, Math.min(50, q.enunciado.length())) + "..." : "null"));
+                        android.util.Log.e("QuizActivity", "  • opciones count: " + (q.opciones != null ? q.opciones.size() : 0));
                     }
+
+                    boolean esIA = apiQs.get(0).id_pregunta == null;
+
+                    // 🧠 ANÁLISIS ADICIONAL: Examinar contenido para confirmar origen
+                    boolean contenidoPareceLaIA = analizarContenidoPreguntasIA(apiQs);
+
+                    android.util.Log.e("QuizActivity", "========================================");
+                    android.util.Log.e("QuizActivity", "🧪 ANÁLISIS DE CONTENIDO:");
+                    android.util.Log.e("QuizActivity", "  • Contenido parece IA: " + contenidoPareceLaIA);
+                    android.util.Log.e("QuizActivity", "  • id_pregunta es null: " + esIA);
+                    android.util.Log.e("QuizActivity", "========================================");
+
+                    if (esIA) {
+                        android.util.Log.e("QuizActivity", "🤖 RESULTADO: PREGUNTAS GENERADAS POR IA/OPENAI");
+                        android.util.Log.e("QuizActivity", "✅ id_pregunta es NULL → Preguntas de OpenAI");
+                        if (contenidoPareceLaIA) {
+                            android.util.Log.e("QuizActivity", "✅ Contenido confirma origen IA");
+                        } else {
+                            android.util.Log.w("QuizActivity", "⚠️ ALERTA: id_pregunta=null pero contenido no parece IA");
+                        }
+                        logIAEvent("🤖 ✅ PREGUNTAS GENERADAS CON OPENAI/IA", idSesion, areaApi, subtemaApi, nivel, apiQs.size());
+                    } else {
+                        android.util.Log.e("QuizActivity", "📚 RESULTADO: PREGUNTAS DEL BANCO LOCAL");
+                        android.util.Log.e("QuizActivity", "❌ id_pregunta=" + apiQs.get(0).id_pregunta + " → Banco de preguntas");
+                        if (!contenidoPareceLaIA) {
+                            android.util.Log.e("QuizActivity", "✅ Contenido confirma origen banco local");
+                        } else {
+                            android.util.Log.w("QuizActivity", "⚠️ ALERTA: Tiene id_pregunta pero contenido parece IA");
+                        }
+                        logIAEvent("📚 PREGUNTAS DEL BANCO LOCAL", idSesion, areaApi, subtemaApi, nivel, apiQs.size());
+                    }
+                    android.util.Log.e("QuizActivity", "========================================");
                 } else {
+                    android.util.Log.e("QuizActivity", "⚠️ No se recibieron preguntas de la API");
                     logIAEvent("⚠️ No se recibieron preguntas de la API", idSesion, areaApi, subtemaApi, nivel, 0);
                 }
 
@@ -1253,6 +1310,70 @@ public class QuizActivity extends AppCompatActivity {
                 ", nivel=" + nivel +
                 ", preguntas=" + cantidadPreguntas;
         android.util.Log.d("QuizActivity", logMsg);
+    }
+
+    /**
+     * 🧠 ANÁLISIS DE CONTENIDO: Determina si las preguntas parecen generadas por IA
+     * Analiza patrones típicos de preguntas generadas por OpenAI vs banco estático
+     */
+    private boolean analizarContenidoPreguntasIA(ArrayList<ApiQuestion> preguntas) {
+        if (preguntas == null || preguntas.isEmpty()) return false;
+
+        int indicadoresIA = 0;
+        int totalPreguntas = Math.min(3, preguntas.size()); // Analizar máximo 3 preguntas
+
+        for (int i = 0; i < totalPreguntas; i++) {
+            ApiQuestion pregunta = preguntas.get(i);
+            if (pregunta.enunciado == null) continue;
+
+            String texto = pregunta.enunciado.toLowerCase();
+
+            // 🔍 INDICADORES DE IA/OPENAI:
+            // 1. Preguntas más elaboradas y contextualizadas
+            if (texto.contains("considera") || texto.contains("analiza") ||
+                texto.contains("reflexiona") || texto.contains("evalúa")) {
+                indicadoresIA++;
+                android.util.Log.d("QuizActivity", "  ✅ Indicador IA: Vocabulario elaborado");
+            }
+
+            // 2. Preguntas con contexto narrativo
+            if (texto.contains("situación") || texto.contains("contexto") ||
+                texto.contains("escenario") || texto.contains("ejemplo")) {
+                indicadoresIA++;
+                android.util.Log.d("QuizActivity", "  ✅ Indicador IA: Contexto narrativo");
+            }
+
+            // 3. Longitud típica de IA (más detalladas)
+            if (texto.length() > 200) {
+                indicadoresIA++;
+                android.util.Log.d("QuizActivity", "  ✅ Indicador IA: Pregunta detallada (" + texto.length() + " chars)");
+            }
+
+            // 4. Estructura más natural y conversacional
+            if (texto.contains("¿qué opinas") || texto.contains("¿cómo crees") ||
+                texto.contains("¿por qué piensas") || texto.contains("¿cuál sería")) {
+                indicadoresIA++;
+                android.util.Log.d("QuizActivity", "  ✅ Indicador IA: Lenguaje conversacional");
+            }
+
+            // 5. Referencias a aplicación práctica
+            if (texto.contains("en la vida real") || texto.contains("en tu experiencia") ||
+                texto.contains("aplicarías") || texto.contains("utilizarías")) {
+                indicadoresIA++;
+                android.util.Log.d("QuizActivity", "  ✅ Indicador IA: Aplicación práctica");
+            }
+
+            android.util.Log.d("QuizActivity", "  📊 Pregunta #" + (i+1) + ": " +
+                (texto.length() > 100 ? texto.substring(0, 100) + "..." : texto));
+        }
+
+        // Si tiene 2 o más indicadores de IA en las preguntas analizadas, probablemente es IA
+        boolean pareceIA = indicadoresIA >= 2;
+
+        android.util.Log.d("QuizActivity", "  📊 Total indicadores IA: " + indicadoresIA + "/" + totalPreguntas);
+        android.util.Log.d("QuizActivity", "  🧠 Conclusión: " + (pareceIA ? "PARECE IA" : "PARECE BANCO LOCAL"));
+
+        return pareceIA;
     }
 
     // ========== Sistema de Vidas ==========

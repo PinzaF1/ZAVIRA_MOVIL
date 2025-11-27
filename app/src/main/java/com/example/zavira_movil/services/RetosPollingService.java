@@ -39,10 +39,12 @@ public class RetosPollingService extends Service {
     private static final String TAG = "RetosPolling";
     private static final String CHANNEL_ID = "retos_polling_channel";
     private static final int POLLING_INTERVAL_MS = 30000; // 30 segundos
+    private static final long RETO_EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 horas
 
     private Handler handler;
     private Runnable pollingRunnable;
     private Set<String> retosYaNotificados;
+    private SharedPreferences retosTimestampPrefs;
 
     @Override
     public void onCreate() {
@@ -51,7 +53,13 @@ public class RetosPollingService extends Service {
 
         // Cargar IDs de retos ya notificados
         SharedPreferences prefs = getSharedPreferences("retos_polling_prefs", MODE_PRIVATE);
-        retosYaNotificados = prefs.getStringSet("retos_notificados", new HashSet<>());
+        retosYaNotificados = new HashSet<>(prefs.getStringSet("retos_notificados", new HashSet<>()));
+
+        // Cargar timestamps de notificaciones
+        retosTimestampPrefs = getSharedPreferences("retos_timestamps", MODE_PRIVATE);
+
+        // 🔥 LIMPIAR RETOS EXPIRADOS (más de 24 horas)
+        limpiarRetosExpirados();
 
         handler = new Handler(Looper.getMainLooper());
 
@@ -140,6 +148,11 @@ public class RetosPollingService extends Service {
                                     // Marcar como notificado
                                     retosYaNotificados.add(retoId);
                                     guardarRetosNotificados();
+
+                                    // 🔥 GUARDAR TIMESTAMP DE LA NOTIFICACIÓN
+                                    retosTimestampPrefs.edit()
+                                        .putLong("reto_" + retoId, System.currentTimeMillis())
+                                        .apply();
 
                                     nuevosRetosCount++;
                                 }
@@ -289,6 +302,49 @@ public class RetosPollingService extends Service {
         prefs.edit()
             .putStringSet("retos_notificados", retosYaNotificados)
             .apply();
+    }
+
+    /**
+     * 🔥 LIMPIA RETOS EXPIRADOS (más de 24 horas desde la notificación)
+     * Esto evita que se acumulen retos indefinidamente y previene notificaciones duplicadas
+     */
+    private void limpiarRetosExpirados() {
+        long currentTime = System.currentTimeMillis();
+        Set<String> retosExpirados = new HashSet<>();
+
+        // Verificar cada reto notificado
+        for (String retoId : retosYaNotificados) {
+            long timestamp = retosTimestampPrefs.getLong("reto_" + retoId, 0);
+
+            if (timestamp > 0) {
+                long tiempoTranscurrido = currentTime - timestamp;
+
+                // Si pasaron más de 24 horas, marcar como expirado
+                if (tiempoTranscurrido > RETO_EXPIRATION_TIME) {
+                    retosExpirados.add(retoId);
+                    Log.d(TAG, "🗑️ Reto " + retoId + " expirado (más de 24h), limpiando...");
+                }
+            }
+        }
+
+        // Eliminar retos expirados
+        if (!retosExpirados.isEmpty()) {
+            retosYaNotificados.removeAll(retosExpirados);
+
+            // Limpiar timestamps
+            SharedPreferences.Editor editor = retosTimestampPrefs.edit();
+            for (String retoId : retosExpirados) {
+                editor.remove("reto_" + retoId);
+            }
+            editor.apply();
+
+            // Guardar cambios
+            guardarRetosNotificados();
+
+            Log.d(TAG, "✅ " + retosExpirados.size() + " retos expirados eliminados");
+        } else {
+            Log.d(TAG, "ℹ️ No hay retos expirados para limpiar");
+        }
     }
 }
 
