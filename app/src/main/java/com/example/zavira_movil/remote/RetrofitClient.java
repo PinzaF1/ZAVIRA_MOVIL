@@ -16,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public final class RetrofitClient {
 
     //  URL NGROK ACTUALIZADA (con soporte OpenAI/IA)
-    private static final String BASE_URL = "https://gillian-semiluminous-blubberingly.ngrok-free.dev/";
+    private static final String BASE_URL = "https://churnable-nimbly-norbert.ngrok-free.dev";
 
     // DEBUG LOCAL (comentado hasta resolver firewall):
     // private static final String BASE_URL = "http://192.168.1.5:3333/";
@@ -30,6 +30,7 @@ public final class RetrofitClient {
 
     private static Retrofit retrofit;
     private static Context appContext; // para leer el token
+    private static String baseUrl = BASE_URL; // URL actual (puede cambiar en runtime)
 
     private RetrofitClient() {}
 
