@@ -92,6 +92,10 @@ public class FragmentDetalleSimulacro extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
+        // Aplicar recarga por detalle ANTES de configurar padding
+        // Esto asegura que la recarga se aplique cuando el usuario realmente ve el detalle
+        aplicarRecargaPorDetalle();
+
         // Configurar padding del contenedor para bajar el contenido
         if (getActivity() != null) {
             android.widget.FrameLayout fragmentContainer = getActivity().findViewById(R.id.fragmentContainer);
@@ -105,6 +109,62 @@ public class FragmentDetalleSimulacro extends Fragment {
                 int paddingTop = (int) (40 * getResources().getDisplayMetrics().density); // 40dp
                 fragmentContainer.setPadding(0, paddingTop, 0, 0);
             }
+        }
+    }
+
+    /**
+     * Aplica recarga de media vida por ver el detalle.
+     * Solo funciona una vez por intento fallido.
+     */
+    private void aplicarRecargaPorDetalle() {
+        try {
+            // Obtener datos de los argumentos
+            Bundle args = getArguments();
+            if (args == null) {
+                Log.w("FragmentDetalleSimulacro", "No se encontraron argumentos para aplicar recarga");
+                return;
+            }
+
+            // Obtener materia y nivel
+            String materia = args.getString("materia");
+            int nivel = args.getInt("nivel", 0);
+
+            if (materia == null || materia.isEmpty() || nivel <= 1) {
+                Log.d("FragmentDetalleSimulacro", "No se aplica recarga: materia=" + materia + ", nivel=" + nivel);
+                return;
+            }
+
+            // Obtener userId
+            int userId = com.example.zavira_movil.local.TokenManager.getUserId(requireContext());
+            if (userId <= 0) {
+                Log.w("FragmentDetalleSimulacro", "No se pudo obtener userId");
+                return;
+            }
+
+            // Aplicar recarga
+            boolean recargado = com.example.zavira_movil.niveleshome.LivesManager.recargarPorDetalle(
+                requireContext(),
+                String.valueOf(userId),
+                materia,
+                nivel
+            );
+
+            if (recargado) {
+                Log.d("FragmentDetalleSimulacro", "¡Media vida recargada al ver detalle!");
+                Toast.makeText(requireContext(), "✨ ¡Media vida recargada!", Toast.LENGTH_SHORT).show();
+
+                // Notificar a HomeActivity para actualizar UI de vidas
+                if (getActivity() instanceof com.example.zavira_movil.Home.HomeActivity) {
+                    // El HomeActivity debería tener un método para actualizar las vidas en el UI
+                    // Por ahora, solo enviar un broadcast local
+                    androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(requireContext())
+                        .sendBroadcast(new android.content.Intent("UPDATE_LIVES"));
+                }
+            } else {
+                Log.d("FragmentDetalleSimulacro", "No se pudo aplicar recarga (ya usada o no disponible)");
+            }
+        } catch (Exception e) {
+            Log.e("FragmentDetalleSimulacro", "Error al aplicar recarga por detalle", e);
         }
     }
 

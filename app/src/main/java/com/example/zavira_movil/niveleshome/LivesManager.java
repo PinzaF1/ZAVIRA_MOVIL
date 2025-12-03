@@ -134,11 +134,13 @@ public final class LivesManager {
         long timestampActual = System.currentTimeMillis();
         editor.putLong(keyTimestamp(userId, area, level, vidaPerdidaIndex), timestampActual);
         
-        // Resetear flag de recarga por detalle usado (nuevo intento fallido)
-        // IMPORTANTE: Solo resetear el flag cuando se consume una vida (intento fallido)
-        // Esto permite que el usuario pueda recargar media vida viendo el detalle de este intento fallido
-        editor.putBoolean(keyDetalleUsed(userId, area, level), false);
-        
+        // CORRECCIÓN BUG #3: NO resetear flag de recarga por detalle al consumir vida
+        // El flag solo debe resetearse cuando:
+        // 1. Pasa de nivel (éxito) - en resetLivesForNextLevel()
+        // 2. Retrocede de nivel (se acabaron las vidas) - en retroceso
+        // Si consumimos 2 vidas seguidas sin ver detalle, solo puede ver detalle UNA VEZ total
+        // NO permitir múltiples recargas por múltiples consumos de vidas
+
         // IMPORTANTE: NO resetear vidas parciales si ya existe una media vida cargándose
         // Si hay una media vida existente, debe mantenerse para que se pueda completar
         float partialLives = prefs(c).getFloat(keyPartialLives(userId, area, level), 0f);
@@ -167,7 +169,11 @@ public final class LivesManager {
      */
     public static void resetLivesForNextLevel(Context c, String userId, String area, int nextLevel) {
         if (nextLevel > MIN_LEVEL) {
-            prefs(c).edit().putInt(key(userId, area, nextLevel), MAX_LIVES).apply();
+            SharedPreferences.Editor editor = prefs(c).edit();
+            editor.putInt(key(userId, area, nextLevel), MAX_LIVES);
+            // Resetear flag de recarga por detalle (nuevo nivel, nueva oportunidad)
+            editor.putBoolean(keyDetalleUsed(userId, area, nextLevel), false);
+            editor.apply();
         }
     }
 

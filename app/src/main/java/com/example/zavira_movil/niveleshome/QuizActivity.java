@@ -702,7 +702,10 @@ public class QuizActivity extends AppCompatActivity {
                 int nivelRetrocedido = ProgressLockManager.getUnlockedLevel(this, userId, areaUi);
                 android.util.Log.d("QuizActivity", "Nivel retrocedido a: " + nivelRetrocedido + " (desde nivel " + nivel + ")");
                 
-                // Reiniciar vidas para el nivel retrocedido (3 vidas nuevas)
+                // CORRECCIÓN BUG #6: Reiniciar vidas tanto del nivel perdido como del nivel retrocedido
+                // Nivel perdido: resetear para que tenga 3 vidas cuando lo desbloquee de nuevo
+                LivesManager.resetLivesAndSync(this, userId, areaUi, nivel);
+                // Nivel retrocedido: resetear para que tenga 3 vidas nuevas
                 LivesManager.resetLivesAndSync(this, userId, areaUi, nivelRetrocedido);
                 
                 // Verificar que el nivel se bloqueó correctamente
@@ -885,17 +888,10 @@ public class QuizActivity extends AppCompatActivity {
         btnUsarVida.setOnClickListener(v -> {
             dialog.dismiss();
             
-            // IMPORTANTE: Si el usuario presiona "Reintentar", limpiar vidas parciales
-            // y crear un nuevo timestamp para la vida vacía (5 minutos desde ahora)
-            if (nivel > 1 && userIdInt > 0) {
-                // Limpiar vidas parciales ANTES de reiniciar
-                LivesManager.limpiarVidasParcialesYCrearTimestamp(this, userId, areaUi, nivel);
-                android.util.Log.d("QuizActivity", "Vidas parciales limpiadas al presionar Reintentar");
-                
-                // Forzar actualización inmediata de vidas para mostrar vida vacía
-                actualizarVidas();
-            }
-            
+            // IMPORTANTE: NO limpiar vidas parciales al reintentar
+            // La media vida debe aplicarse solo cuando se ve el detalle
+            // Si el usuario reintenta sin ver el detalle, pierde la oportunidad de recarga
+
             // Reiniciar el quiz: limpiar estado y crear nueva sesión
             idSesion = null;
             allQuestions.clear();
@@ -1080,20 +1076,16 @@ public class QuizActivity extends AppCompatActivity {
             finish();
             return;
         }
-        String userId = String.valueOf(userIdInt);
-        
-        // Recargar media vida ANTES de navegar (solo si está disponible)
-        boolean recargado = LivesManager.recargarPorDetalle(this, userId, areaUi, nivel);
-        if (recargado) {
-            android.util.Log.d("QuizActivity", "Media vida recargada por detalle antes de navegar");
-            Toast.makeText(this, "¡Media vida recargada!", Toast.LENGTH_SHORT).show();
-        }
-        
+
+        // NO recargar aquí - la recarga se aplicará en FragmentDetalleSimulacro cuando el usuario vea el detalle
+        android.util.Log.d("QuizActivity", "Navegando al detalle - recarga se aplicará al ver el historial");
+
         // Crear Intent para navegar a HomeActivity con el fragment de detalle
         Intent intent = new Intent(this, com.example.zavira_movil.Home.HomeActivity.class);
         intent.putExtra("action", "show_detalle");
         intent.putExtra("id_sesion", idSesion);
         intent.putExtra("materia", areaUi);
+        intent.putExtra("nivel", nivel); // IMPORTANTE: Pasar nivel para la recarga
         intent.putExtra("initial_tab", 1); // Abrir en la pestaña "Preguntas"
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

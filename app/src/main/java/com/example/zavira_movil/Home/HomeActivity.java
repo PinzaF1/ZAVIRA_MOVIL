@@ -359,6 +359,7 @@ public class HomeActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putInt("id_sesion", idSesion);
                 bundle.putString("materia", intent.getStringExtra("materia"));
+                bundle.putInt("nivel", intent.getIntExtra("nivel", 0)); // IMPORTANTE: Pasar nivel para recarga
                 bundle.putInt("initial_tab", intent.getIntExtra("initial_tab", 0));
 
                 com.example.zavira_movil.detalleprogreso.FragmentDetalleSimulacro fragment =
