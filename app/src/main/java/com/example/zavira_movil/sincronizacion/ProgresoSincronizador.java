@@ -455,22 +455,36 @@ public class ProgresoSincronizador {
         
         // Convertir área de UI a área del backend
         String areaApi = convertirAreaUIApi(area);
-        Log.d(TAG, "Actualizando " + vidas + " vidas para nivel " + nivel + " del área " + areaApi + " (UI: " + area + ") en backend");
-        
+        Log.d(TAG, "📤 Actualizando " + vidas + " vidas para nivel " + nivel + " del área " + areaApi + " (UI: " + area + ") en backend");
+
         ActualizarVidasRequest request = new ActualizarVidasRequest(areaApi, nivel, vidas);
         apiService.actualizarVidas(request).enqueue(new Callback<com.example.zavira_movil.BasicResponse>() {
             @Override
             public void onResponse(Call<com.example.zavira_movil.BasicResponse> call, Response<com.example.zavira_movil.BasicResponse> response) {
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "Vidas actualizadas exitosamente en backend");
+                    Log.d(TAG, "✅ Vidas actualizadas exitosamente en backend: " + vidas + " vidas (nivel " + nivel + ")");
                 } else {
-                    Log.e(TAG, "Error al actualizar vidas en backend: " + response.code());
+                    // CORRECCIÓN BUG #7: Logging detallado de errores
+                    Log.e(TAG, "❌ Error al actualizar vidas en backend: HTTP " + response.code());
+                    Log.e(TAG, "   - Área: " + areaApi + ", Nivel: " + nivel + ", Vidas: " + vidas);
+                    Log.e(TAG, "   - ATENCIÓN: Puede haber inconsistencia local vs backend");
+
+                    // TODO: Implementar rollback local o retry automático
+                    // Por ahora, solo loggear el error para debugging
                 }
             }
             
             @Override
             public void onFailure(Call<com.example.zavira_movil.BasicResponse> call, Throwable t) {
-                Log.e(TAG, "Error de red al actualizar vidas en backend", t);
+                // CORRECCIÓN BUG #7: Logging detallado de fallos de red
+                Log.e(TAG, "❌ Error de red al actualizar vidas en backend", t);
+                Log.e(TAG, "   - Área: " + areaApi + ", Nivel: " + nivel + ", Vidas: " + vidas);
+                Log.e(TAG, "   - Tipo de error: " + t.getClass().getSimpleName());
+                Log.e(TAG, "   - Mensaje: " + t.getMessage());
+                Log.e(TAG, "   - ATENCIÓN: Vidas locales pueden estar desincronizadas");
+
+                // TODO: Implementar cola de reintento o sincronización diferida
+                // Por ahora, las vidas locales prevalecen hasta la próxima sincronización completa
             }
         });
     }
