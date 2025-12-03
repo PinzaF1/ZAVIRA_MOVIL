@@ -29,6 +29,7 @@ public final class RetrofitClient {
 
     private static Retrofit retrofit;
     private static Context appContext; // para leer el token
+    private static String baseUrl = BASE_URL; // URL actual (puede cambiar en runtime)
 
     private RetrofitClient() {}
 
