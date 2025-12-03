@@ -1,78 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="20dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
 
-    <!-- Fondo con borde de color (se aplica dinámicamente) -->
+    <!-- Fondo con borde, ahora más pequeño -->
     <View
         android:id="@+id/rootBadge"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="223dp"
+        android:layout_height="246dp"
         android:background="@drawable/bg_badge_pendiente" />
 
+    <!-- Contenido del popup reducido pero igual diseño -->
     <LinearLayout
         android:id="@+id/dialogRoot"
-        android:layout_width="280dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp"
+        android:background="@android:color/white"
         android:gravity="center_horizontal"
-        android:background="@android:color/white">
+        android:orientation="vertical"
+        android:padding="18dp">
 
-        <!-- Icono grande de la insignia -->
         <ImageView
             android:id="@+id/ivIconoInsignia"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:scaleType="fitCenter"
-            android:contentDescription="Icono de insignia"
-            android:layout_marginBottom="12dp"/>
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginBottom="10dp"
+            android:scaleType="fitCenter" />
 
-        <!-- Nombre de la insignia -->
         <TextView
             android:id="@+id/tvNombreInsignia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Isla completa: Matemáticas"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#1F2937"
+            android:layout_marginBottom="6dp"
             android:gravity="center"
-            android:maxLines="2"
-            android:layout_marginBottom="8dp"/>
+            android:text="Isla completa: Matemáticas"
+            android:textColor="#1F2937"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <!-- Descripción -->
         <TextView
             android:id="@+id/tvDescripcionInsignia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Completaste todas las paradas del área de Matemáticas."
-            android:textSize="12sp"
-            android:textColor="#666"
+            android:layout_marginBottom="14dp"
             android:gravity="center"
-            android:maxLines="3"
-            android:layout_marginBottom="16dp"/>
+            android:text="Completaste todas las paradas del área de Matemáticas."
+            android:textColor="#666"
+            android:textSize="12sp" />
 
-        <!-- Botón Continuar -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnContinuar"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
+            android:layout_height="40dp"
+            android:elevation="2dp"
             android:text="Continuar"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:cornerRadius="12dp"
-            android:elevation="2dp"/>
+            app:backgroundTint="@color/colorPrimary"
+            app:cornerRadius="12dp" />
 
     </LinearLayout>
-    
-    <!-- No hay overlay gris en el diálogo porque siempre se muestra cuando se gana la insignia -->
 
 </FrameLayout>
-
-
-
-
