@@ -21,6 +21,7 @@ import com.example.zavira_movil.databinding.ActivityQuizBinding;
 import com.example.zavira_movil.model.Question;
 import com.example.zavira_movil.remote.ApiService;
 import com.example.zavira_movil.remote.RetrofitClient;
+import com.example.zavira_movil.BasicResponse; // <-- import añadido para Callback<BasicResponse>
 import com.google.android.material.button.MaterialButton;
 
 import java.io.IOException;
@@ -224,7 +225,7 @@ public class QuizActivity extends AppCompatActivity {
 
                 ParadaResponse pr = resp.body();
                 if (pr == null) {
-                    logIAEvent("Respuesta sin cuerpo JSON de la API", idSesion, areaApi, subtemaApi, nivel, 0);
+                    logIAEvent("Respuesta sin cuerpo JSON de la API", idSesion, areaApi, subtemaUi, nivel, 0);
 
                     // Error de servidor sin cuerpo
                     com.example.zavira_movil.utils.ErrorHandler.ErrorInfo errorInfo =
@@ -289,7 +290,7 @@ public class QuizActivity extends AppCompatActivity {
                         } else {
                             android.util.Log.w("QuizActivity", "⚠️ ALERTA: id_pregunta=null pero contenido no parece IA");
                         }
-                        logIAEvent("🤖 ✅ PREGUNTAS GENERADAS CON OPENAI/IA", idSesion, areaApi, subtemaApi, nivel, apiQs.size());
+                        logIAEvent("🤖 ✅ PREGUNTAS GENERADAS CON OPENAI/IA", idSesion, areaApi, subtemaUi, nivel, apiQs.size());
                     } else {
                         android.util.Log.e("QuizActivity", "📚 RESULTADO: PREGUNTAS DEL BANCO LOCAL");
                         android.util.Log.e("QuizActivity", "❌ id_pregunta=" + apiQs.get(0).id_pregunta + " → Banco de preguntas");
@@ -298,19 +299,68 @@ public class QuizActivity extends AppCompatActivity {
                         } else {
                             android.util.Log.w("QuizActivity", "⚠️ ALERTA: Tiene id_pregunta pero contenido parece IA");
                         }
-                        logIAEvent("📚 PREGUNTAS DEL BANCO LOCAL", idSesion, areaApi, subtemaApi, nivel, apiQs.size());
+                        logIAEvent("📚 PREGUNTAS DEL BANCO LOCAL", idSesion, areaApi, subtemaUi, nivel, apiQs.size());
+
+                        // REPORTAR AL BACKEND: indicar que estas preguntas NO fueron generadas por la API de IA
+                        try {
+                            java.util.ArrayList<com.example.zavira_movil.niveleshome.ReportIaRequest.ReportQuestion> rqList = new java.util.ArrayList<>();
+                            for (int i = 0; i < apiQs.size() && i < 10; i++) {
+                                ApiQuestion q = apiQs.get(i);
+                                String preview = q.enunciado != null ? q.enunciado.substring(0, Math.min(200, q.enunciado.length())) : null;
+                                boolean likelyIa = analizarContenidoPreguntasIA(java.util.Collections.singletonList(q));
+                                rqList.add(new com.example.zavira_movil.niveleshome.ReportIaRequest.ReportQuestion(i + 1, q.id_pregunta, preview, likelyIa));
+                            }
+
+                            Integer userId = com.example.zavira_movil.local.TokenManager.getUserId(QuizActivity.this);
+                            // Usar SimpleDateFormat para compatibilidad con API < 26
+                            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                            sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                            String ts = sdf.format(new java.util.Date());
+                            com.example.zavira_movil.niveleshome.ReportIaRequest report = new com.example.zavira_movil.niveleshome.ReportIaRequest(
+                                    idSesion != null ? idSesion : null,
+                                    userId != null && userId > 0 ? userId : null,
+                                    areaApi,
+                                    subtemaApi,
+                                    nivel,
+                                    "client-heuristic",
+                                    false,
+                                    "id_pregunta_present",
+                                    rqList,
+                                    ts
+                            );
+
+                            // Enviar en background (no bloquear UI)
+                            ApiService apiForReport = RetrofitClient.getInstance(QuizActivity.this).create(ApiService.class);
+                            apiForReport.reportIaUsage(report).enqueue(new Callback<BasicResponse>() {
+                                @Override
+                                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                    if (response.isSuccessful()) {
+                                        android.util.Log.d("QuizActivity", "IA report enviado correctamente (200/2xx)");
+                                    } else {
+                                        android.util.Log.w("QuizActivity", "Fallo al enviar IA report: HTTP " + response.code());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                    android.util.Log.w("QuizActivity", "Error enviando IA report: " + t.getMessage());
+                                }
+                            });
+                        } catch (Exception ex) {
+                            android.util.Log.w("QuizActivity", "No se pudo construir/enviar reporte IA: " + ex.getMessage());
+                        }
                     }
                     android.util.Log.e("QuizActivity", "========================================");
                 } else {
                     android.util.Log.e("QuizActivity", "⚠️ No se recibieron preguntas de la API");
-                    logIAEvent("⚠️ No se recibieron preguntas de la API", idSesion, areaApi, subtemaApi, nivel, 0);
+                    logIAEvent("⚠️ No se recibieron preguntas de la API", idSesion, areaApi, subtemaUi, nivel, 0);
                 }
 
                 ArrayList<Question> preguntas = ApiQuestionMapper.toAppList(apiQs);
                 if (preguntas.size() > 10) preguntas = new ArrayList<>(preguntas.subList(0, 10));
                 if (preguntas.isEmpty()) {
                     Toast.makeText(QuizActivity.this, "No hay preguntas para este subtema.", Toast.LENGTH_LONG).show();
-                    logIAEvent("No hay preguntas para este subtema", idSesion, areaApi, subtemaApi, nivel, 0);
+                    logIAEvent("No hay preguntas para este subtema", idSesion, areaApi, subtemaUi, nivel, 0);
                     finish();
                     return;
                 }
@@ -1316,7 +1366,7 @@ public class QuizActivity extends AppCompatActivity {
      * 🧠 ANÁLISIS DE CONTENIDO: Determina si las preguntas parecen generadas por IA
      * Analiza patrones típicos de preguntas generadas por OpenAI vs banco estático
      */
-    private boolean analizarContenidoPreguntasIA(ArrayList<ApiQuestion> preguntas) {
+    private boolean analizarContenidoPreguntasIA(java.util.List<ApiQuestion> preguntas) {
         if (preguntas == null || preguntas.isEmpty()) return false;
 
         int indicadoresIA = 0;

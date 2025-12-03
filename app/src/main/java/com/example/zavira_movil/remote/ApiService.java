@@ -1,69 +1,54 @@
 package com.example.zavira_movil.remote;
 
 import com.example.zavira_movil.BasicResponse;
-import com.example.zavira_movil.HislaConocimiento.IslaSimulacroRequest;
-import com.example.zavira_movil.HislaConocimiento.IslaSimulacroResponse;
 import com.example.zavira_movil.QuizCerrarRequest;
 import com.example.zavira_movil.QuizInicialResponse;
 
-import com.example.zavira_movil.progreso.DiagnosticoInicial;
-import com.example.zavira_movil.retos1vs1.AceptarRetoResponse;
-import com.example.zavira_movil.retos1vs1.EstadoRetoResponse;
-import com.example.zavira_movil.progreso.HistorialResponse;
-import com.example.zavira_movil.niveleshome.CerrarRequest;
-import com.example.zavira_movil.niveleshome.CerrarResponse;
-
-import com.example.zavira_movil.model.Estudiante;
+// HislaConocimiento
 import com.example.zavira_movil.HislaConocimiento.IslaCerrarRequest;
-import com.example.zavira_movil.HislaConocimiento.IslaCerrarResponse;
+import com.example.zavira_movil.HislaConocimiento.IslaCerrarResultadoResponse;
+import com.example.zavira_movil.HislaConocimiento.IslaIniciarRequest;
 import com.example.zavira_movil.HislaConocimiento.IslaResumenResponse;
+import com.example.zavira_movil.HislaConocimiento.IslaSimulacroRequest;
+import com.example.zavira_movil.HislaConocimiento.IslaSimulacroResponse;
+
+// Model
+import com.example.zavira_movil.model.Estudiante;
 import com.example.zavira_movil.model.KolbRequest;
 import com.example.zavira_movil.model.KolbResponse;
 import com.example.zavira_movil.model.LoginRequest;
+import com.example.zavira_movil.model.LogrosResponse;
 import com.example.zavira_movil.model.OtorgarAreaRequest;
 import com.example.zavira_movil.model.OtorgarAreaResponse;
-
 import com.example.zavira_movil.model.RankingResponse;
-import com.example.zavira_movil.retos1vs1.RondaResponse;
 import com.example.zavira_movil.model.SimulacroRequest;
+
+// Niveleshome
 import com.example.zavira_movil.niveleshome.CerrarRequest;
 import com.example.zavira_movil.niveleshome.CerrarResponse;
 import com.example.zavira_movil.niveleshome.ParadaRequest;
 import com.example.zavira_movil.niveleshome.ParadaResponse;
+import com.example.zavira_movil.niveleshome.ReportIaRequest;
 import com.example.zavira_movil.niveleshome.SimulacroResponse;
 
-import com.example.zavira_movil.retos1vs1.MarcadorResponse;
-import com.example.zavira_movil.retos1vs1.RetoListItem;
-
+// Oponente
 import com.example.zavira_movil.oponente.OpponentBackend;
+
+// Progreso
+import com.example.zavira_movil.progreso.DiagnosticoInicial;
 import com.example.zavira_movil.progreso.HistorialResponse;
 import com.example.zavira_movil.progreso.MateriasResponse;
 import com.example.zavira_movil.progreso.ResumenGeneral;
+
+// Retos1vs1
 import com.example.zavira_movil.retos1vs1.AceptarRetoResponse;
 import com.example.zavira_movil.retos1vs1.EstadoRetoResponse;
+import com.example.zavira_movil.retos1vs1.MarcadorResponse;
 import com.example.zavira_movil.retos1vs1.RetoCreadoResponse;
 import com.example.zavira_movil.retos1vs1.RetoCreateRequest;
-
 import com.example.zavira_movil.retos1vs1.RetoListItem;
-import com.example.zavira_movil.model.LogrosResponse;
-import com.example.zavira_movil.HislaConocimiento.IslaSimulacroRequest;
-import com.example.zavira_movil.HislaConocimiento.IslaSimulacroResponse;
-import com.example.zavira_movil.HislaConocimiento.IslaCerrarRequest;
-import com.example.zavira_movil.HislaConocimiento.IslaCerrarResultadoResponse;
-import com.example.zavira_movil.HislaConocimiento.IslaResumenResponse;
-import com.example.zavira_movil.HislaConocimiento.IslaCerrarMixtoRequest;
-import com.example.zavira_movil.HislaConocimiento.IslaCerrarRequest;
-import com.example.zavira_movil.HislaConocimiento.IslaCerrarResultadoResponse;
-import com.example.zavira_movil.HislaConocimiento.IslaResumenResponse;
-import com.example.zavira_movil.HislaConocimiento.IslaSimulacroRequest;
-import com.example.zavira_movil.HislaConocimiento.IslaSimulacroResponse;
-import com.example.zavira_movil.HislaConocimiento.IslaIniciarRequest;
-
-import com.example.zavira_movil.retos1vs1.RondaResponse;
-import com.example.zavira_movil.niveleshome.ParadaRequest;
-import com.example.zavira_movil.niveleshome.ParadaResponse;
 import com.example.zavira_movil.retos1vs1.RondaRequest;
-
+import com.example.zavira_movil.retos1vs1.RondaResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -277,4 +262,10 @@ public interface ApiService {
     // debe manejarlo). El body esperado seguirá el mismo formato que el POST.
     @retrofit2.http.HTTP(method = "DELETE", path = "movil/fcm-token", hasBody = true)
     Call<Void> unregisterFCMToken(@Body okhttp3.RequestBody body);
+
+    // ---------- Telemetría IA (Reporte cliente) ----------
+    // Reporte opcional desde el cliente indicando que las preguntas recibidas NO
+    // fueron generadas por la API de IA (p. ej. vinieron del banco local).
+    @POST("movil/ia/report")
+    Call<BasicResponse> reportIaUsage(@Body ReportIaRequest body);
 }
