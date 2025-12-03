@@ -62,6 +62,18 @@ public class RetosFragment extends Fragment {
         // Cargar contador de retos pendientes después de configurar las pestañas
         viewPager.post(() -> cargarContadorRetosPendientes());
 
+        // Agregar listener para actualizar badge cuando se cambia de pestaña
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                // Si se cambia a la pestaña de Recibidos (posición 1), actualizar badge
+                if (position == 1) {
+                    viewPager.postDelayed(() -> cargarContadorRetosPendientes(), 300);
+                }
+            }
+        });
+
         // Verificar si hay un índice de tab inicial específico (desde notificación)
         if (getArguments() != null) {
             int initialTabIndex = getArguments().getInt("initial_tab_index", -1);

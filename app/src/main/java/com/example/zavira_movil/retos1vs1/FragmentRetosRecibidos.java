@@ -144,6 +144,10 @@ public class FragmentRetosRecibidos extends Fragment {
 
                 if (resp.isSuccessful() && resp.body() != null) {
                     AceptarRetoResponse body = resp.body();
+
+                    // ACTUALIZAR BADGE: reto aceptado, actualizar contador
+                    actualizarBadgeRetosRecibidos();
+
                     // Si el estado es "en_curso" y tiene preguntas, lanzar el quiz INMEDIATAMENTE
                     if (body.reto != null && "en_curso".equalsIgnoreCase(body.reto.estado) 
                         && body.preguntas != null && !body.preguntas.isEmpty()
@@ -308,6 +312,10 @@ public class FragmentRetosRecibidos extends Fragment {
 
                 if (resp.isSuccessful()) {
                     Toast.makeText(requireContext(), "Reto rechazado", Toast.LENGTH_SHORT).show();
+
+                    // ACTUALIZAR BADGE: reto rechazado, actualizar contador inmediatamente
+                    actualizarBadgeRetosRecibidos();
+
                     // Actualizar la lista para quitar el reto rechazado
                     cargar();
                     // También actualizar la lista de oponentes si hay un FragmentReto visible
@@ -470,5 +478,28 @@ public class FragmentRetosRecibidos extends Fragment {
     private void mostrarCargando(boolean s) {
         // No mostrar el ProgressBar de carga (se ve feo según el usuario)
         if (pb != null) pb.setVisibility(View.GONE);
+    }
+
+    /**
+     * Actualiza el badge de retos pendientes en el fragment padre
+     * Se llama cuando se acepta o rechaza un reto para mantener el contador sincronizado
+     */
+    private void actualizarBadgeRetosRecibidos() {
+        try {
+            // Buscar el RetosFragment padre para actualizar el badge
+            Fragment parentFragment = getParentFragment();
+            while (parentFragment != null && !(parentFragment instanceof com.example.zavira_movil.ui.ranking.progreso.RetosFragment)) {
+                parentFragment = parentFragment.getParentFragment();
+            }
+
+            if (parentFragment instanceof com.example.zavira_movil.ui.ranking.progreso.RetosFragment) {
+                ((com.example.zavira_movil.ui.ranking.progreso.RetosFragment) parentFragment).refreshBadgeRetosRecibidos();
+                android.util.Log.d("FragmentRetosRecibidos", "✅ Badge actualizado después de acción de reto");
+            } else {
+                android.util.Log.w("FragmentRetosRecibidos", "⚠️ RetosFragment padre no encontrado para actualizar badge");
+            }
+        } catch (Exception e) {
+            android.util.Log.e("FragmentRetosRecibidos", "❌ Error al actualizar badge: " + e.getMessage());
+        }
     }
 }
