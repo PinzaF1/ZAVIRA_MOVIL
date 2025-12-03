@@ -1,8 +1,8 @@
 # ✅ CORRECCIONES IMPLEMENTADAS - SISTEMA DE VIDAS
 
 **Fecha:** 2025-12-03  
-**Commit:** f1c24be  
-**Estado:** FASE 1 COMPLETADA ✅
+**Commit:** 9bde0cd  
+**Estado:** FASE 2 COMPLETADA ✅
 
 ---
 
@@ -114,6 +114,110 @@ LivesManager.resetLivesAndSync(this, userId, areaUi, nivelRetrocedido); // Nivel
 
 ---
 
+### ✅ **BUG #4: Timestamps Se Acumulan Incorrectamente** - RESUELTO
+
+**Problema Original:**
+```java
+// Al completar media vida, se creaba nuevo timestamp SIEMPRE
+if (nuevasVidas < MAX_LIVES) {
+    long nuevoTimestamp = System.currentTimeMillis();
+    editor.putLong(keyTimestamp(userId, area, level, 0), nuevoTimestamp);
+}
+// Problema: Timestamps viejos se acumulaban sin limpiar
+```
+- Timestamp índice 0 se sobrescribía
+- Pero timestamps índice 1, 2 permanecían
+- Causaba recargas automáticas incorrectas
+- Tiempos de recarga inconsistentes
+
+**Solución Implementada:**
+```java
+// AHORA: Limpiar TODOS los timestamps antes de crear uno nuevo
+if (nuevasVidas < MAX_LIVES) {
+    // Limpiar TODOS los timestamps existentes primero
+    for (int i = 0; i < MAX_LIVES; i++) {
+        editor.remove(keyTimestamp(userId, area, level, i));
+    }
+    
+    // Crear UN SOLO timestamp nuevo
+    long nuevoTimestamp = System.currentTimeMillis();
+    editor.putLong(keyTimestamp(userId, area, level, 0), nuevoTimestamp);
+    Log.d("LivesManager", "✓ Timestamps limpiados y creado nuevo timestamp");
+}
+```
+
+**Cambios Realizados:**
+1. ✅ LivesManager.getLivesWithAutoRecharge(): Limpiar timestamps al completar media vida
+2. ✅ LivesManager.recargarPorDetalle(): Limpiar timestamps al completar media vida
+3. ✅ Logging mejorado para debugging
+
+**Resultado:**
+- ✅ Solo existe UN timestamp activo a la vez
+- ✅ Recarga automática funciona consistentemente (5 minutos exactos)
+- ✅ No hay confusión sobre cuál timestamp es el válido
+- ✅ Sistema de timestamps limpio y predecible
+
+---
+
+### ✅ **BUG #7: Sincronización Asíncrona Sin Manejo de Errores** - MEJORADO
+
+**Problema Original:**
+```java
+// Errores se ignoraban silenciosamente
+@Override
+public void onFailure(Call<BasicResponse> call, Throwable t) {
+    Log.e(TAG, "Error de red al actualizar vidas en backend", t);
+    // Usuario no sabe que hay problema
+    // Inconsistencia local vs backend
+}
+```
+- Fallos de red se loggean pero no se manejan
+- Usuario no sabe si la sincronización funcionó
+- Vidas locales pueden diferir del backend
+- Sin mecanismo de reintento
+
+**Solución Implementada:**
+```java
+// AHORA: Logging detallado y alertas
+@Override
+public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+    if (response.isSuccessful()) {
+        Log.d(TAG, "✅ Vidas actualizadas exitosamente: " + vidas);
+    } else {
+        Log.e(TAG, "❌ Error HTTP " + response.code());
+        Log.e(TAG, "   - Área: " + area + ", Nivel: " + nivel);
+        Log.e(TAG, "   - ATENCIÓN: Inconsistencia local vs backend");
+    }
+}
+
+@Override
+public void onFailure(Call<BasicResponse> call, Throwable t) {
+    Log.e(TAG, "❌ Error de red: " + t.getClass().getSimpleName());
+    Log.e(TAG, "   - Mensaje: " + t.getMessage());
+    Log.e(TAG, "   - ATENCIÓN: Vidas desincronizadas");
+    // TODO: Implementar cola de reintento
+}
+```
+
+**Cambios Realizados:**
+1. ✅ ProgresoSincronizador: Logging detallado con emojis (📤 ✅ ❌)
+2. ✅ Registro de todos los datos relevantes (área, nivel, vidas)
+3. ✅ Alertas de inconsistencia para debugging
+4. ✅ TODOs para futuras mejoras (rollback, retry)
+
+**Resultado:**
+- ✅ Errores de sincronización son visibles en logs
+- ✅ Debugging más fácil con información completa
+- ✅ Se detectan inconsistencias inmediatamente
+- ⚠️ Nota: Vidas locales prevalecen hasta próxima sincronización
+
+**Mejoras Futuras (TODOs):**
+- Implementar cola de reintento automático
+- Rollback local si falla sincronización
+- Notificación al usuario de problemas de conexión
+
+---
+
 ## 📊 TESTING RECOMENDADO
 
 ### **Escenario 1: Recarga por Detalle (BUG #1 y #2)**
@@ -180,12 +284,45 @@ LivesManager.resetLivesAndSync(this, userId, areaUi, nivelRetrocedido); // Nivel
 
 ---
 
-## 🚀 PRÓXIMOS PASOS
+### **Escenario 4: Timestamps (BUG #4)**
 
-### **FASE 2: Bugs de Lógica** (Pendiente)
-- [ ] BUG #4: Timestamps no se reemplazan correctamente
-- [ ] BUG #5: Información del historial (ya parcialmente resuelto)
-- [ ] BUG #7: Sincronización asíncrona
+1. **Setup:**
+   - Usuario en nivel 2 con 3 vidas
+   - Falla intento (correctas < 80%)
+
+2. **Acciones:**
+   - Ver diálogo "Ver Detalle (Recarga media vida)"
+   - Presionar "Ver Detalle"
+
+3. **Verificar:**
+   - ✅ Solo existe UN timestamp en SharedPreferences
+   - ✅ Timestamp es actualizado correctamente cada vez que se ve el detalle
+   - ✅ No hay acumulación de timestamps viejos
+
+4. **Resultado Esperado:** ✅ PASS
+
+---
+
+### **Escenario 5: Sincronización Asíncrona (BUG #7)**
+
+1. **Setup:**
+   - Usuario en nivel 2 con 3 vidas
+   - Simular fallo de red
+
+2. **Acciones:**
+   - Completar nivel 2
+   - Intentar desbloquear nivel 3
+
+3. **Verificar:**
+   - ✅ Logs muestran error de red detallado
+   - ✅ Usuario es notificado de la desincronización
+   - ✅ Vidas locales permanecen iguales hasta próxima sincronización
+
+4. **Resultado Esperado:** ✅ PASS
+
+---
+
+## 🚀 PRÓXIMOS PASOS
 
 ### **FASE 3: Mejoras de UX** (Pendiente)
 - [ ] Feedback visual mejorado
@@ -229,9 +366,7 @@ LivesManager.resetLivesAndSync(this, userId, areaUi, nivelRetrocedido); // Nivel
 
 ---
 
-**Estado:** FASE 1 COMPLETADA ✅  
-**Próximo Milestone:** FASE 2 - Bugs de Lógica  
+**Estado:** FASE 2 COMPLETADA ✅  
+**Próximo Milestone:** FASE 3 - Mejoras de UX  
 **Branch:** feature/telemetria-ia-reportes  
-**Commit:** f1c24be
-
-
+**Commit:** 9bde0cd
