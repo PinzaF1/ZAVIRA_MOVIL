@@ -2,7 +2,6 @@ package com.example.zavira_movil.detalleprogreso;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -258,9 +257,8 @@ public class FragmentDetalleSimulacro extends Fragment {
 
                 // Logging de análisis
                 if (d.analisis != null) {
-                    Log.d("DETALLE_SIMU", "✅ ANÁLISIS:");
-                    Log.d("DETALLE_SIMU", "  - Por Tema: " + (d.analisis.porTema != null ? d.analisis.porTema.size() : 0));
-                    Log.d("DETALLE_SIMU", "  - Por Dificultad: " + (d.analisis.porDificultad != null ? d.analisis.porDificultad.size() : 0));
+                    Log.d("DETALLE_SIMU", "✅ ANÁLISIS: Datos disponibles");
+                    // Nota: Los campos específicos dependen de la estructura de ProgresoDetalleResponse.Analisis
                 } else {
                     Log.w("DETALLE_SIMU", "⚠️ ANÁLISIS es NULL");
                 }
