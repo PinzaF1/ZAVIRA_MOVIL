@@ -291,6 +291,27 @@ public class QuizActivity extends AppCompatActivity {
                             android.util.Log.w("QuizActivity", "⚠️ ALERTA: id_pregunta=null pero contenido no parece IA");
                         }
                         logIAEvent("🤖 ✅ PREGUNTAS GENERADAS CON OPENAI/IA", idSesion, areaApi, subtemaUi, nivel, apiQs.size());
+
+                        // 🎯 MOSTRAR DIÁLOGO IA/ICFES cuando se detectan preguntas de IA
+                        ArrayList<Question> preguntasFinales = ApiQuestionMapper.toAppList(apiQs);
+                        if (preguntasFinales.size() > 10) preguntasFinales = new ArrayList<>(preguntasFinales.subList(0, 10));
+
+                        if (!preguntasFinales.isEmpty()) {
+                            // Guardar preguntas y mostrar diálogo IA/ICFES antes de comenzar
+                            allQuestions = preguntasFinales;
+                            currentQuestionIndex = 0;
+                            todasLasRespuestas = new ArrayList<>();
+                            for (int i = 0; i < preguntasFinales.size(); i++) {
+                                todasLasRespuestas.add(null);
+                            }
+
+                            // Mostrar diálogo informativo de IA/ICFES
+                            mostrarDialogoIA_ICFES(areaUi, () -> {
+                                // Después de cerrar el diálogo, mostrar la primera pregunta
+                                mostrarPreguntaActual();
+                            });
+                            return; // Salir aquí para no ejecutar el código de abajo
+                        }
                     } else {
                         android.util.Log.e("QuizActivity", "📚 RESULTADO: PREGUNTAS DEL BANCO LOCAL");
                         android.util.Log.e("QuizActivity", "❌ id_pregunta=" + apiQs.get(0).id_pregunta + " → Banco de preguntas");
@@ -1300,6 +1321,69 @@ public class QuizActivity extends AppCompatActivity {
         dialog.show();
     }
     
+    /**
+     * Muestra un diálogo informativo cuando las preguntas son generadas por IA
+     * indicando que están alimentadas con información oficial del ICFES.
+     */
+    private void mostrarDialogoIA_ICFES(String area, Runnable onContinuar) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_preguntas_ia_icfes, null);
+
+        // Obtener color del área
+        int areaColor = obtenerColorArea(area);
+
+        // Configurar elementos del diálogo
+        com.google.android.material.card.MaterialCardView cardDialog = dialogView.findViewById(R.id.cardDialogIA);
+        ImageView ivIcono = dialogView.findViewById(R.id.ivIconoIA);
+        TextView tvTitulo = dialogView.findViewById(R.id.tvTituloIA);
+        TextView tvMensaje = dialogView.findViewById(R.id.tvMensajeIA);
+        com.google.android.material.button.MaterialButton btnComenzar = dialogView.findViewById(R.id.btnComenzarIA);
+
+        // Configurar colores según el área
+        if (cardDialog != null) {
+            cardDialog.setStrokeColor(areaColor);
+            cardDialog.setStrokeWidth(dp(2));
+        }
+
+        if (ivIcono != null) {
+            ivIcono.setColorFilter(areaColor, android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+
+        if (btnComenzar != null) {
+            btnComenzar.setBackgroundTintList(android.content.res.ColorStateList.valueOf(areaColor));
+            btnComenzar.setIconTint(android.content.res.ColorStateList.valueOf(android.R.color.white));
+        }
+
+        // Crear y mostrar diálogo
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        // Configurar ventana del diálogo
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_overlay_oscuro);
+            dialog.getWindow().setLayout(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            );
+        }
+
+        // Configurar botón de continuar
+        if (btnComenzar != null) {
+            btnComenzar.setOnClickListener(v -> {
+                dialog.dismiss();
+                if (onContinuar != null) {
+                    onContinuar.run();
+                }
+            });
+        }
+
+        dialog.show();
+
+        // Log del evento
+        android.util.Log.d("QuizActivity", "🤖 Diálogo IA/ICFES mostrado para área: " + area);
+    }
+
     private int obtenerColorArea(String area) {
         if (area == null) return Color.parseColor("#B6B9C2");
         String a = area.toLowerCase().trim();
