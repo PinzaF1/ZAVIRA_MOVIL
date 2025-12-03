@@ -46,9 +46,21 @@ public class RetosFragment extends Fragment {
         // Adapter con constructor que acepta Fragment (ver RetosTabsAdapter abajo)
         viewPager.setAdapter(new RetosTabsAdapter(this));
 
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
-                tab.setText(position == 0 ? "Crear Reto" : "Recibidos")
-        ).attach();
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            if (position == 0) {
+                tab.setText("Crear Reto");
+            } else {
+                // Pestaña Recibidos con layout personalizado para mostrar badge
+                View customView = LayoutInflater.from(getContext()).inflate(R.layout.tab_recibidos_with_badge, null);
+                tab.setCustomView(customView);
+
+                // Inicializar con badge oculto
+                updateRecibidosBadge(customView, 0);
+            }
+        }).attach();
+
+        // Cargar contador de retos pendientes después de configurar las pestañas
+        viewPager.post(() -> cargarContadorRetosPendientes());
 
         // Verificar si hay un índice de tab inicial específico (desde notificación)
         if (getArguments() != null) {
@@ -146,6 +158,11 @@ public class RetosFragment extends Fragment {
             getActivity().runOnUiThread(() -> {
                 establecerStatusBarNaranja();
             });
+        }
+
+        // Actualizar contador de retos pendientes cuando el usuario regresa a la pantalla
+        if (getView() != null && isAdded()) {
+            getView().post(() -> cargarContadorRetosPendientes());
         }
     }
     
@@ -265,6 +282,87 @@ public class RetosFragment extends Fragment {
         // Si restauramos aquí, el topBar aparecería en segundo plano
     }
     
+    /**
+     * Actualiza el badge de la pestaña Recibidos con el número de retos pendientes
+     */
+    private void updateRecibidosBadge(View customView, int count) {
+        if (customView == null) return;
+
+        android.widget.TextView tvBadgeCount = customView.findViewById(R.id.tvBadgeCount);
+        android.widget.TextView tvTabText = customView.findViewById(R.id.tvTabText);
+
+        if (tvBadgeCount != null) {
+            if (count > 0) {
+                tvBadgeCount.setText(String.valueOf(count));
+                tvBadgeCount.setVisibility(android.view.View.VISIBLE);
+                android.util.Log.d("RetosFragment", "✅ Badge actualizado: " + count + " retos pendientes");
+            } else {
+                tvBadgeCount.setVisibility(android.view.View.GONE);
+                android.util.Log.d("RetosFragment", "❌ Badge ocultado: no hay retos pendientes");
+            }
+        }
+
+        // Asegurar que el texto del tab esté visible
+        if (tvTabText != null) {
+            tvTabText.setText("Recibidos");
+        }
+    }
+
+    /**
+     * Carga el número de retos pendientes desde el servidor y actualiza el badge
+     */
+    private void cargarContadorRetosPendientes() {
+        if (getContext() == null) return;
+
+        com.example.zavira_movil.remote.ApiService api =
+            com.example.zavira_movil.remote.RetrofitClient.getInstance(getContext())
+                .create(com.example.zavira_movil.remote.ApiService.class);
+
+        retrofit2.Call<java.util.List<com.example.zavira_movil.retos1vs1.RetoListItem>> call =
+            api.listarRetos("recibidos");
+
+        call.enqueue(new retrofit2.Callback<java.util.List<com.example.zavira_movil.retos1vs1.RetoListItem>>() {
+            @Override
+            public void onResponse(retrofit2.Call<java.util.List<com.example.zavira_movil.retos1vs1.RetoListItem>> call,
+                                 retrofit2.Response<java.util.List<com.example.zavira_movil.retos1vs1.RetoListItem>> resp) {
+                if (!isAdded() || getView() == null) return;
+
+                int count = 0;
+                if (resp.isSuccessful() && resp.body() != null) {
+                    count = resp.body().size();
+                }
+
+                android.util.Log.d("RetosFragment", "📊 Retos pendientes encontrados: " + count);
+
+                // Actualizar badge en el tab de Recibidos
+                TabLayout tabLayout = getView().findViewById(R.id.tabLayout);
+                if (tabLayout != null && tabLayout.getTabCount() > 1) {
+                    TabLayout.Tab recibidosTab = tabLayout.getTabAt(1);
+                    if (recibidosTab != null && recibidosTab.getCustomView() != null) {
+                        updateRecibidosBadge(recibidosTab.getCustomView(), count);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<java.util.List<com.example.zavira_movil.retos1vs1.RetoListItem>> call,
+                                Throwable t) {
+                android.util.Log.w("RetosFragment", "Error al cargar contador de retos: " + t.getMessage());
+
+                // En caso de error, ocultar badge
+                if (isAdded() && getView() != null) {
+                    TabLayout tabLayout = getView().findViewById(R.id.tabLayout);
+                    if (tabLayout != null && tabLayout.getTabCount() > 1) {
+                        TabLayout.Tab recibidosTab = tabLayout.getTabAt(1);
+                        if (recibidosTab != null && recibidosTab.getCustomView() != null) {
+                            updateRecibidosBadge(recibidosTab.getCustomView(), 0);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     private void ocultarTopBar() {
         if (getActivity() != null && isAdded()) {
             View topBar = getActivity().findViewById(R.id.topBar);
@@ -280,6 +378,17 @@ public class RetosFragment extends Fragment {
             if (topBar != null) {
                 topBar.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    /**
+     * Método público para que otros componentes puedan actualizar el badge de retos pendientes
+     * Útil cuando se acepta o rechaza un reto desde otra pantalla
+     */
+    public void refreshBadgeRetosRecibidos() {
+        if (isAdded() && getView() != null) {
+            cargarContadorRetosPendientes();
+            android.util.Log.d("RetosFragment", "🔄 Badge de retos actualizado desde componente externo");
         }
     }
 }
