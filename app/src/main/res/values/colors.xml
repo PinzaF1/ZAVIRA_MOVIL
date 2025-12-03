@@ -55,4 +55,7 @@
     <color name="success_color">#059669</color>
     <color name="success_light">#D1FAE5</color>
 
+    <!-- Color faltante para temas nocturnos -->
+    <color name="ripple_neutral">#E0E0E0</color>
+
 </resources>
