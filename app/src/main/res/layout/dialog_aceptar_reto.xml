@@ -65,7 +65,7 @@
             android:gravity="center">
 
             <!-- Botón Aceptar (destacado) -->
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnAceptarReto"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -73,23 +73,19 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
-                android:backgroundTint="#DC2626"
-                app:cornerRadius="28dp"
+                android:background="@drawable/btn_aceptar_reto_fixed"
                 android:layout_marginBottom="12dp"
                 android:elevation="4dp"/>
 
             <!-- Botón Rechazar (secundario) -->
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnRechazarReto"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:text="No, gracias"
                 android:textSize="14sp"
                 android:textColor="@android:color/white"
-                android:backgroundTint="#4B5563"
-                app:cornerRadius="24dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#6B7280"/>
+                android:background="@drawable/btn_rechazar_reto_fixed"/>
 
         </LinearLayout>
 
