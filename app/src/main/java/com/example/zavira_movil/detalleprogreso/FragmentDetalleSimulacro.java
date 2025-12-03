@@ -191,8 +191,17 @@ public class FragmentDetalleSimulacro extends Fragment {
                 if (!isAdded() || getContext() == null) return;
                 if (progress != null) progress.setVisibility(View.GONE);
 
+                Log.d("DETALLE_SIMU", "========================================");
+                Log.d("DETALLE_SIMU", "📥 RESPUESTA RECIBIDA DEL BACKEND");
+                Log.d("DETALLE_SIMU", "========================================");
+                Log.d("DETALLE_SIMU", "HTTP Status: " + resp.code());
+                Log.d("DETALLE_SIMU", "Successful: " + resp.isSuccessful());
+
                 if (!resp.isSuccessful() || resp.body() == null) {
-                    Log.e("DETALLE_SIMU", "HTTP " + resp.code());
+                    Log.e("DETALLE_SIMU", "❌ ERROR: HTTP " + resp.code());
+                    if (resp.body() == null) {
+                        Log.e("DETALLE_SIMU", "❌ ERROR: Body es NULL");
+                    }
                     if (getContext() != null) {
                         Toast.makeText(getContext(), "Error " + resp.code(), Toast.LENGTH_LONG).show();
                     }
@@ -200,19 +209,79 @@ public class FragmentDetalleSimulacro extends Fragment {
                 }
 
                 ProgresoDetalleResponse d = resp.body();
-                if (d == null || d.header == null) {
+
+                // Debugging detallado de la respuesta
+                Log.d("DETALLE_SIMU", "========================================");
+                Log.d("DETALLE_SIMU", "📊 DATOS RECIBIDOS:");
+                Log.d("DETALLE_SIMU", "========================================");
+
+                if (d == null) {
+                    Log.e("DETALLE_SIMU", "❌ ERROR: ProgresoDetalleResponse es NULL");
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "Detalle sin datos", Toast.LENGTH_SHORT).show();
+                    }
+                    return;
+                }
+
+                if (d.header == null) {
+                    Log.e("DETALLE_SIMU", "❌ ERROR: Header es NULL");
                     if (getContext() != null) {
                         Toast.makeText(getContext(), "Detalle sin header", Toast.LENGTH_SHORT).show();
                     }
                     return;
                 }
 
+                // Logging del header
+                Log.d("DETALLE_SIMU", "✅ HEADER:");
+                Log.d("DETALLE_SIMU", "  - Materia: " + d.header.materia);
+                Log.d("DETALLE_SIMU", "  - Fecha: " + d.header.fecha);
+                Log.d("DETALLE_SIMU", "  - Nivel: " + d.header.nivel);
+                Log.d("DETALLE_SIMU", "  - Correctas: " + d.header.correctas);
+                Log.d("DETALLE_SIMU", "  - Incorrectas: " + d.header.incorrectas);
+                Log.d("DETALLE_SIMU", "  - Total: " + d.header.total);
+                Log.d("DETALLE_SIMU", "  - Puntaje: " + d.header.puntaje);
+                Log.d("DETALLE_SIMU", "  - Tiempo Total (seg): " + d.header.tiempo_total_seg);
+                Log.d("DETALLE_SIMU", "  - Escala: " + d.header.escala);
+
+                // Logging de preguntas
+                if (d.preguntas != null) {
+                    Log.d("DETALLE_SIMU", "✅ PREGUNTAS: " + d.preguntas.size() + " preguntas");
+                    for (int i = 0; i < Math.min(3, d.preguntas.size()); i++) {
+                        Log.d("DETALLE_SIMU", "  - Pregunta " + (i+1) + ": " +
+                            (d.preguntas.get(i).enunciado != null ?
+                                d.preguntas.get(i).enunciado.substring(0, Math.min(50, d.preguntas.get(i).enunciado.length())) + "..." :
+                                "sin enunciado"));
+                    }
+                } else {
+                    Log.w("DETALLE_SIMU", "⚠️ PREGUNTAS es NULL");
+                }
+
+                // Logging de análisis
+                if (d.analisis != null) {
+                    Log.d("DETALLE_SIMU", "✅ ANÁLISIS:");
+                    Log.d("DETALLE_SIMU", "  - Por Tema: " + (d.analisis.porTema != null ? d.analisis.porTema.size() : 0));
+                    Log.d("DETALLE_SIMU", "  - Por Dificultad: " + (d.analisis.porDificultad != null ? d.analisis.porDificultad.size() : 0));
+                } else {
+                    Log.w("DETALLE_SIMU", "⚠️ ANÁLISIS es NULL");
+                }
+
+                Log.d("DETALLE_SIMU", "========================================");
+                Log.d("DETALLE_SIMU", "🔄 BINDING DATOS A LA UI");
+                Log.d("DETALLE_SIMU", "========================================");
+
                 bindHeader(d);
+
                 if (pagerAdapter != null) {
+                    Log.d("DETALLE_SIMU", "✅ PagerAdapter existe, configurando datos...");
                     // Primero establecer la materia, luego los datos
                     pagerAdapter.setMateria(nullSafe(d.header.materia));
                     pagerAdapter.setData(d); // -> Resumen, Preguntas, Análisis
+                    Log.d("DETALLE_SIMU", "✅ Datos configurados en PagerAdapter");
+                } else {
+                    Log.e("DETALLE_SIMU", "❌ ERROR: PagerAdapter es NULL");
                 }
+
+                Log.d("DETALLE_SIMU", "========================================");
             }
 
             @Override
@@ -231,28 +300,59 @@ public class FragmentDetalleSimulacro extends Fragment {
         if (!isAdded() || getContext() == null) return;
         if (d == null || d.header == null) return;
         
+        Log.d("DETALLE_SIMU", "🎨 BIND HEADER - Iniciando...");
+
         ProgresoDetalleResponse.Header h = d.header;
         android.content.Context ctx = getContext();
 
         // Texto principal
-        if (tvMateria != null) tvMateria.setText(nullSafe(h.materia));
+        if (tvMateria != null) {
+            tvMateria.setText(nullSafe(h.materia));
+            Log.d("DETALLE_SIMU", "✅ tvMateria actualizado: " + nullSafe(h.materia));
+        } else {
+            Log.e("DETALLE_SIMU", "❌ tvMateria es NULL");
+        }
+
         if (tvFecha != null) {
-            tvFecha.setText(formatFecha(h.fecha));
+            String fechaFormateada = formatFecha(h.fecha);
+            tvFecha.setText(fechaFormateada);
             tvFecha.setTextColor(Color.BLACK);
             tvFecha.setTypeface(tvFecha.getTypeface(), android.graphics.Typeface.BOLD);
+            Log.d("DETALLE_SIMU", "✅ tvFecha actualizado: " + fechaFormateada);
+        } else {
+            Log.e("DETALLE_SIMU", "❌ tvFecha es NULL");
         }
-        if (tvNivel != null) tvNivel.setText(nullSafe(h.nivel));
+
+        if (tvNivel != null) {
+            tvNivel.setText(nullSafe(h.nivel));
+            Log.d("DETALLE_SIMU", "✅ tvNivel actualizado: " + nullSafe(h.nivel));
+        } else {
+            Log.e("DETALLE_SIMU", "❌ tvNivel es NULL");
+        }
+
         if (tvTiempo != null) {
-            tvTiempo.setText(toMin(h.tiempo_total_seg));
+            String tiempoFormateado = toMin(h.tiempo_total_seg);
+            tvTiempo.setText(tiempoFormateado);
             tvTiempo.setTextColor(ContextCompat.getColor(ctx, R.color.blue_time));
+            Log.d("DETALLE_SIMU", "✅ tvTiempo actualizado: " + tiempoFormateado + " (seg: " + h.tiempo_total_seg + ")");
+        } else {
+            Log.e("DETALLE_SIMU", "❌ tvTiempo es NULL");
         }
+
         if (tvCorr != null) {
             tvCorr.setText(String.valueOf(h.correctas));
             tvCorr.setTextColor(ContextCompat.getColor(ctx, R.color.green_success));
+            Log.d("DETALLE_SIMU", "✅ tvCorr (correctas) actualizado: " + h.correctas);
+        } else {
+            Log.e("DETALLE_SIMU", "❌ tvCorr es NULL");
         }
+
         if (tvInc != null) {
             tvInc.setText(String.valueOf(h.incorrectas));
             tvInc.setTextColor(ContextCompat.getColor(ctx, R.color.red_error));
+            Log.d("DETALLE_SIMU", "✅ tvInc (incorrectas) actualizado: " + h.incorrectas);
+        } else {
+            Log.e("DETALLE_SIMU", "❌ tvInc es NULL");
         }
 
         // Porcentaje: si escala=porcentaje usa puntaje; si no, calcula según correctas/total
@@ -260,13 +360,31 @@ public class FragmentDetalleSimulacro extends Fragment {
                 ? safeInt(h.puntaje)
                 : (h.total > 0 ? Math.round(h.correctas * 100f / h.total) : 0);
         
+        Log.d("DETALLE_SIMU", "📊 Cálculo porcentaje:");
+        Log.d("DETALLE_SIMU", "  - Escala: " + h.escala);
+        Log.d("DETALLE_SIMU", "  - Puntaje: " + h.puntaje);
+        Log.d("DETALLE_SIMU", "  - Correctas: " + h.correctas + " / Total: " + h.total);
+        Log.d("DETALLE_SIMU", "  - Porcentaje calculado: " + pct + "%");
+
         if (tvPuntaje != null) {
             tvPuntaje.setText(pct + "%");
             // Obtener color del área para el porcentaje
             int areaColor = obtenerColorArea(nullSafe(h.materia), ctx);
             tvPuntaje.setTextColor(areaColor);
+            Log.d("DETALLE_SIMU", "✅ tvPuntaje actualizado: " + pct + "%");
+        } else {
+            Log.e("DETALLE_SIMU", "❌ tvPuntaje es NULL");
+        }
+
+        if (progress != null) {
+            progress.setMax(100);
+            progress.setProgress(pct);
+            Log.d("DETALLE_SIMU", "✅ ProgressBar actualizado: " + pct + "/100");
+        } else {
+            Log.e("DETALLE_SIMU", "❌ ProgressBar es NULL");
         }
         
+        Log.d("DETALLE_SIMU", "🎨 BIND HEADER - Completado");
         // La materia ya se pasa al adapter en onResponse antes de setData
     }
     
