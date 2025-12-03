@@ -292,12 +292,12 @@ public class QuizActivity extends AppCompatActivity {
                         }
                         logIAEvent("🤖 ✅ PREGUNTAS GENERADAS CON OPENAI/IA", idSesion, areaApi, subtemaUi, nivel, apiQs.size());
 
-                        // 🎯 MOSTRAR DIÁLOGO IA/ICFES cuando se detectan preguntas de IA
+                        // 🎯 MOSTRAR DIÁLOGO IA/ICFES cuando se detectan preguntas de IA (solo una vez por usuario)
                         ArrayList<Question> preguntasFinales = ApiQuestionMapper.toAppList(apiQs);
                         if (preguntasFinales.size() > 10) preguntasFinales = new ArrayList<>(preguntasFinales.subList(0, 10));
 
                         if (!preguntasFinales.isEmpty()) {
-                            // Guardar preguntas y mostrar diálogo IA/ICFES antes de comenzar
+                            // Guardar preguntas
                             allQuestions = preguntasFinales;
                             currentQuestionIndex = 0;
                             todasLasRespuestas = new ArrayList<>();
@@ -305,11 +305,28 @@ public class QuizActivity extends AppCompatActivity {
                                 todasLasRespuestas.add(null);
                             }
 
-                            // Mostrar diálogo informativo de IA/ICFES
-                            mostrarDialogoIA_ICFES(areaUi, () -> {
-                                // Después de cerrar el diálogo, mostrar la primera pregunta
+                            // Verificar si ya vio el diálogo IA/ICFES (solo mostrar una vez por UX)
+                            int userIdInt = com.example.zavira_movil.local.TokenManager.getUserId(QuizActivity.this);
+                            String prefsKey = "dialogo_ia_icfes_visto_" + userIdInt;
+                            boolean yaVisto = getSharedPreferences("dialogo_ia_tutorial", MODE_PRIVATE).getBoolean(prefsKey, false);
+
+                            if (!yaVisto) {
+                                // Primera vez - mostrar diálogo informativo de IA/ICFES
+                                mostrarDialogoIA_ICFES(areaUi, () -> {
+                                    // Marcar como visto después de cerrar el diálogo
+                                    getSharedPreferences("dialogo_ia_tutorial", MODE_PRIVATE)
+                                            .edit()
+                                            .putBoolean(prefsKey, true)
+                                            .apply();
+
+                                    // Después de cerrar el diálogo, mostrar la primera pregunta
+                                    mostrarPreguntaActual();
+                                });
+                            } else {
+                                // Ya vio el diálogo antes - ir directo a las preguntas
+                                android.util.Log.d("QuizActivity", "🤖 Diálogo IA/ICFES ya visto por usuario " + userIdInt + " - saltando al quiz");
                                 mostrarPreguntaActual();
-                            });
+                            }
                             return; // Salir aquí para no ejecutar el código de abajo
                         }
                     } else {
