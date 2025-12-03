@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:background="@drawable/bg_white_rounded_light"
+    android:scrollbars="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:background="@drawable/bg_white_rounded_light"
+            android:clipToOutline="true">
+
+            <!-- Icono -->
+            <ImageView
+                android:id="@+id/ivIcono"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:scaleType="fitCenter" />
+
+            <!-- Título -->
+            <TextView
+                android:id="@+id/tvTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="Necesitas Practicar Más"
+                android:textColor="#1F2937"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- Correctas -->
+            <TextView
+                android:id="@+id/tvCorrectas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="Correctas: 1 de 5"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Puntaje -->
+            <TextView
+                android:id="@+id/tvPuntaje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="Puntaje: 20%"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Línea divisoria -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="16dp"
+                android:background="#E5E7EB" />
+
+            <!-- Mensaje -->
+            <TextView
+                android:id="@+id/tvMensaje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp"
+                android:text="Necesitas 4 o 5 correctas para pasar al siguiente nivel.\n\nPuedes intentarlo nuevamente sin límite."
+                android:textColor="#666666"
+                android:textSize="16sp" />
+
+            <!-- Botones -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSalir"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="Salir"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="@color/colorPrimary"
+                    app:cornerRadius="8dp"
+                    app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                    app:iconGravity="start" />
+
+            </LinearLayout>
+        </LinearLayout>
+</ScrollView>
