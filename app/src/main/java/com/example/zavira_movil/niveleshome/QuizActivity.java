@@ -1359,7 +1359,9 @@ public class QuizActivity extends AppCompatActivity {
 
         if (btnComenzar != null) {
             btnComenzar.setBackgroundTintList(android.content.res.ColorStateList.valueOf(areaColor));
-            btnComenzar.setIconTint(android.content.res.ColorStateList.valueOf(android.R.color.white));
+            btnComenzar.setIconTint(android.content.res.ColorStateList.valueOf(
+                ContextCompat.getColor(this, android.R.color.white)
+            ));
         }
 
         // Crear y mostrar diálogo
