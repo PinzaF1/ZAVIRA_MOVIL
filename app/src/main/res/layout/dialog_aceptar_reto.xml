@@ -84,7 +84,7 @@
                 android:layout_height="48dp"
                 android:text="No, gracias"
                 android:textSize="14sp"
-                android:textColor="#64748B"
+                android:textColor="@android:color/white"
                 android:background="@drawable/btn_rechazar_reto"
                 style="?android:attr/borderlessButtonStyle"/>
 
