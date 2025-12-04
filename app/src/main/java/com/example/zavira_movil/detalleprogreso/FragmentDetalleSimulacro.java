@@ -245,16 +245,6 @@ public class FragmentDetalleSimulacro extends Fragment {
                 // Verificar si la sesión está vacía (usuario salió sin responder)
                 if (d.header.total == 0 && (d.preguntas == null || d.preguntas.isEmpty())) {
                     Log.w("DETALLE_SIMU", "⚠️ SESIÓN VACÍA: El usuario salió sin responder ninguna pregunta");
-                    Log.w("DETALLE_SIMU", "📋 Esto significa que:");
-                    Log.w("DETALLE_SIMU", "  1. Se creó la sesión correctamente");
-                    Log.w("DETALLE_SIMU", "  2. Se cargaron las preguntas");
-                    Log.w("DETALLE_SIMU", "  3. PERO el usuario salió antes de hacer clic en 'Enviar' en la última pregunta");
-                    Log.w("DETALLE_SIMU", "  4. Por lo tanto, NO se enviaron respuestas al backend");
-                    Log.w("DETALLE_SIMU", "📝 Posibles razones:");
-                    Log.w("DETALLE_SIMU", "  - Presionó el botón 'Atrás'");
-                    Log.w("DETALLE_SIMU", "  - La app se cerró inesperadamente");
-                    Log.w("DETALLE_SIMU", "  - Salió a otra pantalla sin completar");
-
                     Log.d("DETALLE_SIMU", "✅ PREGUNTAS: " + d.preguntas.size() + " preguntas");
                     for (int i = 0; i < Math.min(3, d.preguntas.size()); i++) {
                         Log.d("DETALLE_SIMU", "  - Pregunta " + (i+1) + ": " +
