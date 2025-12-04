@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.zavira_movil.QuizQuestionsAdapter;
@@ -128,26 +129,35 @@ public class QuizActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         detenerActualizacionVidas();
-    }
 
-    private void setLoading(boolean isLoading) {
-        // Mostrar/ocultar ProgressBar según el estado
-        if (binding.progress != null) {
-            binding.progress.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        // Log para diagnosticar salidas sin completar
+        if (idSesion != null && currentQuestionIndex < allQuestions.size() - 1) {
+            // Contar respuestas guardadas localmente (sin usar stream)
+            int respuestasGuardadas = 0;
+            for (String r : todasLasRespuestas) {
+                if (r != null) respuestasGuardadas++;
+            }
+
+            android.util.Log.w("QuizActivity", "⚠️ USUARIO SALIÓ SIN COMPLETAR EL QUIZ");
+            android.util.Log.w("QuizActivity", "  • idSesion: " + idSesion);
+            android.util.Log.w("QuizActivity", "  • Pregunta actual: " + (currentQuestionIndex + 1) + "/" + allQuestions.size());
+            android.util.Log.w("QuizActivity", "  • Respuestas guardadas localmente: " +
+                respuestasGuardadas + "/" + todasLasRespuestas.size());
+            android.util.Log.w("QuizActivity", "  📝 Estas respuestas NO fueron enviadas al backend");
+            android.util.Log.w("QuizActivity", "  📝 Por eso el historial mostrará correctas=0, incorrectas=0");
+        } else if (idSesion != null && currentQuestionIndex == allQuestions.size() - 1) {
+            // Usuario estaba en la última pregunta
+            List<String> marcadas = adapter != null ? adapter.getMarcadas() : new ArrayList<>();
+            if (marcadas.isEmpty() || marcadas.get(0) == null) {
+                android.util.Log.w("QuizActivity", "⚠️ USUARIO EN ÚLTIMA PREGUNTA PERO NO LA RESPONDIÓ");
+                android.util.Log.w("QuizActivity", "  • idSesion: " + idSesion);
+                android.util.Log.w("QuizActivity", "  • Salió sin hacer clic en 'Enviar'");
+            }
         }
-        // Deshabilitar/habilitar botón durante la carga para mejor UX
-        binding.btnEnviar.setEnabled(!isLoading);
-        binding.btnEnviar.setAlpha(isLoading ? 0.5f : 1.0f);
-
-        // Deshabilitar interacción con el RecyclerView durante la carga
-        binding.rvQuestions.setEnabled(!isLoading);
-        binding.rvQuestions.setClickable(!isLoading);
     }
 
-    /** Crea sesión y pinta preguntas (máximo 10). */
     private void crearParadaYMostrar() {
-        // IMPORTANTE: Verificar que no haya vidas parciales en la ÚLTIMA vida antes de iniciar el quiz
-        // Solo bloquear si tiene la última vida en la mitad (las otras están vacías)
+        // Verificar sistema de vidas antes de crear sesión (solo niveles 2+)
         if (nivel > 1) {
             int userIdInt = com.example.zavira_movil.local.TokenManager.getUserId(this);
             if (userIdInt > 0) {
@@ -164,12 +174,15 @@ public class QuizActivity extends AppCompatActivity {
             }
         }
         
-        setLoading(true);
+        // Mostrar loading
+        if (binding.progress != null) {
+            binding.progress.setVisibility(View.VISIBLE);
+        }
 
         final String areaApi    = MapeadorArea.toApiArea(areaUi);
         final String subtemaApi = MapeadorArea.normalizeSubtema(subtemaUi);
 
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         ParadaRequest req = new ParadaRequest(
                 areaApi != null ? areaApi : "",
                 subtemaApi != null ? subtemaApi : "",
@@ -182,7 +195,6 @@ public class QuizActivity extends AppCompatActivity {
         android.util.Log.e("QuizActivity", "========================================");
         android.util.Log.e("QuizActivity", "📤 ENVIANDO REQUEST AL BACKEND");
         android.util.Log.e("QuizActivity", "========================================");
-        android.util.Log.e("QuizActivity", "🌐 Backend URL: " + RetrofitClient.getBaseUrl());
         android.util.Log.e("QuizActivity", "🌐 Endpoint: POST /sesion/parada");
         android.util.Log.e("QuizActivity", "📋 Parámetros enviados:");
         android.util.Log.e("QuizActivity", "  • area: '" + req.area + "' (UI: " + areaUi + ")");
@@ -201,7 +213,10 @@ public class QuizActivity extends AppCompatActivity {
 
         api.crearParada(req).enqueue(new Callback<ParadaResponse>() {
             @Override public void onResponse(Call<ParadaResponse> call, Response<ParadaResponse> resp) {
-                setLoading(false);
+                // Ocultar loading
+                if (binding != null && binding.progress != null) {
+                    binding.progress.setVisibility(View.GONE);
+                }
 
                 // 🔍 LOG DETALLADO DE LA RESPUESTA HTTP
                 android.util.Log.e("QuizActivity", "========================================");
@@ -368,7 +383,7 @@ public class QuizActivity extends AppCompatActivity {
                             );
 
                             // Enviar en background (no bloquear UI)
-                            ApiService apiForReport = RetrofitClient.getInstance(QuizActivity.this).create(ApiService.class);
+                            ApiService apiForReport = RetrofitClient.getInstance().create(ApiService.class);
                             apiForReport.reportIaUsage(report).enqueue(new Callback<BasicResponse>() {
                                 @Override
                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -417,7 +432,10 @@ public class QuizActivity extends AppCompatActivity {
             }
 
             @Override public void onFailure(Call<ParadaResponse> call, Throwable t) {
-                setLoading(false);
+                // Ocultar loading
+                if (binding != null && binding.progress != null) {
+                    binding.progress.setVisibility(View.GONE);
+                }
 
                 // Usar ErrorHandler para manejar excepción de red
                 com.example.zavira_movil.utils.ErrorHandler.handleNetworkException(
@@ -518,30 +536,53 @@ public class QuizActivity extends AppCompatActivity {
             return;
         }
 
-        // Construir lista de respuestas para enviar
+        android.util.Log.d("QuizActivity", "========================================");
+        android.util.Log.d("QuizActivity", "📤 ENVIANDO RESPUESTAS AL BACKEND");
+        android.util.Log.d("QuizActivity", "========================================");
+        android.util.Log.d("QuizActivity", "idSesion: " + idSesion);
+        android.util.Log.d("QuizActivity", "Total preguntas: " + allQuestions.size());
+        android.util.Log.d("QuizActivity", "Pregunta actual index: " + currentQuestionIndex);
+
+        // Construir lista de respuestas
         List<CerrarRequest.Respuesta> rs = new ArrayList<>();
         for (int i = 0; i < todasLasRespuestas.size(); i++) {
             String respuesta = todasLasRespuestas.get(i);
-            if (respuesta != null) {
-                // Obtener id_pregunta de la pregunta correspondiente
-                Integer idPregunta = null;
-                if (i < allQuestions.size() && allQuestions.get(i).id_pregunta != null) {
-                    try {
-                        idPregunta = Integer.parseInt(allQuestions.get(i).id_pregunta);
-                    } catch (NumberFormatException e) {
-                        // id_pregunta es null o no es numérico, se mantiene como null
-                    }
+            Integer idPregunta = null;
+
+            // Obtener id_pregunta de la pregunta correspondiente
+            if (i < allQuestions.size() && allQuestions.get(i).id_pregunta != null) {
+                try {
+                    idPregunta = Integer.parseInt(allQuestions.get(i).id_pregunta);
+                } catch (NumberFormatException e) {
+                    // id_pregunta es null o no es numérico, se mantiene como null
                 }
-                rs.add(new CerrarRequest.Respuesta(i + 1, idPregunta, respuesta));
             }
+
+            rs.add(new CerrarRequest.Respuesta(i + 1, idPregunta, respuesta));
+            android.util.Log.d("QuizActivity", "  • Respuesta " + (i+1) + ": orden=" + (i+1) +
+                ", id_pregunta=" + idPregunta + ", opcion=" + respuesta);
         }
 
-        setLoading(true);
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        android.util.Log.d("QuizActivity", "✅ Total respuestas a enviar: " + rs.size());
+        android.util.Log.d("QuizActivity", "🌐 Enviando POST /sesion/cerrar");
+        android.util.Log.d("QuizActivity", "========================================");
 
-        // Primer intento: formato NUEVO
-        api.cerrarSesion(new CerrarRequest(idSesion, rs)).enqueue(new Callback<CerrarResponse>() {
-            @Override public void onResponse(Call<CerrarResponse> call, Response<CerrarResponse> response) {
+        // Mostrar loading
+        if (binding != null && binding.progress != null) {
+            binding.progress.setVisibility(View.VISIBLE);
+        }
+
+        CerrarRequest req = new CerrarRequest(idSesion, rs);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+
+        api.cerrarSesion(req).enqueue(new Callback<CerrarResponse>() {
+            @Override
+            public void onResponse(Call<CerrarResponse> call, Response<CerrarResponse> response) {
+                // Ocultar loading
+                if (binding != null && binding.progress != null) {
+                    binding.progress.setVisibility(View.GONE);
+                }
+
                 if (response.isSuccessful() && response.body() != null) {
                     onCierreOk(response.body());
                     return;
@@ -554,9 +595,11 @@ public class QuizActivity extends AppCompatActivity {
 
                 if (esLegacy) {
                     // Reintento: LEGACY
+                    android.util.Log.w("QuizActivity", "⚠️ Endpoint nuevo falló, reintentando con formato legacy...");
                     Map<String, Object> compat = new HashMap<>();
                     compat.put("id_sesion", idSesion);
                     List<List<Object>> legacyRs = new ArrayList<>();
+
                     for (CerrarRequest.Respuesta r : rs) {
                         List<Object> par = new ArrayList<>();
                         par.add(r.opcion);
@@ -566,50 +609,73 @@ public class QuizActivity extends AppCompatActivity {
                     compat.put("respuestas", legacyRs);
 
                     api.cerrarSesionCompat(compat).enqueue(new Callback<CerrarResponse>() {
-                        @Override public void onResponse(Call<CerrarResponse> call2, Response<CerrarResponse> resp2) {
-                            setLoading(false);
+                        @Override
+                        public void onResponse(Call<CerrarResponse> call2, Response<CerrarResponse> resp2) {
+                            // Ocultar loading
+                            if (binding != null && binding.progress != null) {
+                                binding.progress.setVisibility(View.GONE);
+                            }
+
                             if (resp2.isSuccessful() && resp2.body() != null) {
                                 onCierreOk(resp2.body());
                             } else {
                                 com.example.zavira_movil.utils.ErrorHandler.handleHttpError(
                                     QuizActivity.this,
                                     resp2,
-                                    () -> enviarTodasLasRespuestas() // Reintentar envío
+                                    () -> enviarTodasLasRespuestas()
                                 );
                             }
                         }
-                        @Override public void onFailure(Call<CerrarResponse> call2, Throwable t) {
-                            setLoading(false);
+
+                        @Override
+                        public void onFailure(Call<CerrarResponse> call2, Throwable t2) {
+                            // Ocultar loading
+                            if (binding != null && binding.progress != null) {
+                                binding.progress.setVisibility(View.GONE);
+                            }
+
                             com.example.zavira_movil.utils.ErrorHandler.handleNetworkException(
                                 QuizActivity.this,
-                                t,
-                                () -> enviarTodasLasRespuestas() // Reintentar envío
+                                t2,
+                                () -> enviarTodasLasRespuestas()
                             );
                         }
                     });
                 } else {
-                    setLoading(false);
+                    android.util.Log.d("QuizActivity", "📥 Respuesta recibida de /sesion/cerrar");
+                    android.util.Log.d("QuizActivity", "  HTTP Code: " + response.code());
+                    android.util.Log.d("QuizActivity", "  isSuccessful: " + response.isSuccessful());
+
                     com.example.zavira_movil.utils.ErrorHandler.handleHttpError(
                         QuizActivity.this,
                         response,
-                        () -> enviarTodasLasRespuestas() // Reintentar envío
+                        () -> enviarTodasLasRespuestas()
                     );
                 }
             }
 
-            @Override public void onFailure(Call<CerrarResponse> call, Throwable t) {
-                setLoading(false);
+            @Override
+            public void onFailure(Call<CerrarResponse> call, Throwable t) {
+                // Ocultar loading
+                if (binding != null && binding.progress != null) {
+                    binding.progress.setVisibility(View.GONE);
+                }
+
                 com.example.zavira_movil.utils.ErrorHandler.handleNetworkException(
                     QuizActivity.this,
                     t,
-                    () -> enviarTodasLasRespuestas() // Reintentar envío
+                    () -> enviarTodasLasRespuestas()
                 );
             }
         });
     }
 
     private void onCierreOk(CerrarResponse r) {
-        setLoading(false);
+        // Ocultar loading
+        if (binding != null && binding.progress != null) {
+            binding.progress.setVisibility(View.GONE);
+        }
+
         Integer puntaje = r.puntaje;
         int correctas = r.correctas != null ? r.correctas : 0;
         int totalPreguntas = allQuestions.size();
@@ -702,12 +768,15 @@ public class QuizActivity extends AppCompatActivity {
                 int nivelRetrocedido = ProgressLockManager.getUnlockedLevel(this, userId, areaUi);
                 android.util.Log.d("QuizActivity", "Nivel retrocedido a: " + nivelRetrocedido + " (desde nivel " + nivel + ")");
                 
-                // CORRECCIÓN BUG #6: Reiniciar vidas tanto del nivel perdido como del nivel retrocedido
-                // Nivel perdido: resetear para que tenga 3 vidas cuando lo desbloquee de nuevo
+                // CORRECCIÓN CRÍTICA: NO resetear vidas inmediatamente
+                // Las vidas deben recargarse con el tiempo reglamentario (5 minutos por vida)
+                // Solo resetear vidas del nivel perdido para cuando lo desbloquee de nuevo
                 LivesManager.resetLivesAndSync(this, userId, areaUi, nivel);
-                // Nivel retrocedido: resetear para que tenga 3 vidas nuevas
-                LivesManager.resetLivesAndSync(this, userId, areaUi, nivelRetrocedido);
-                
+
+                // IMPORTANTE: NO resetear vidas del nivel retrocedido
+                // El usuario debe esperar a que se recarguen automáticamente (5 min por vida)
+                android.util.Log.d("QuizActivity", "⏱️ Vidas del nivel " + nivelRetrocedido + " se recargarán automáticamente");
+
                 // Verificar que el nivel se bloqueó correctamente
                 int nivelVerificado = ProgressLockManager.getUnlockedLevel(this, userId, areaUi);
                 if (nivelVerificado != nivelRetrocedido) {
@@ -905,6 +974,7 @@ public class QuizActivity extends AppCompatActivity {
         // Botón cancelar
         btnCancelar.setOnClickListener(v -> {
             dialog.dismiss();
+            notificarActualizacionHistorial(); // Notificar actualización del historial
             setResult(RESULT_OK); // Notificar que hubo cambios para actualizar la UI
             finish();
         });
@@ -1055,6 +1125,7 @@ public class QuizActivity extends AppCompatActivity {
         // Botón cancelar - cerrar la actividad
         btnCancelar.setOnClickListener(v -> {
             dialog.dismiss();
+            notificarActualizacionHistorial(); // Notificar actualización del historial
             setResult(RESULT_OK);
             finish();
         });
@@ -1079,6 +1150,9 @@ public class QuizActivity extends AppCompatActivity {
 
         // NO recargar aquí - la recarga se aplicará en FragmentDetalleSimulacro cuando el usuario vea el detalle
         android.util.Log.d("QuizActivity", "Navegando al detalle - recarga se aplicará al ver el historial");
+
+        // 🔥 IMPORTANTE: Notificar al historial que hay nuevos datos
+        notificarActualizacionHistorial();
 
         // Crear Intent para navegar a HomeActivity con el fragment de detalle
         Intent intent = new Intent(this, com.example.zavira_movil.Home.HomeActivity.class);
@@ -1106,6 +1180,7 @@ public class QuizActivity extends AppCompatActivity {
         if (yaVisto) {
             // Si ya vio el tutorial, solo mostrar toast y cerrar
             Toast.makeText(this, "¡Felicitaciones! Pasaste al Nivel 2", Toast.LENGTH_LONG).show();
+            notificarActualizacionHistorial(); // Notificar actualización del historial
             setResult(RESULT_OK);
             finish();
             return;
@@ -1180,6 +1255,7 @@ public class QuizActivity extends AppCompatActivity {
             
             dialog.dismiss();
             Toast.makeText(this, "¡Felicitaciones! Pasaste al Nivel 2", Toast.LENGTH_LONG).show();
+            notificarActualizacionHistorial(); // Notificar actualización del historial
             setResult(RESULT_OK);
             finish();
         });
@@ -1227,6 +1303,7 @@ public class QuizActivity extends AppCompatActivity {
         
         btnContinuar.setOnClickListener(v -> {
             dialog.dismiss();
+            notificarActualizacionHistorial(); // Notificar actualización del historial
             setResult(RESULT_OK);
             finish();
         });
@@ -1740,6 +1817,19 @@ public class QuizActivity extends AppCompatActivity {
             Toast.makeText(this, "¡Media vida recargada por ver el detalle!", Toast.LENGTH_SHORT).show();
             // Actualizar vidas en la pantalla
             actualizarVidas();
+        }
+    }
+
+    /**
+     * Notifica al historial que hay nuevos datos disponibles para actualizar en tiempo real.
+     */
+    private void notificarActualizacionHistorial() {
+        try {
+            Intent intent = new Intent("com.example.zavira_movil.HISTORIAL_UPDATE");
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            android.util.Log.d("QuizActivity", "📢 Broadcast enviado: HISTORIAL_UPDATE - El historial se actualizará en tiempo real");
+        } catch (Exception e) {
+            android.util.Log.e("QuizActivity", "Error al enviar broadcast de actualización de historial", e);
         }
     }
 }

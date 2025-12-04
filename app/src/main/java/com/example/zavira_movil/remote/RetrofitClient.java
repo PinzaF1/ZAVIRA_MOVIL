@@ -1,7 +1,8 @@
 package com.example.zavira_movil.remote;
 
 import android.content.Context;
-
+import android.content.Intent;
+import android.util.Log;
 import com.example.zavira_movil.local.TokenManager;
 
 import java.util.concurrent.TimeUnit;
@@ -15,34 +16,29 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class RetrofitClient {
 
-    //  URL NGROK ACTUALIZADA (con soporte OpenAI/IA)
+    private static final String TAG = "RetrofitClient";
     private static final String BASE_URL = "https://eduexce-backend.ddns.net/";
 
-    // DEBUG LOCAL (comentado hasta resolver firewall):
-    // private static final String BASE_URL = "http://192.168.1.5:3333/";
-    
     // EMULADOR: Descomentar si usas emulador
     // private static final String BASE_URL = "http://10.0.2.2:3333/";
-    
+
     // DISPOSITIVO FÍSICO: Descomenta y reemplaza con IP de tu PC
     // private static final String BASE_URL = "http://192.168.X.X:3333/";
-    
 
     private static Retrofit retrofit;
-    private static Context appContext; // para leer el token
-    private static String baseUrl = BASE_URL; // URL actual (puede cambiar en runtime)
+    private static Context appContext;
+    private static String baseUrl = BASE_URL;
 
     private RetrofitClient() {}
 
     /** Llama esto una vez (por ejemplo en Application o en tu primera Activity) */
     public static void init(Context context) {
-        if (context != null) appContext = context.getApplicationContext();
-    }
-
-    /** Compatibilidad: permite usar getInstance(this) como tú lo estabas haciendo */
-    public static Retrofit getInstance(Context context) {
-        init(context);
-        return getInstance();
+        if (context != null) {
+            appContext = context.getApplicationContext();
+            Log.d(TAG, "init: context inicializado");
+        } else {
+            Log.w(TAG, "init: se recibió context nulo");
+        }
     }
 
     /** Usar cuando ya llamaste init(Context) antes */
@@ -55,6 +51,8 @@ public final class RetrofitClient {
 
     /** Construye el cliente Retrofit con la URL actual */
     private static synchronized void buildRetrofit() {
+        Log.d(TAG, "buildRetrofit: construyendo retrofit (baseUrl=" + baseUrl + ")");
+
         // Interceptor de logs (útil en desarrollo)
         HttpLoggingInterceptor log = new HttpLoggingInterceptor();
         log.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -65,84 +63,118 @@ public final class RetrofitClient {
             Request.Builder builder = original.newBuilder();
 
             if (appContext != null) {
-                String token = TokenManager.getToken(appContext);
-                if (token != null && !token.trim().isEmpty()) {
-                    builder.header("Authorization", "Bearer " + token);
+                try {
+                    String token = TokenManager.getToken(appContext);
+                    if (token != null && !token.trim().isEmpty()) {
+                        builder.header("Authorization", "Bearer " + token);
+                        Log.d(TAG, "authInterceptor: token presente (length=" + token.length() + ")");
+                    } else {
+                        Log.d(TAG, "authInterceptor: token ausente o vacío");
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, "authInterceptor: error al obtener token: " + e.getMessage());
                 }
+            } else {
+                Log.w(TAG, "authInterceptor: appContext es nulo, no se agrega Authorization");
             }
-            // JSON por defecto
+
+            // Headers por defecto
             builder.header("Accept", "application/json");
             builder.header("Content-Type", "application/json");
 
-            return chain.proceed(builder.build());
+            Request req = builder.build();
+            Log.d(TAG, "authInterceptor: request -> " + req.method() + " " + req.url());
+            return chain.proceed(req);
         };
 
-        // Interceptor que detecta 401 y realiza logout centralizado (best-effort)
-        Interceptor sessionInterceptor = chain -> {
-            okhttp3.Response response = chain.proceed(chain.request());
-            try {
-                if (response.code() == 401 && appContext != null) {
-                    // Limpieza local del token
-                    com.example.zavira_movil.local.TokenManager.clearAll(appContext);
-                    // Enviar broadcast para que Activities/Fragments puedan reaccionar
-                    // Intent explícito al BroadcastReceiver local (evita problema con receiver no exportado)
-                    android.content.Intent intent = new android.content.Intent(appContext, com.example.zavira_movil.SessionExpiredReceiver.class);
-                    intent.setAction("com.example.zavira_movil.ACTION_SESSION_EXPIRED");
-                    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-                    appContext.sendBroadcast(intent);
-                }
-            } catch (Exception ignored) {
-            }
-            return response;
-        };
-
-        // Network interceptor para capturar X-Request-Id de las respuestas y guardarlo en SharedPreferences
+        // Interceptor para capturar X-Request-Id de las respuestas
         Interceptor responseIdInterceptor = chain -> {
-            okhttp3.Response response = chain.proceed(chain.request());
+            Request request = chain.request();
+            okhttp3.Response response = chain.proceed(request);
+
             try {
-                if (appContext != null) {
-                    String requestId = response.header("X-Request-Id");
-                    if (requestId != null && !requestId.trim().isEmpty()) {
-                        android.util.Log.d("RetrofitClient", "X-Request-Id: " + requestId);
-                        android.content.SharedPreferences prefs = appContext.getSharedPreferences("api_prefs", Context.MODE_PRIVATE);
-                        prefs.edit().putString("last_request_id", requestId).apply();
-                    }
+                String requestId = response.header("X-Request-Id");
+                if (requestId != null && appContext != null) {
+                    Log.d(TAG, "responseIdInterceptor: X-Request-Id=" + requestId + " for " + request.url());
+                    // Guardar en SharedPreferences si es necesario
+                    appContext.getSharedPreferences("api_logs", Context.MODE_PRIVATE)
+                            .edit()
+                            .putString("last_request_id", requestId)
+                            .apply();
+                } else if (requestId == null) {
+                    Log.d(TAG, "responseIdInterceptor: no se encontró X-Request-Id en respuesta para " + request.url());
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.w(TAG, "responseIdInterceptor: excepción: " + e.getMessage());
             }
+
             return response;
         };
 
-        OkHttpClient ok = new OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
+        // Interceptor para manejar sesiones expiradas (401)
+        Interceptor sessionInterceptor = chain -> {
+            Request request = chain.request();
+            okhttp3.Response response = chain.proceed(request);
+
+            int code = response.code();
+            Log.d(TAG, "sessionInterceptor: response code=" + code + " for " + request.url());
+
+            if (code == 401 && appContext != null) {
+                Log.i(TAG, "sessionInterceptor: 401 detectado, limpiando token y enviando broadcast");
+                try {
+                    TokenManager.clearAll(appContext);
+
+                    // Enviar broadcast explícito para que Activities/Fragments puedan reaccionar
+                    Intent intent = new Intent("com.example.zavira_movil.ACTION_SESSION_EXPIRED");
+                    intent.setPackage(appContext.getPackageName()); // Hacer el intent explícito
+                    appContext.sendBroadcast(intent);
+                    Log.d(TAG, "sessionInterceptor: broadcast enviado");
+                } catch (Exception e) {
+                    Log.w(TAG, "sessionInterceptor: error al limpiar token o enviar broadcast: " + e.getMessage());
+                }
+            }
+
+            return response;
+        };
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(log)
+                .addInterceptor(authInterceptor)
+                .addNetworkInterceptor(responseIdInterceptor)
+                .addInterceptor(sessionInterceptor)
+                .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(authInterceptor)
-                .addInterceptor(sessionInterceptor)
-                .addNetworkInterceptor(responseIdInterceptor)
-                .addInterceptor(log)
                 .build();
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
-                .client(ok)
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
+        Log.d(TAG, "buildRetrofit: retrofit construido exitosamente");
     }
 
-    /** Permite cambiar la URL base en tiempo de ejecución; reconstrye Retrofit si cambia */
     public static synchronized void setBaseUrl(String url) {
-        if (url == null || url.trim().isEmpty()) return;
-        String normalized = url.trim();
-        if (!normalized.endsWith("/")) normalized = normalized + "/";
-        if (!normalized.equals(baseUrl)) {
-            baseUrl = normalized;
-            // invalidar instancia para forzar rebuild con nueva URL
-            retrofit = null;
+        if (url == null || url.trim().isEmpty()) {
+            Log.w(TAG, "setBaseUrl: URL nula o vacía, ignorando");
+            return;
         }
+
+        String normalized = url.trim();
+        if (!normalized.endsWith("/")) {
+            normalized = normalized + "/";
+        }
+
+        baseUrl = normalized;
+        // Invalidar instancia para forzar rebuild con nueva URL
+        retrofit = null;
+        Log.d(TAG, "setBaseUrl: nueva URL configurada: " + baseUrl);
     }
 
     public static String getBaseUrl() {
         return baseUrl;
     }
 }
+
