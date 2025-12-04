@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/transparent">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardDialogIA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        android:backgroundTint="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Icono y título -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/ivIconoIA"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_smart_toy"
+                    android:tint="@color/primary_color"
+                    android:layout_marginEnd="16dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTituloIA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Preguntas Generadas con IA"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Información Oficial ICFES"
+                        android:textSize="14sp"
+                        android:textColor="@color/primary_color"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Contenido principal -->
+            <TextView
+                android:id="@+id/tvMensajeIA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Las preguntas de este quiz han sido generadas utilizando Inteligencia Artificial alimentada con información oficial del ICFES (Instituto Colombiano para la Evaluación de la Educación).\n\nEsto garantiza que el contenido está alineado con los estándares educativos nacionales y te prepara efectivamente para las pruebas Saber."
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:lineSpacingExtra="4dp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Badge ICFES -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="@drawable/bg_icfes_badge"
+                android:padding="12dp"
+                android:layout_marginBottom="20dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_verified"
+                    android:tint="@color/success_color"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contenido Verificado ICFES"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/success_color" />
+
+            </LinearLayout>
+
+            <!-- Botón de acción -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnComenzarIA"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Comenzar Quiz IA"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_rocket_launch"
+                app:iconGravity="textStart"
+                app:iconSize="20dp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

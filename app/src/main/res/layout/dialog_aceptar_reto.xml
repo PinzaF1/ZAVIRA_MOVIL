@@ -73,7 +73,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
-                android:background="@drawable/btn_aceptar_reto"
+                android:background="@drawable/btn_aceptar_reto_fixed"
                 android:layout_marginBottom="12dp"
                 android:elevation="4dp"/>
 
@@ -84,9 +84,8 @@
                 android:layout_height="48dp"
                 android:text="No, gracias"
                 android:textSize="14sp"
-                android:textColor="#64748B"
-                android:background="@drawable/btn_rechazar_reto"
-                style="?android:attr/borderlessButtonStyle"/>
+                android:textColor="@android:color/white"
+                android:background="@drawable/btn_rechazar_reto_fixed"/>
 
         </LinearLayout>
 

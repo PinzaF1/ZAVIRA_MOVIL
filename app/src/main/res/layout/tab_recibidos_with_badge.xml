@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/tvTabText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recibidos"
+        android:textSize="14sp"
+        android:textColor="@color/text_primary"
+        android:layout_centerInParent="true" />
+
+    <!-- Burbuja de notificación - más pequeña -->
+    <TextView
+        android:id="@+id/tvBadgeCount"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="-4dp"
+        android:background="@drawable/bg_notification_badge"
+        android:text="1"
+        android:textColor="@android:color/white"
+        android:textSize="9sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:visibility="gone" />
+
+</RelativeLayout>

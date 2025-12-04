@@ -1,6 +1,11 @@
 package com.example.zavira_movil.progreso;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -8,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +31,9 @@ import retrofit2.Response;
 
 public class FragmentHistorial extends Fragment {
 
+    private static final String TAG = "FragmentHistorial";
+    public static final String ACTION_HISTORIAL_UPDATE = "com.example.zavira_movil.HISTORIAL_UPDATE";
+
     private RecyclerView rv;
     private ProgressBar progress;
     private TextView tvError;
@@ -32,6 +41,17 @@ public class FragmentHistorial extends Fragment {
 
     private int currentPage = 1;
     private final int pageSize = 20;
+
+    // BroadcastReceiver para actualizaciones en tiempo real
+    private BroadcastReceiver historialReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ACTION_HISTORIAL_UPDATE.equals(intent.getAction())) {
+                Log.d(TAG, "🔄 Broadcast recibido - Actualizando historial en tiempo real");
+                recargarHistorial();
+            }
+        }
+    };
 
     public FragmentHistorial() { super(R.layout.fragment_historial); }
 
@@ -50,14 +70,75 @@ public class FragmentHistorial extends Fragment {
         // Click en item -> abrir detalle (Resumen)
         adapter.setOnItemClick(this::abrirDetalle);
 
+        // Registrar BroadcastReceiver para actualizaciones en tiempo real
+        LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(historialReceiver, new IntentFilter(ACTION_HISTORIAL_UPDATE));
+        Log.d(TAG, "✅ BroadcastReceiver registrado para actualizaciones en tiempo real");
+
         cargarHistorial(currentPage, pageSize);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Recargar historial cada vez que el usuario vuelva a este fragmento
+        Log.d(TAG, "📱 onResume - Recargando historial automáticamente");
+        recargarHistorial();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Desregistrar BroadcastReceiver
+        try {
+            LocalBroadcastManager.getInstance(requireContext())
+                    .unregisterReceiver(historialReceiver);
+            Log.d(TAG, "✅ BroadcastReceiver desregistrado");
+        } catch (Exception e) {
+            Log.e(TAG, "Error al desregistrar receiver", e);
+        }
+        rv = null; progress = null; tvError = null;
+    }
+
+    // Método para recargar el historial sin mostrar loading excesivo
+    private void recargarHistorial() {
+        if (!isAdded() || getContext() == null) return;
+
+        Log.d(TAG, "🔄 Recargando historial...");
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+        api.getHistorial(currentPage, pageSize).enqueue(new Callback<HistorialResponse>() {
+            @Override
+            public void onResponse(Call<HistorialResponse> call, Response<HistorialResponse> resp) {
+                if (!isAdded()) return;
+
+                if (!resp.isSuccessful() || resp.body() == null) {
+                    Log.e(TAG, "❌ Error al recargar historial: HTTP " + resp.code());
+                    return;
+                }
+
+                List<HistorialItem> items = resp.body().getItems();
+                if (items != null && !items.isEmpty()) {
+                    Log.d(TAG, "✅ Historial actualizado: " + items.size() + " items");
+                    tvError.setVisibility(View.GONE);
+                    adapter.setData(items);
+                } else {
+                    Log.w(TAG, "⚠️ Historial vacío");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<HistorialResponse> call, Throwable t) {
+                if (!isAdded()) return;
+                Log.e(TAG, "❌ Error de red al recargar historial: " + t.getMessage());
+            }
+        });
     }
 
     private void cargarHistorial(int page, int limit) {
         mostrarCargando(true);
         tvError.setVisibility(View.GONE);
 
-        ApiService api = RetrofitClient.getInstance(getContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.getHistorial(page, limit).enqueue(new Callback<HistorialResponse>() {
             @Override
             public void onResponse(Call<HistorialResponse> call, Response<HistorialResponse> resp) {
@@ -158,11 +239,5 @@ public class FragmentHistorial extends Fragment {
     // parseo seguro de String -> int
     private int safeParseInt(String s) {
         try { return Integer.parseInt(s); } catch (Exception e) { return -1; }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        rv = null; progress = null; tvError = null;
     }
 }

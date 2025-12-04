@@ -1,7 +1,8 @@
 package com.example.zavira_movil.remote;
 
 import android.content.Context;
-
+import android.content.Intent;
+import android.util.Log;
 import com.example.zavira_movil.local.TokenManager;
 
 import java.util.concurrent.TimeUnit;
@@ -28,20 +29,19 @@ public final class RetrofitClient {
     // private static final String BASE_URL = "http://192.168.X.X:3333/";
 
     private static Retrofit retrofit;
-    private static Context appContext; // para leer el token
-    private static String baseUrl = BASE_URL; // URL actual (puede cambiar en runtime)
+    private static Context appContext;
+    private static String baseUrl = BASE_URL;
 
     private RetrofitClient() {}
 
     /** Llama esto una vez (por ejemplo en Application o en tu primera Activity) */
     public static void init(Context context) {
-        if (context != null) appContext = context.getApplicationContext();
-    }
-
-    /** Compatibilidad: permite usar getInstance(this) como tú lo estabas haciendo */
-    public static Retrofit getInstance(Context context) {
-        init(context);
-        return getInstance();
+        if (context != null) {
+            appContext = context.getApplicationContext();
+            Log.d(TAG, "init: context inicializado");
+        } else {
+            Log.w(TAG, "init: se recibió context nulo");
+        }
     }
 
     /** Usar cuando ya llamaste init(Context) antes */
@@ -86,3 +86,4 @@ public final class RetrofitClient {
         return retrofit;
     }
 }
+
