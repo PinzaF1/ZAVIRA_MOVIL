@@ -9,6 +9,9 @@ public class HistorialItem {
     @SerializedName("nivel")             private String  nivel;
     @SerializedName("fecha")             private String  fecha;
     @SerializedName("detalleDisponible") private boolean detalleDisponible;
+    @SerializedName("correctas")         private int     correctas;
+    @SerializedName("incorrectas")       private int     incorrectas;
+    @SerializedName("total")             private int     total;
 
     public String  getIntentoId()        { return intentoId; }
     public String  getMateria()          { return materia; }
@@ -16,4 +19,7 @@ public class HistorialItem {
     public String  getNivel()            { return nivel; }
     public String  getFecha()            { return fecha; }
     public boolean isDetalleDisponible() { return detalleDisponible; }
+    public int     getCorrectas()        { return correctas; }
+    public int     getIncorrectas()      { return incorrectas; }
+    public int     getTotal()            { return total; }
 }

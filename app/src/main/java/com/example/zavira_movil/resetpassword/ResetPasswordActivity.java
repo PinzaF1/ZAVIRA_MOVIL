@@ -93,7 +93,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 @Override
                 public void handleOnBackPressed() {
                     int currentStep = viewFlipper.getDisplayedChild();
-
+                    
                     if (currentStep > 0) {
                         // Si no está en el primer paso, volver al paso anterior
                         showStep(currentStep - 1);
