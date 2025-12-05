@@ -107,7 +107,7 @@ public class RetosPollingService extends Service {
         try {
             Log.d(TAG, "🔍 Verificando nuevos retos...");
 
-            ApiService apiService = RetrofitClient.getInstance(this).create(ApiService.class);
+            ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
             Call<java.util.List<com.example.zavira_movil.retos1vs1.RetoListItem>> call =
                 apiService.listarRetos("recibidos");
 
@@ -347,4 +347,5 @@ public class RetosPollingService extends Service {
         }
     }
 }
+
 

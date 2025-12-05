@@ -327,7 +327,7 @@ public class RetosFragment extends Fragment {
         if (getContext() == null) return;
 
         com.example.zavira_movil.remote.ApiService api =
-            com.example.zavira_movil.remote.RetrofitClient.getInstance(getContext())
+            com.example.zavira_movil.remote.RetrofitClient.getInstance()
                 .create(com.example.zavira_movil.remote.ApiService.class);
 
         retrofit2.Call<java.util.List<com.example.zavira_movil.retos1vs1.RetoListItem>> call =

@@ -91,7 +91,7 @@ public class FragmentQuiz extends Fragment {
         ivFotoUsuario    = v.findViewById(R.id.ivFotoUsuario);
         ivFotoOponente   = v.findViewById(R.id.ivFotoOponente);
         
-        api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
         
         // Inicializar timer y barra de progreso
         if (tvTimer != null) {
@@ -302,6 +302,7 @@ public class FragmentQuiz extends Fragment {
         cargarFotoUsuario();
     }
     
+    @android.annotation.SuppressLint({"UnspecifiedRegisterReceiverFlag"})
     private void registrarReceiverFoto() {
         if (fotoActualizadaReceiver == null) {
             fotoActualizadaReceiver = new android.content.BroadcastReceiver() {
@@ -323,7 +324,12 @@ public class FragmentQuiz extends Fragment {
             try {
                 android.content.IntentFilter filter = new android.content.IntentFilter("com.example.zavira_movil.FOTO_ACTUALIZADA");
                 if (getActivity() != null) {
-                    getActivity().registerReceiver(fotoActualizadaReceiver, filter);
+                    if (android.os.Build.VERSION.SDK_INT >= 33) {
+                        getActivity().registerReceiver(fotoActualizadaReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED);
+                    } else {
+                        // Para versiones menores que 33, simplemente registrar sin flags
+                        getActivity().registerReceiver(fotoActualizadaReceiver, filter);
+                    }
                 }
             } catch (Exception e) {
                 // Ignorar errores de registro
@@ -440,7 +446,7 @@ public class FragmentQuiz extends Fragment {
             items.add(new RondaRequest.Item(i + 1, key, tiempoSeg));
         }
 
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         RondaRequest payload = new RondaRequest(idSesion, items);
         payload.tiempoTotalSeg = tiempoTotalSeg;
 
@@ -679,7 +685,7 @@ public class FragmentQuiz extends Fragment {
 
     
     private void consultarEstado() {
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.estadoReto(idReto).enqueue(new Callback<EstadoRetoResponse>() {
             @Override public void onResponse(Call<EstadoRetoResponse> call, Response<EstadoRetoResponse> resp) {
                 if (!isAdded()) return;
@@ -717,3 +723,4 @@ public class FragmentQuiz extends Fragment {
         });
     }
 }
+

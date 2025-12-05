@@ -511,7 +511,7 @@ public class FragmentResultadoReto extends Fragment {
     private void pollEstado() {
         if (!isAdded() || TextUtils.isEmpty(idReto) || ambosTerminaron) return;
         
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.estadoReto(idReto).enqueue(new Callback<EstadoRetoResponse>() {
             @Override
             public void onResponse(Call<EstadoRetoResponse> call, Response<EstadoRetoResponse> resp) {
@@ -753,7 +753,7 @@ public class FragmentResultadoReto extends Fragment {
         final TextView tvDerrotas  = findMetricViewSafely(R.id.tvDerrotas);
         if (tvVictorias == null && tvDerrotas == null) return;
 
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         Call<MarcadorResponse> call = (idSesion != null)
                 ? api.marcadorPorSesion(idSesion)
                 : api.marcador();
@@ -828,3 +828,4 @@ public class FragmentResultadoReto extends Fragment {
         }
     }
 }
+

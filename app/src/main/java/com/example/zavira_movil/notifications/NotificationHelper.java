@@ -166,7 +166,7 @@ public class NotificationHelper {
                 MediaType.parse("application/json")
             );
 
-            ApiService apiService = RetrofitClient.getInstance(context).create(ApiService.class);
+            ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
             Call<Void> call = apiService.registerFCMToken(body);
             call.enqueue(new Callback<Void>() {
                 @Override

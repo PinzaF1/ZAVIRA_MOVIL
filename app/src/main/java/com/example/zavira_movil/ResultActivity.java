@@ -95,7 +95,7 @@ public class ResultActivity extends AppCompatActivity {
 
         boolean falta = isEmpty(extraFecha) || isEmpty(extraEstilo) || isEmpty(extraCarac) || isEmpty(extraRec);
         if (falta) {
-            apiService = RetrofitClient.getInstance(this).create(ApiService.class);
+            apiService = RetrofitClient.getInstance().create(ApiService.class);
             apiService.obtenerResultado().enqueue(new Callback<KolbResultado>() {
                 @Override public void onResponse(Call<KolbResultado> call, Response<KolbResultado> r) {
                     if (!r.isSuccessful() || r.body() == null) {
@@ -326,3 +326,4 @@ public class ResultActivity extends AppCompatActivity {
         }
     }
 }
+

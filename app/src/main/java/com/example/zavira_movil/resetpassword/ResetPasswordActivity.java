@@ -78,7 +78,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
             android.util.Log.d("ResetPasswordActivity", "onCreate: Layout inflado correctamente");
 
             // Inicializar API
-            api = RetrofitClient.getInstance(this).create(ApiService.class);
+            api = RetrofitClient.getInstance().create(ApiService.class);
             android.util.Log.d("ResetPasswordActivity", "onCreate: API inicializada");
 
             // Inicializar vistas
@@ -87,6 +87,23 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
             setupListeners();
             android.util.Log.d("ResetPasswordActivity", "onCreate: Listeners configurados");
+
+            // Configurar OnBackPressedDispatcher
+            getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    int currentStep = viewFlipper.getDisplayedChild();
+
+                    if (currentStep > 0) {
+                        // Si no está en el primer paso, volver al paso anterior
+                        showStep(currentStep - 1);
+                    } else {
+                        // Si está en el primer paso, cerrar la actividad
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                    }
+                }
+            });
 
             // Mostrar paso 1
             showStep(0);
@@ -510,18 +527,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         resendTimer.start();
     }
 
-    @Override
-    public void onBackPressed() {
-        int currentStep = viewFlipper.getDisplayedChild();
-        
-        if (currentStep > 0) {
-            // Si no está en el primer paso, volver al paso anterior
-            showStep(currentStep - 1);
-        } else {
-            // Si está en el primer paso, cerrar la actividad
-            super.onBackPressed();
-        }
-    }
+    // ...existing code...
 
     @Override
     protected void onResume() {

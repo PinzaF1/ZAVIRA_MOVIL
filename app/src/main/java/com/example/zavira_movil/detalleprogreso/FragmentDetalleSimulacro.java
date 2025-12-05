@@ -32,10 +32,8 @@ public class FragmentDetalleSimulacro extends Fragment {
     // ---- Vistas del header (usa tus IDs reales del layout) ----
     private TextView tvMateria, tvFecha, tvPuntaje, tvNivel, tvTiempo, tvCorr, tvInc;
     private ProgressBar progress;
-    private View headerCard;
 
     // ---- ViewPager + Adapter ----
-    private ViewPager2 pager;
     private DetalleSimuPagerAdapter pagerAdapter;
 
     // ---- Servicio local (no toca tu ApiService global) ----
@@ -61,10 +59,9 @@ public class FragmentDetalleSimulacro extends Fragment {
         tvCorr    = v.findViewById(R.id.tvCorrectas);
         tvInc     = v.findViewById(R.id.tvIncorrectas);
         progress  = v.findViewById(R.id.progress);
-        headerCard= v.findViewById(R.id.headerCard);
 
         // Pager + Tabs
-        pager = v.findViewById(R.id.viewPager);
+        ViewPager2 pager = v.findViewById(R.id.viewPager);
         pagerAdapter = new DetalleSimuPagerAdapter(requireActivity());
         pager.setAdapter(pagerAdapter);
 
@@ -179,14 +176,14 @@ public class FragmentDetalleSimulacro extends Fragment {
 
         // Usa tu RetrofitClient ya configurado (token, baseUrl, etc.)
         ProgresoService api = RetrofitClient
-                .getInstance(getContext())
+                .getInstance()
                 .create(ProgresoService.class);
 
         Log.d("DETALLE_SIMU", "GET /movil/sesion/" + idSesion + "/detalle");
 
-        api.getDetalleSesion(idSesion).enqueue(new Callback<ProgresoDetalleResponse>() {
+        api.getDetalleSesion(idSesion).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<ProgresoDetalleResponse> call, Response<ProgresoDetalleResponse> resp) {
+            public void onResponse(@NonNull Call<ProgresoDetalleResponse> call, @NonNull Response<ProgresoDetalleResponse> resp) {
                 if (!isAdded() || getContext() == null) return;
                 if (progress != null) progress.setVisibility(View.GONE);
 
@@ -207,20 +204,12 @@ public class FragmentDetalleSimulacro extends Fragment {
                     return;
                 }
 
-                ProgresoDetalleResponse d = resp.body();
+                @NonNull ProgresoDetalleResponse d = resp.body();
 
                 // Debugging detallado de la respuesta
                 Log.d("DETALLE_SIMU", "========================================");
                 Log.d("DETALLE_SIMU", "📊 DATOS RECIBIDOS:");
                 Log.d("DETALLE_SIMU", "========================================");
-
-                if (d == null) {
-                    Log.e("DETALLE_SIMU", "❌ ERROR: ProgresoDetalleResponse es NULL");
-                    if (getContext() != null) {
-                        Toast.makeText(getContext(), "Detalle sin datos", Toast.LENGTH_SHORT).show();
-                    }
-                    return;
-                }
 
                 if (d.header == null) {
                     Log.e("DETALLE_SIMU", "❌ ERROR: Header es NULL");
@@ -284,7 +273,7 @@ public class FragmentDetalleSimulacro extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ProgresoDetalleResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<ProgresoDetalleResponse> call, @NonNull Throwable t) {
                 if (!isAdded() || getContext() == null) return;
                 if (progress != null) progress.setVisibility(View.GONE);
                 Log.e("DETALLE_SIMU", "onFailure", t);
@@ -356,7 +345,7 @@ public class FragmentDetalleSimulacro extends Fragment {
 
         // Porcentaje: si escala=porcentaje usa puntaje; si no, calcula según correctas/total
         int pct = (h.escala != null && h.escala.equalsIgnoreCase("porcentaje"))
-                ? safeInt(h.puntaje)
+                ? h.puntaje
                 : (h.total > 0 ? Math.round(h.correctas * 100f / h.total) : 0);
         
         Log.d("DETALLE_SIMU", "📊 Cálculo porcentaje:");
@@ -366,7 +355,7 @@ public class FragmentDetalleSimulacro extends Fragment {
         Log.d("DETALLE_SIMU", "  - Porcentaje calculado: " + pct + "%");
 
         if (tvPuntaje != null) {
-            tvPuntaje.setText(pct + "%");
+            tvPuntaje.setText(String.format("%d%%", pct));
             // Obtener color del área para el porcentaje
             int areaColor = obtenerColorArea(nullSafe(h.materia), ctx);
             tvPuntaje.setTextColor(areaColor);

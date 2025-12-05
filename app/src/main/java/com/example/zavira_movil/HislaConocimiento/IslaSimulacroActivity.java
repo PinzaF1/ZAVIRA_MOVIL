@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,10 +56,10 @@ public class IslaSimulacroActivity extends AppCompatActivity {
     }
     
     private void verificarDiagnosticoInicial() {
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
-        api.diagnosticoProgreso().enqueue(new Callback<DiagnosticoInicial>() {
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+        api.diagnosticoProgreso().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<DiagnosticoInicial> call, Response<DiagnosticoInicial> response) {
+            public void onResponse(@NonNull Call<DiagnosticoInicial> call, @NonNull Response<DiagnosticoInicial> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     DiagnosticoInicial diagnostico = response.body();
                     if (diagnostico.tieneDiagnostico) {
@@ -88,7 +89,7 @@ public class IslaSimulacroActivity extends AppCompatActivity {
             }
             
             @Override
-            public void onFailure(Call<DiagnosticoInicial> call, Throwable t) {
+            public void onFailure(@NonNull Call<DiagnosticoInicial> call, @NonNull Throwable t) {
                 // En caso de error, bloquear por seguridad
                 Toast.makeText(IslaSimulacroActivity.this, 
                     "Error al verificar el diagnóstico. Debes completar el diagnóstico inicial primero", 
@@ -248,12 +249,12 @@ public class IslaSimulacroActivity extends AppCompatActivity {
         aplicarSeleccion(modalidadSeleccionada); // refresca estado del botón
         Toast.makeText(this, "Iniciando modo " + modalidad + "…", Toast.LENGTH_SHORT).show();
 
-        ApiService api = RetrofitClient.getInstance(getApplicationContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         Call<IslaSimulacroResponse> call = api.iniciarIslaSimulacro(new IslaSimulacroRequest(modalidad));
 
-        call.enqueue(new Callback<IslaSimulacroResponse>() {
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<IslaSimulacroResponse> call, Response<IslaSimulacroResponse> response) {
+            public void onResponse(@NonNull Call<IslaSimulacroResponse> call, @NonNull Response<IslaSimulacroResponse> response) {
                 busy = false;
                 aplicarSeleccion(modalidadSeleccionada);
 
@@ -291,7 +292,7 @@ public class IslaSimulacroActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<IslaSimulacroResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<IslaSimulacroResponse> call, @NonNull Throwable t) {
                 busy = false;
                 aplicarSeleccion(modalidadSeleccionada);
                 Toast.makeText(IslaSimulacroActivity.this,
@@ -301,3 +302,4 @@ public class IslaSimulacroActivity extends AppCompatActivity {
         });
     }
 }
+

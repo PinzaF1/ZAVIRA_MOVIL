@@ -181,14 +181,14 @@ public class ConfiguracionFragment extends Fragment {
             Dialog loading = showLoading();
 
             ApiService api = RetrofitClient
-                    .getInstance(requireContext())
+                    .getInstance()
                     .create(ApiService.class);
 
             CambiarPassword body = new CambiarPassword(actual, nueva);
 
-            api.cambiarPasswordMovil(body).enqueue(new Callback<BasicResponse>() {
+            api.cambiarPasswordMovil(body).enqueue(new Callback<>() {
                 @Override
-                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> resp) {
+                public void onResponse(@NonNull Call<BasicResponse> call, @NonNull Response<BasicResponse> resp) {
                     if (loading.isShowing()) loading.dismiss();
 
                     if (resp.isSuccessful() && resp.body() != null && resp.body().isOk()) {
@@ -205,7 +205,7 @@ public class ConfiguracionFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(Call<BasicResponse> call, Throwable t) {
+                public void onFailure(@NonNull Call<BasicResponse> call, @NonNull Throwable t) {
                     if (loading.isShowing()) loading.dismiss();
                     showLong("Fallo de red: " + t.getMessage());
                 }
@@ -219,9 +219,9 @@ public class ConfiguracionFragment extends Fragment {
      * Llama al perfil para obtener numero_documento y prueba login con la nueva contraseña.
      */
     private void verificarLoginConNuevaClave(ApiService api, String nuevaClave, Dialog dialogCambio) {
-        api.getPerfilEstudiante().enqueue(new Callback<Estudiante>() {
+        api.getPerfilEstudiante().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<Estudiante> call, Response<Estudiante> rPerfil) {
+            public void onResponse(@NonNull Call<Estudiante> call, @NonNull Response<Estudiante> rPerfil) {
                 if (!rPerfil.isSuccessful() || rPerfil.body() == null) {
                     showLong("Contraseña actualizada. No pude leer el perfil para verificar login.");
                     dialogCambio.dismiss();
@@ -242,9 +242,9 @@ public class ConfiguracionFragment extends Fragment {
 
                 LoginRequest loginReq = new LoginRequest(numeroDoc.trim(), nuevaClave);
 
-                api.loginEstudiante(loginReq).enqueue(new Callback<ResponseBody>() {
+                api.loginEstudiante(loginReq).enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> rLogin) {
+                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> rLogin) {
                         if (rLogin.isSuccessful()) {
                             showLong("Contraseña actualizada correctamente");
                             dialogCambio.dismiss();
@@ -260,14 +260,14 @@ public class ConfiguracionFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                         showLong("No pude verificar login: " + t.getMessage());
                     }
                 });
             }
 
             @Override
-            public void onFailure(Call<Estudiante> call, Throwable t) {
+            public void onFailure(@NonNull Call<Estudiante> call, @NonNull Throwable t) {
                 showLong("Contraseña actualizada. No pude leer el perfil: " + t.getMessage());
                 dialogCambio.dismiss();
             }
@@ -345,10 +345,10 @@ public class ConfiguracionFragment extends Fragment {
                     okhttp3.MediaType.parse("application/json")
             );
 
-            ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
-            api.unregisterFCMToken(body).enqueue(new retrofit2.Callback<Void>() {
+            ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+            api.unregisterFCMToken(body).enqueue(new retrofit2.Callback<>() {
                 @Override
-                public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                public void onResponse(@NonNull retrofit2.Call<Void> call, @NonNull retrofit2.Response<Void> response) {
                     // Ignorar éxito/fallo y finalizar logout
                     if (loading.isShowing()) loading.dismiss();
                     com.example.zavira_movil.local.TokenManager.clearAll(requireContext());
@@ -360,7 +360,7 @@ public class ConfiguracionFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                public void onFailure(@NonNull retrofit2.Call<Void> call, @NonNull Throwable t) {
                     // Best-effort: igualmente cerrar sesión localmente
                     if (loading.isShowing()) loading.dismiss();
                     com.example.zavira_movil.local.TokenManager.clearAll(requireContext());

@@ -123,7 +123,7 @@ public class PerfilFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
         perfilUserId = getUserIdFromToken();
 
         binding.icon.setOnClickListener(v -> showPickerDialog());

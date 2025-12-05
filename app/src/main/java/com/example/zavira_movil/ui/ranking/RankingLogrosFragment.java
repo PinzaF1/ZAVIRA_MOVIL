@@ -60,7 +60,7 @@ public class RankingLogrosFragment extends Fragment {
     public void onViewCreated(@NonNull View v, @Nullable Bundle s) {
         // IMPORTANTE: usa la versión con contexto (consistente con tu otro código)
         RetrofitClient.init(requireContext());
-        api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
 
         // Ocultar logo EduExce y campana en la Activity principal
         v.post(() -> ocultarTopBar());

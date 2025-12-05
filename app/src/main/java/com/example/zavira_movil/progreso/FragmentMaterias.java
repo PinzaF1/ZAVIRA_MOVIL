@@ -59,7 +59,7 @@ public class FragmentMaterias extends Fragment {
     }
 
     private void cargarDiagnosticoInicial() {
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.diagnosticoProgreso().enqueue(new Callback<DiagnosticoInicial>() {
             @Override
             public void onResponse(Call<DiagnosticoInicial> call, Response<DiagnosticoInicial> r) {
@@ -113,3 +113,4 @@ public class FragmentMaterias extends Fragment {
 
     private int clamp(int v){ return Math.max(0, Math.min(100, v)); }
 }
+

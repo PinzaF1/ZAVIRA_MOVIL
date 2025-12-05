@@ -1305,10 +1305,10 @@ public class MapaActivity extends AppCompatActivity {
             android.widget.Toast.LENGTH_SHORT).show();
         
         // Llamar a la API para iniciar el simulacro
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
-        api.iniciarIslaSimulacro(new IslaSimulacroRequest(modalidad)).enqueue(new Callback<IslaSimulacroResponse>() {
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+        api.iniciarIslaSimulacro(new IslaSimulacroRequest(modalidad)).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<IslaSimulacroResponse> call, Response<IslaSimulacroResponse> response) {
+            public void onResponse(@androidx.annotation.NonNull Call<IslaSimulacroResponse> call, @androidx.annotation.NonNull Response<IslaSimulacroResponse> response) {
                 if (!response.isSuccessful() || response.body() == null) {
                     android.util.Log.e("MapaActivity", "Error al iniciar simulacro: " + response.code());
                     android.widget.Toast.makeText(MapaActivity.this, 
@@ -1327,7 +1327,7 @@ public class MapaActivity extends AppCompatActivity {
             }
             
             @Override
-            public void onFailure(Call<IslaSimulacroResponse> call, Throwable t) {
+            public void onFailure(@androidx.annotation.NonNull Call<IslaSimulacroResponse> call, @androidx.annotation.NonNull Throwable t) {
                 android.util.Log.e("MapaActivity", "Error de red al iniciar simulacro", t);
                 android.widget.Toast.makeText(MapaActivity.this, 
                     "Error de red: " + (t.getMessage() != null ? t.getMessage() : "desconocido"), 

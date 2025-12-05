@@ -58,7 +58,7 @@ public class FragmentDiagnosticoInicial extends Fragment {
     }
 
     private void cargarDiagnostico() {
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.diagnosticoProgreso().enqueue(new Callback<DiagnosticoInicial>() {
             @Override public void onResponse(Call<DiagnosticoInicial> call, Response<DiagnosticoInicial> res) {
                 if (!isAdded()) return;
@@ -102,3 +102,4 @@ public class FragmentDiagnosticoInicial extends Fragment {
         rv = null;
     }
 }
+

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -14,7 +13,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
 import com.example.zavira_movil.Home.SplashActivity;
-import com.example.zavira_movil.R;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,11 +29,6 @@ import com.example.zavira_movil.progreso.DiagnosticoInicial;
 import com.example.zavira_movil.remote.ApiService;
 import com.example.zavira_movil.remote.RetrofitClient;
 import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -81,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        api = RetrofitClient.getInstance(this).create(ApiService.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
         notificationHelper = new NotificationHelper(this);
         
         // Solicitar permisos de notificaciones (Android 13+)
@@ -177,33 +170,12 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG_ERROR_STATE = "field_error_state";
 
     private void setCursorColor(android.widget.EditText editText, int color) {
+        // El color del cursor se maneja a través de los drawables del InputLayout
+        // Esta es la forma más compatible sin usar reflection en API 36+
         try {
-            // Método para cambiar el color del cursor usando reflexión
-            java.lang.reflect.Field fCursorDrawableRes = 
-                android.widget.TextView.class.getDeclaredField("mCursorDrawableRes");
-            fCursorDrawableRes.setAccessible(true);
-            fCursorDrawableRes.setInt(editText, R.drawable.cursor_blue);
-
-            java.lang.reflect.Field fEditor = android.widget.TextView.class.getDeclaredField("mEditor");
-            fEditor.setAccessible(true);
-            Object editor = fEditor.get(editText);
-            
-            if (editor != null) {
-                String className = editor.getClass().getName();
-                if (className.equals("android.widget.Editor")) {
-                    java.lang.reflect.Field fCursorDrawable = editor.getClass().getDeclaredField("mCursorDrawable");
-                    fCursorDrawable.setAccessible(true);
-                    
-                    android.graphics.drawable.Drawable[] drawables = new android.graphics.drawable.Drawable[2];
-                    drawables[0] = getResources().getDrawable(R.drawable.cursor_blue);
-                    drawables[1] = getResources().getDrawable(R.drawable.cursor_blue);
-                    
-                    fCursorDrawable.set(editor, drawables);
-                }
-            }
+            editText.setBackground(androidx.core.content.ContextCompat.getDrawable(this, R.drawable.bg_input_normal));
         } catch (Exception e) {
-            // Si falla, no hacer nada - el cursor usará el color por defecto
-            Log.d("CURSOR_COLOR", "No se pudo cambiar el color del cursor (esto es normal en algunas versiones de Android)");
+            Log.d("CURSOR_COLOR", "No se pudo cambiar el cursor (esto es normal en algunas versiones de Android)");
         }
     }
 
@@ -315,8 +287,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void doLogin() {
-        String doc = binding.etDocumento.getText().toString().trim();
-        String pass = binding.etPassword.getText().toString().trim();
+        CharSequence docSeq = binding.etDocumento.getText();
+        CharSequence passSeq = binding.etPassword.getText();
+
+        String doc = (docSeq != null ? docSeq.toString() : "").trim();
+        String pass = (passSeq != null ? passSeq.toString() : "").trim();
 
         // Validación de campos vacíos
         if (doc.isEmpty()) {
@@ -348,9 +323,9 @@ public class LoginActivity extends AppCompatActivity {
         binding.btnLogin.setEnabled(false); // Deshabilitar botón durante la solicitud
 
         LoginRequest request = new LoginRequest(doc, pass);
-        api.loginEstudiante(request).enqueue(new Callback<ResponseBody>() {
+        api.loginEstudiante(request).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@androidx.annotation.NonNull Call<ResponseBody> call, @androidx.annotation.NonNull Response<ResponseBody> response) {
                 binding.progress.setVisibility(View.GONE);
                 binding.btnLogin.setEnabled(true);
                 binding.btnLogin.setAlpha(1.0f);
@@ -371,45 +346,47 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 try {
-                    String body = response.body().string().trim();
-                    LoginResponse loginResponse = new Gson().fromJson(body, LoginResponse.class);
+                    ResponseBody body = response.body();
+                    if (body != null) {
+                        String bodyStr = body.string().trim();
+                        LoginResponse loginResponse = new Gson().fromJson(bodyStr, LoginResponse.class);
 
-                    if (loginResponse.getToken() == null || loginResponse.getToken().isEmpty()) {
-                        Toast.makeText(LoginActivity.this, "No se recibió token de autenticación", Toast.LENGTH_LONG).show();
-                        return;
+                        if (loginResponse.getToken() == null || loginResponse.getToken().isEmpty()) {
+                            Toast.makeText(LoginActivity.this, "No se recibió token de autenticación", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        // Guarda token
+                        TokenManager.setToken(LoginActivity.this, loginResponse.getToken());
+                        Log.d("TOKEN_GUARDADO", loginResponse.getToken());
+
+                        // Guarda userId desde el JWT (si tu TokenManager lo soporta)
+                        int userId = TokenManager.extractUserIdFromJwt(loginResponse.getToken());
+                        if (userId > 0) {
+                            TokenManager.setUserId(LoginActivity.this, userId);
+                            // Inicializar UserSession para que esté disponible en toda la app
+                            UserSession.getInstance().setIdUsuario(userId);
+                            Log.d("USER_ID_GUARDADO", "id=" + userId);
+                        } else {
+                            Log.w("USER_ID_GUARDADO", "No se pudo extraer el id del JWT");
+                        }
+
+                        Toast.makeText(LoginActivity.this, "¡Bienvenido/a!", Toast.LENGTH_SHORT).show();
+
+                        // ✅ Registrar token FCM después del login exitoso
+                        registerFCMToken();
+
+                        // La sincronización se hará en goToHome() después de verificar los tests
+                        goToHome();
                     }
-
-                    // Guarda token
-                    TokenManager.setToken(LoginActivity.this, loginResponse.getToken());
-                    Log.d("TOKEN_GUARDADO", loginResponse.getToken());
-
-                    // Guarda userId desde el JWT (si tu TokenManager lo soporta)
-                    int userId = TokenManager.extractUserIdFromJwt(loginResponse.getToken());
-                    if (userId > 0) {
-                        TokenManager.setUserId(LoginActivity.this, userId);
-                        // Inicializar UserSession para que esté disponible en toda la app
-                        UserSession.getInstance().setIdUsuario(userId);
-                        Log.d("USER_ID_GUARDADO", "id=" + userId);
-                    } else {
-                        Log.w("USER_ID_GUARDADO", "No se pudo extraer el id del JWT");
-                    }
-
-                    Toast.makeText(LoginActivity.this, "¡Bienvenido/a!", Toast.LENGTH_SHORT).show();
-
-                    // ✅ Registrar token FCM después del login exitoso
-                    registerFCMToken();
-
-                    // La sincronización se hará en goToHome() después de verificar los tests
-                    goToHome();
-
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e("LOGIN_ERROR", "Error al procesar respuesta de login", e);
                     Toast.makeText(LoginActivity.this, "Credenciales Incorrectas", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@androidx.annotation.NonNull Call<ResponseBody> call, @androidx.annotation.NonNull Throwable t) {
                 // Restaurar estado del botón
                 binding.progress.setVisibility(View.GONE);
                 binding.btnLogin.setEnabled(true);
@@ -436,7 +413,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // Navegación → HomeActivity
     private void goToHome() {
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         String token = com.example.zavira_movil.local.TokenManager.getToken(this);
 
         if (token == null || token.isEmpty()) {
@@ -449,9 +426,9 @@ public class LoginActivity extends AppCompatActivity {
         String bearer = token.startsWith("Bearer ") ? token : "Bearer " + token;
 
         // Primero verificar si ya completó el test de Kolb
-        api.obtenerResultado().enqueue(new Callback<KolbResultado>() {
+        api.obtenerResultado().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<KolbResultado> call, Response<KolbResultado> response) {
+            public void onResponse(@androidx.annotation.NonNull Call<KolbResultado> call, @androidx.annotation.NonNull Response<KolbResultado> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getEstilo() != null) {
                     // Ya completó Kolb, verificar diagnóstico
                     verificarDiagnostico();
@@ -480,7 +457,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<KolbResultado> call, Throwable t) {
+            public void onFailure(@androidx.annotation.NonNull Call<KolbResultado> call, @androidx.annotation.NonNull Throwable t) {
                 // En caso de error de red, ir a Home para que verifique allí
                 // No redirigir forzadamente al test porque puede ser un error de conexión
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
@@ -500,11 +477,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void verificarDiagnostico() {
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
 
-        api.diagnosticoProgreso().enqueue(new Callback<DiagnosticoInicial>() {
+        api.diagnosticoProgreso().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<DiagnosticoInicial> call, Response<DiagnosticoInicial> response) {
+            public void onResponse(@androidx.annotation.NonNull Call<DiagnosticoInicial> call, @androidx.annotation.NonNull Response<DiagnosticoInicial> response) {
                 Intent intent;
 
                 if (response.isSuccessful() && response.body() != null && response.body().tieneDiagnostico) {
@@ -538,7 +515,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<DiagnosticoInicial> call, Throwable t) {
+            public void onFailure(@androidx.annotation.NonNull Call<DiagnosticoInicial> call, @androidx.annotation.NonNull Throwable t) {
                 // En caso de error de red, redirigir a SPLASH por defecto
                 Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

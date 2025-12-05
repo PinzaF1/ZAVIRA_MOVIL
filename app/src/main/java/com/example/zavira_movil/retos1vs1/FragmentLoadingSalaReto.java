@@ -175,7 +175,7 @@ public class FragmentLoadingSalaReto extends Fragment {
     private void pollEstado() {
         if (!isAdded() || launching || TextUtils.isEmpty(idReto)) return;
 
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.estadoReto(idReto).enqueue(new Callback<EstadoRetoResponse>() {
             @Override public void onResponse(Call<EstadoRetoResponse> call, Response<EstadoRetoResponse> resp) {
                 if (!isAdded() || launching) return;
@@ -213,7 +213,7 @@ public class FragmentLoadingSalaReto extends Fragment {
                         // Obtener sesiones y comenzar el quiz INMEDIATAMENTE (sin delay)
                         // Ejecutar directamente sin esperar
                         if (!isAdded() || launching) return;
-                        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+                        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
                         api.aceptarRetoConBody(idReto, new HashMap<>()).enqueue(new Callback<AceptarRetoResponse>() {
                             @Override public void onResponse(Call<AceptarRetoResponse> call, Response<AceptarRetoResponse> resp) {
                                 if (!isAdded() || launching) return;
@@ -271,7 +271,7 @@ public class FragmentLoadingSalaReto extends Fragment {
             .setMessage("¿Estás seguro de que quieres abandonar este reto?")
             .setPositiveButton("Sí, abandonar", (dialog, which) -> {
                 // Llamar al backend para abandonar el reto
-                ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+                ApiService api = RetrofitClient.getInstance().create(ApiService.class);
                 api.abandonarReto(idReto).enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> resp) {
@@ -335,7 +335,7 @@ public class FragmentLoadingSalaReto extends Fragment {
         Runnable work = () -> {
             if (!isAdded() || launching) return;
 
-            ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+            ApiService api = RetrofitClient.getInstance().create(ApiService.class);
             
             // Cuando el estado es 'en_curso', ambos ya tienen sesión (creadas cuando el oponente aceptó)
             // Solo necesitamos obtener las sesiones llamando a aceptarReto (que devuelve las sesiones y preguntas)

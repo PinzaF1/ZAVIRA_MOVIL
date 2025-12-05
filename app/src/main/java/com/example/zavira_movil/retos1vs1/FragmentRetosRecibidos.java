@@ -87,7 +87,7 @@ public class FragmentRetosRecibidos extends Fragment {
         mostrarCargando(true);
         tvEmpty.setVisibility(View.GONE);
 
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         Call<List<RetoListItem>> call = api.listarRetos("recibidos");
 
         call.enqueue(new Callback<List<RetoListItem>>() {
@@ -133,7 +133,7 @@ public class FragmentRetosRecibidos extends Fragment {
         }
         mostrarCargando(true);
 
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         final String retoId = String.valueOf(it.getIdReto());
 
         // Aceptar el reto (esto crea la sesión del oponente)
@@ -301,7 +301,7 @@ public class FragmentRetosRecibidos extends Fragment {
             return;
         }
 
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         final String retoId = String.valueOf(it.getIdReto());
 
         // Llamar al endpoint de rechazar

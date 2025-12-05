@@ -73,7 +73,7 @@ public class ProgresoSincronizador {
      */
     public void sincronizarDesdeBackend(Context context, String userId) {
         if (apiService == null) {
-            apiService = RetrofitClient.getInstance(context).create(ApiService.class);
+            apiService = RetrofitClient.getInstance().create(ApiService.class);
         }
         
         Log.d(TAG, "=== INICIANDO SINCRONIZACIÓN DESDE BACKEND ===");
@@ -255,7 +255,7 @@ public class ProgresoSincronizador {
      */
     public void sincronizarABackend(Context context, String userId) {
         if (apiService == null) {
-            apiService = RetrofitClient.getInstance(context).create(ApiService.class);
+            apiService = RetrofitClient.getInstance().create(ApiService.class);
         }
         
         Log.d(TAG, "Iniciando sincronización al backend para usuario: " + userId);
@@ -344,7 +344,7 @@ public class ProgresoSincronizador {
      */
     public void actualizarNivelEnBackend(Context context, String userId, String area, int nivel) {
         if (apiService == null) {
-            apiService = RetrofitClient.getInstance(context).create(ApiService.class);
+            apiService = RetrofitClient.getInstance().create(ApiService.class);
         }
         
         // Convertir área de UI a área del backend
@@ -412,7 +412,7 @@ public class ProgresoSincronizador {
         Log.d(TAG, "Verificando nivel en backend: área=" + areaApi + ", nivel esperado=" + nivelEsperado);
         
         if (apiService == null) {
-            apiService = RetrofitClient.getInstance(context).create(ApiService.class);
+            apiService = RetrofitClient.getInstance().create(ApiService.class);
         }
         
         apiService.obtenerProgresoSincronizacion().enqueue(new Callback<SincronizacionResponse>() {
@@ -450,7 +450,7 @@ public class ProgresoSincronizador {
      */
     public void actualizarVidasEnBackend(Context context, String userId, String area, int nivel, int vidas) {
         if (apiService == null) {
-            apiService = RetrofitClient.getInstance(context).create(ApiService.class);
+            apiService = RetrofitClient.getInstance().create(ApiService.class);
         }
         
         // Convertir área de UI a área del backend
@@ -499,4 +499,5 @@ public class ProgresoSincronizador {
         return prefs.getLong(KEY_LAST_SYNC, 0);
     }
 }
+
 

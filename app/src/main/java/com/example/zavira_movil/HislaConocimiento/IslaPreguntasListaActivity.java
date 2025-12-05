@@ -105,7 +105,7 @@ public class IslaPreguntasListaActivity extends AppCompatActivity {
         }
         IslaCerrarRequest body = new IslaCerrarRequest(idSesion, resp);
 
-        ApiService api = RetrofitClient.getInstance(getApplicationContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.cerrarIslaSimulacro(getToken(), body).enqueue(new Callback<IslaCerrarResultadoResponse>() {
             @Override public void onResponse(Call<IslaCerrarResultadoResponse> call, Response<IslaCerrarResultadoResponse> res) {
                 if (!res.isSuccessful() || res.body() == null) {
@@ -133,3 +133,4 @@ public class IslaPreguntasListaActivity extends AppCompatActivity {
         try { return Integer.parseInt(String.valueOf(o)); } catch (Exception e) { return 0; }
     }
 }
+

@@ -3,7 +3,6 @@ package com.example.zavira_movil.HislaConocimiento;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -12,14 +11,13 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +25,6 @@ import androidx.core.content.ContextCompat;
 
 import com.example.zavira_movil.R;
 import com.example.zavira_movil.databinding.ActivityQuizBinding;
-import com.example.zavira_movil.local.UserSession;
 import com.example.zavira_movil.model.OtorgarAreaRequest;
 import com.example.zavira_movil.model.OtorgarAreaResponse;
 import com.example.zavira_movil.niveleshome.LivesManager;
@@ -629,14 +626,14 @@ public class IslaPreguntasActivity extends AppCompatActivity {
             }
         }
         
-        ApiService api = RetrofitClient.getInstance(getApplicationContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         com.example.zavira_movil.niveleshome.CerrarRequest body = 
             new com.example.zavira_movil.niveleshome.CerrarRequest(idSesionFinal, resps);
 
-        api.cerrarSimulacro(body).enqueue(new Callback<com.example.zavira_movil.niveleshome.CerrarResponse>() {
+        api.cerrarSimulacro(body).enqueue(new Callback<>() {
             @Override public void onResponse(
-                Call<com.example.zavira_movil.niveleshome.CerrarResponse> call, 
-                Response<com.example.zavira_movil.niveleshome.CerrarResponse> res) {
+                @NonNull Call<com.example.zavira_movil.niveleshome.CerrarResponse> call,
+                @NonNull Response<com.example.zavira_movil.niveleshome.CerrarResponse> res) {
                 if (!res.isSuccessful() || res.body() == null) {
                     Toast.makeText(IslaPreguntasActivity.this, "No se pudo cerrar ("+res.code()+")", Toast.LENGTH_LONG).show();
                     return;
@@ -653,7 +650,7 @@ public class IslaPreguntasActivity extends AppCompatActivity {
                 
                 onExamenCerrado(resultado, tiempoTotalSegundos);
             }
-            @Override public void onFailure(Call<com.example.zavira_movil.niveleshome.CerrarResponse> call, Throwable t) {
+            @Override public void onFailure(@NonNull Call<com.example.zavira_movil.niveleshome.CerrarResponse> call, @NonNull Throwable t) {
                 Log.e("SimulacroCerrar", "Error de red", t);
                 Toast.makeText(IslaPreguntasActivity.this, "Error de red: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -686,7 +683,7 @@ public class IslaPreguntasActivity extends AppCompatActivity {
             return;
         }
 
-        ApiService api = RetrofitClient.getInstance(getApplicationContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         
         // Isla del Conocimiento: usar endpoint movil/isla/simulacro/cerrar
         List<IslaCerrarRequest.Resp> resps = new ArrayList<>();
@@ -715,8 +712,8 @@ public class IslaPreguntasActivity extends AppCompatActivity {
         // Guardar tiempoTotalSegundos en una variable final para usar en el callback
         final long tiempoTotalFinal = tiempoTotalSegundos;
 
-        api.cerrarIslaSimulacro(body).enqueue(new Callback<IslaCerrarResultadoResponse>() {
-            @Override public void onResponse(Call<IslaCerrarResultadoResponse> call, Response<IslaCerrarResultadoResponse> res) {
+        api.cerrarIslaSimulacro(body).enqueue(new Callback<>() {
+            @Override public void onResponse(@NonNull Call<IslaCerrarResultadoResponse> call, @NonNull Response<IslaCerrarResultadoResponse> res) {
                 if (!res.isSuccessful() || res.body() == null) {
                     Toast.makeText(IslaPreguntasActivity.this, "No se pudo cerrar ("+res.code()+")", Toast.LENGTH_LONG).show();
                     return;
@@ -728,7 +725,7 @@ public class IslaPreguntasActivity extends AppCompatActivity {
                 // Usar el tiempo total calculado anteriormente
                 onExamenCerrado(resultado, tiempoTotalFinal);
             }
-            @Override public void onFailure(Call<IslaCerrarResultadoResponse> call, Throwable t) {
+            @Override public void onFailure(@NonNull Call<IslaCerrarResultadoResponse> call, @NonNull Throwable t) {
                 Log.e("IslaCerrar", "Error de red", t);
                 Toast.makeText(IslaPreguntasActivity.this, "Error de red: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -1024,12 +1021,12 @@ public class IslaPreguntasActivity extends AppCompatActivity {
     }
     
     private void otorgarInsigniaArea(String area, IslaCerrarResultadoResponse resultado, long tiempoTotalSegundos) {
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         OtorgarAreaRequest request = new OtorgarAreaRequest(area);
         
-        api.otorgarInsigniaArea(request).enqueue(new Callback<OtorgarAreaResponse>() {
+        api.otorgarInsigniaArea(request).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<OtorgarAreaResponse> call, Response<OtorgarAreaResponse> response) {
+            public void onResponse(@NonNull Call<OtorgarAreaResponse> call, @NonNull Response<OtorgarAreaResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     OtorgarAreaResponse resp = response.body();
                     if (resp.isOtorgada()) {
@@ -1046,7 +1043,7 @@ public class IslaPreguntasActivity extends AppCompatActivity {
             }
             
             @Override
-            public void onFailure(Call<OtorgarAreaResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<OtorgarAreaResponse> call, @NonNull Throwable t) {
                 // En caso de error, mostrar éxito de todas formas
                 mostrarDialogoExito("¡Felicitaciones! Aprobaste el Examen Final", area, resultado, tiempoTotalSegundos);
             }
@@ -1165,3 +1162,4 @@ public class IslaPreguntasActivity extends AppCompatActivity {
         return Math.round(px * density);
     }
 }
+

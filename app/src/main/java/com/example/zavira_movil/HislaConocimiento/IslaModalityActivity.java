@@ -109,7 +109,7 @@ public class IslaModalityActivity extends AppCompatActivity {
     private void iniciar(String modalidad) {
         busy = true; aplicarSeleccion(modalidadSeleccionada);
 
-        ApiService api = RetrofitClient.getInstance(getApplicationContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.iniciarIslaSimulacro(new IslaSimulacroRequest(modalidad)).enqueue(new Callback<IslaSimulacroResponse>() {
             @Override public void onResponse(Call<IslaSimulacroResponse> call, Response<IslaSimulacroResponse> res) {
                 busy = false; aplicarSeleccion(modalidadSeleccionada);
@@ -130,3 +130,4 @@ public class IslaModalityActivity extends AppCompatActivity {
         });
     }
 }
+

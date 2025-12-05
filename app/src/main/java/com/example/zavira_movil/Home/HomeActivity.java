@@ -294,11 +294,11 @@ public class HomeActivity extends AppCompatActivity {
                 filter.addAction("com.example.zavira_movil.FOTO_ACTUALIZADA");
 
                 // Android 13+ requiere especificar RECEIVER_EXPORTED o RECEIVER_NOT_EXPORTED
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    registerReceiver(syncReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
-                } else {
-                    registerReceiver(syncReceiver, filter);
-                }
+                android.content.IntentFilter filterToUse = new android.content.IntentFilter();
+                filterToUse.addAction("com.example.zavira_movil.SYNC_COMPLETED");
+                filterToUse.addAction("com.example.zavira_movil.FOTO_ACTUALIZADA");
+
+                registrarSyncReceiver(syncReceiver, filterToUse);
 
                 android.util.Log.d("HomeActivity", "BroadcastReceiver registrado para SYNC_COMPLETED y FOTO_ACTUALIZADA");
             } catch (Exception e) {
@@ -563,11 +563,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void verificarTestKolb() {
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         android.util.Log.d("HomeActivity", "Verificando test de Kolb desde el backend...");
-        api.obtenerResultado().enqueue(new Callback<KolbResultado>() {
+        api.obtenerResultado().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<KolbResultado> call, Response<KolbResultado> response) {
+            public void onResponse(@NonNull Call<KolbResultado> call, @NonNull Response<KolbResultado> response) {
                 android.util.Log.d("HomeActivity", "Respuesta Kolb - código: " + response.code() + ", exitoso: " + response.isSuccessful());
 
                 // Verificar si el test de Kolb está completado
@@ -609,7 +609,7 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<KolbResultado> call, Throwable t) {
+            public void onFailure(@NonNull Call<KolbResultado> call, @NonNull Throwable t) {
                 // En caso de error de red, NO bloquear - asumir que está completado
                 // Esto evita que errores de conexión bloqueen al usuario
                 android.util.Log.e("HomeActivity", "Error de red al verificar Kolb", t);
@@ -621,11 +621,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void verificarDiagnosticoInicial() {
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         android.util.Log.d("HomeActivity", "Verificando diagnóstico inicial desde el backend...");
-        api.diagnosticoProgreso().enqueue(new Callback<DiagnosticoInicial>() {
+        api.diagnosticoProgreso().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<DiagnosticoInicial> call, Response<DiagnosticoInicial> response) {
+            public void onResponse(@NonNull Call<DiagnosticoInicial> call, @NonNull Response<DiagnosticoInicial> response) {
                 android.util.Log.d("HomeActivity", "Respuesta Diagnóstico - código: " + response.code() + ", exitoso: " + response.isSuccessful());
                 if (response.isSuccessful() && response.body() != null) {
                     DiagnosticoInicial diagnostico = response.body();
@@ -655,7 +655,7 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<DiagnosticoInicial> call, Throwable t) {
+            public void onFailure(@NonNull Call<DiagnosticoInicial> call, @NonNull Throwable t) {
                 // En caso de error de red, no bloquear - asumir que está completado
                 // Esto evita que errores de conexión bloqueen al usuario
                 android.util.Log.e("HomeActivity", "Error de red al verificar diagnóstico", t);
@@ -1297,10 +1297,10 @@ public class HomeActivity extends AppCompatActivity {
      * Carga el nombre del usuario y lo muestra en el header
      */
     private void cargarNombreUsuario() {
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
-        api.getPerfilEstudiante().enqueue(new Callback<com.example.zavira_movil.model.Estudiante>() {
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+        api.getPerfilEstudiante().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<com.example.zavira_movil.model.Estudiante> call, Response<com.example.zavira_movil.model.Estudiante> response) {
+            public void onResponse(@NonNull Call<com.example.zavira_movil.model.Estudiante> call, @NonNull Response<com.example.zavira_movil.model.Estudiante> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     com.example.zavira_movil.model.Estudiante estudiante = response.body();
                     // Obtener primer nombre y primer apellido
@@ -1348,7 +1348,7 @@ public class HomeActivity extends AppCompatActivity {
             }
             
             @Override
-            public void onFailure(Call<com.example.zavira_movil.model.Estudiante> call, Throwable t) {
+            public void onFailure(@NonNull Call<com.example.zavira_movil.model.Estudiante> call, @NonNull Throwable t) {
                 // En caso de error, mantener el texto por defecto y usar icono de perfil
                 android.util.Log.e("HomeActivity", "Error al cargar perfil del usuario", t);
                 ImageView ivAvatar = findViewById(R.id.ivAvatar);
@@ -1617,4 +1617,16 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
     
+    @android.annotation.SuppressLint("UnspecifiedRegisterReceiverFlag")
+    private void registrarSyncReceiver(android.content.BroadcastReceiver receiver, android.content.IntentFilter filter) {
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 33) {
+                registerReceiver(receiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                registerReceiver(receiver, filter);
+            }
+        } catch (Exception e) {
+            android.util.Log.w("HomeActivity", "No se pudo registrar BroadcastReceiver: " + e.getMessage());
+        }
+    }
 }

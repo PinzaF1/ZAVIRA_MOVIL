@@ -101,7 +101,7 @@ public class FragmentReto extends Fragment {
 
     // Público para poder refrescar desde FragmentLoadingSalaReto cuando se abandona
     public void cargarOponentes() {
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.listarOponentes().enqueue(new Callback<List<OpponentBackend>>() {
             @Override public void onResponse(Call<List<OpponentBackend>> call, Response<List<OpponentBackend>> resp) {
                 if (!isAdded()) return;
@@ -161,7 +161,7 @@ public class FragmentReto extends Fragment {
         try { oppId = Integer.parseInt(selectedOpponentId); }
         catch (NumberFormatException e) { Toast.makeText(requireContext(), "Id de oponente inválido", Toast.LENGTH_SHORT).show(); return; }
 
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         btnEnviar.setEnabled(false);
 
         api.crearReto(new RetoCreateRequest(25, area, oppId)).enqueue(new Callback<RetoCreadoResponse>() {
@@ -229,7 +229,7 @@ public class FragmentReto extends Fragment {
     private void cargarMarcador(@Nullable Integer idSesion) {
         if (!isAdded()) return;
 
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         Call<MarcadorResponse> call = (idSesion != null)
                 ? api.marcadorPorSesion(idSesion)
                 : api.marcador();
@@ -248,3 +248,4 @@ public class FragmentReto extends Fragment {
         if (tvDerrotas  != null) tvDerrotas.setText(String.valueOf(derrotas));
     }
 }
+

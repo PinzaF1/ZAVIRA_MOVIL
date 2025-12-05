@@ -112,7 +112,7 @@ public class TestActivity extends AppCompatActivity {
         btnEnviar.setEnabled(false);
         btnEnviar.setText("Cargando...");
 
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.getPreguntas().enqueue(new Callback<List<PreguntasKolb>>() {
             @Override
             public void onResponse(Call<List<PreguntasKolb>> c, Response<List<PreguntasKolb>> r) {
@@ -662,7 +662,7 @@ public class TestActivity extends AppCompatActivity {
         btnEnviar.setEnabled(false);
         btnEnviar.setText("Enviando...");
 
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         KolbRequest body = new KolbRequest(items);
 
         api.guardarRespuestas(body).enqueue(new Callback<KolbResponse>() {
@@ -702,3 +702,4 @@ public class TestActivity extends AppCompatActivity {
         finish();
     }
 }
+

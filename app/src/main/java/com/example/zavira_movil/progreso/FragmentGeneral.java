@@ -63,7 +63,7 @@ public class FragmentGeneral extends Fragment {
     }
 
     private void cargarResumen() {
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.getResumen().enqueue(new Callback<ResumenGeneral>() {
             @Override
             public void onResponse(Call<ResumenGeneral> call, Response<ResumenGeneral> res) {
@@ -95,7 +95,7 @@ public class FragmentGeneral extends Fragment {
     }
 
     private void cargarMaterias() {
-        ApiService api = RetrofitClient.getInstance(requireContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.getMaterias().enqueue(new Callback<MateriasResponse>() {
             @Override
             public void onResponse(Call<MateriasResponse> call, Response<MateriasResponse> response) {
@@ -214,3 +214,4 @@ public class FragmentGeneral extends Fragment {
                 .toLowerCase();
     }
 }
+

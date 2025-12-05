@@ -58,7 +58,7 @@ public class SimulacroActivity extends AppCompatActivity {
         // Crear request para el examen final (solo necesita area)
         SimulacroRequest request = new SimulacroRequest(areaCanonica, null);
         
-        ApiService api = RetrofitClient.getInstance(getApplicationContext()).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         api.crearSimulacro(request).enqueue(new Callback<SimulacroResponse>() {
             @Override
             public void onResponse(Call<SimulacroResponse> call, Response<SimulacroResponse> response) {
@@ -150,3 +150,4 @@ public class SimulacroActivity extends AppCompatActivity {
         return gson.fromJson(jsonRoot, com.example.zavira_movil.HislaConocimiento.IslaSimulacroResponse.class);
     }
 }
+

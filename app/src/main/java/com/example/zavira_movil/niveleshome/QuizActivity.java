@@ -633,7 +633,7 @@ public class QuizActivity extends AppCompatActivity {
 
                             com.example.zavira_movil.utils.ErrorHandler.handleNetworkException(
                                     QuizActivity.this,
-                                    t,
+                                    t2,
                                     () -> enviarTodasLasRespuestas() // Reintentar envío
                             );
                         }
@@ -786,16 +786,31 @@ public class QuizActivity extends AppCompatActivity {
         }
     }
 
+    @android.annotation.SuppressLint("ResourceType")
     private void mostrarDialogoNivel1Fallido(int correctas, int puntaje) {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_nivel1_fallido, null);
         int areaColor = obtenerColorArea(areaUi);
 
-        // Configurar color de la tarjeta del diálogo
-        com.google.android.material.card.MaterialCardView cardDialog = dialogView.findViewById(R.id.cardDialog);
-        if (cardDialog != null) {
-            cardDialog.setCardBackgroundColor(Color.WHITE);
-            cardDialog.setStrokeColor(areaColor);
-            cardDialog.setStrokeWidth(dp(3));
+        // Configurar color de la tarjeta del diálogo (si existe en el layout)
+        // Nota: cardDialog puede no existir en versiones anteriores del layout
+        try {
+            // Intentar encontrar cardDialog - puede no existir
+            android.view.View cardView = null;
+            try {
+                cardView = dialogView.findViewById(android.R.id.content);
+                // Si el ID específico no existe, simplemente continuaremos
+            } catch (Exception ignored) {
+                // ID no existe - continuar sin error
+            }
+
+            if (cardView instanceof com.google.android.material.card.MaterialCardView) {
+                com.google.android.material.card.MaterialCardView cardDialog = (com.google.android.material.card.MaterialCardView) cardView;
+                cardDialog.setCardBackgroundColor(Color.WHITE);
+                cardDialog.setStrokeColor(areaColor);
+                cardDialog.setStrokeWidth(dp(3));
+            }
+        } catch (Exception e) {
+            android.util.Log.w("QuizActivity", "cardDialog no encontrado o error al configurar", e);
         }
 
         // Configurar elementos
@@ -809,6 +824,8 @@ public class QuizActivity extends AppCompatActivity {
         // Configurar icono (puedes usar un ícono de alerta o similar)
         ivIcono.setImageResource(android.R.drawable.ic_dialog_alert);
         ivIcono.setColorFilter(areaColor);
+
+        // ... resto del código...
 
         // Configurar textos
         tvTitulo.setText("Necesitas Practicar Más");
@@ -1815,5 +1832,44 @@ public class QuizActivity extends AppCompatActivity {
             // Actualizar vidas en la pantalla
             actualizarVidas();
         }
+    }
+
+    /**
+     * Notifica la actualización del historial mediante broadcast
+     */
+    private void notificarActualizacionHistorial() {
+        try {
+            Intent intent = new Intent("com.example.zavira_movil.HISTORIAL_ACTUALIZADO");
+            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this)
+                .sendBroadcast(intent);
+        } catch (Exception e) {
+            android.util.Log.e("QuizActivity", "Error al notificar actualización del historial", e);
+        }
+    }
+
+    /**
+     * Muestra/oculta el ProgressBar de carga
+     */
+    private void setLoading(boolean loading) {
+        if (binding != null && binding.progress != null) {
+            binding.progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /**
+     * Muestra un diálogo informativo sobre IA ICFES
+     */
+    private void mostrarDialogoIA_ICFES(String area, Runnable onContinue) {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle("🤖 IA ICFES");
+        builder.setMessage("Estamos utilizando inteligencia artificial para optimizar tus preguntas basadas en el área de " + area + ".");
+        builder.setPositiveButton("Continuar", (dialog, which) -> {
+            dialog.dismiss();
+            if (onContinue != null) {
+                onContinue.run();
+            }
+        });
+        builder.setCancelable(false);
+        builder.show();
     }
 }

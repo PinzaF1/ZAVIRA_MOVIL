@@ -86,7 +86,7 @@ public class TestAcademico extends AppCompatActivity {
         btnEnviar.setEnabled(false);
         btnEnviar.setText("Cargando...");
 
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
 
         String token = com.example.zavira_movil.local.TokenManager.getToken(this);
         if (token == null || token.isEmpty()) {
@@ -331,7 +331,7 @@ public class TestAcademico extends AppCompatActivity {
         android.util.Log.d("TestAcademico", "Total items: " + items.size());
         android.util.Log.d("TestAcademico", "Total respuestasGlobales: " + respuestasGlobales.size());
 
-        ApiService api = RetrofitClient.getInstance(this).create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
 
         String token = com.example.zavira_movil.local.TokenManager.getToken(this);
         String bearer = token.startsWith("Bearer ") ? token : "Bearer " + token;
@@ -535,3 +535,4 @@ public class TestAcademico extends AppCompatActivity {
         Toast.makeText(this, s, Toast.LENGTH_LONG).show();
     }
 }
+

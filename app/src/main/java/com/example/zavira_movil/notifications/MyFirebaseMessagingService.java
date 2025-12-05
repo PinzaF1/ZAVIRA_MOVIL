@@ -373,12 +373,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 MediaType.parse("application/json")
             );
             
-            ApiService apiService = RetrofitClient.getInstance(this).create(ApiService.class);
+            ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
             Call<Void> call = apiService.registerFCMToken(body);
             
-            call.enqueue(new Callback<Void>() {
+            call.enqueue(new Callback<>() {
                 @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
+                public void onResponse(@androidx.annotation.NonNull Call<Void> call, @androidx.annotation.NonNull Response<Void> response) {
                     if (response.isSuccessful()) {
                         Log.d(TAG, "✅ Token FCM registrado exitosamente en el servidor");
                     } else {
@@ -393,7 +393,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
                 
                 @Override
-                public void onFailure(Call<Void> call, Throwable t) {
+                public void onFailure(@androidx.annotation.NonNull Call<Void> call, @androidx.annotation.NonNull Throwable t) {
                     Log.e(TAG, "❌ Fallo de red al enviar token FCM al servidor", t);
                 }
             });
