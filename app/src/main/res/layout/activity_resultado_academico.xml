@@ -40,7 +40,7 @@
                 android:alpha="0.9"/>
         </LinearLayout>
 
-        <!-- TARJETA: Puntaje General -->
+        <!-- TARJETA: Puntaje General (DISEÑO MEJORADO) -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,61 +56,57 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <!-- Nuevo diseño: fila con anillo y métricas -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
-                    <TextView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:background="#E2E9FF"
-                        android:gravity="center"
-                        android:text="📊"
-                        android:textSize="14sp"
-                        android:padding="2dp"
-                        android:includeFontPadding="false"/>
+                    <!-- Anillo circular con porcentaje en el centro -->
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="Indicador de puntaje">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="Puntaje General"
-                        android:textStyle="bold"
-                        android:textColor="#171A1F"
-                        android:textSize="15sp"/>
-                </LinearLayout>
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/progresoPuntaje"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:indeterminate="false"
+                            app:indicatorSize="120dp"
+                            app:trackThickness="12dp"
+                            app:indicatorInset="0dp"
+                            app:indicatorDirectionCircular="clockwise"
+                            app:indicatorColor="@color/progress_primary"
+                            app:trackColor="@color/progress_track" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="12dp"
-                    android:background="@drawable/acad_item_soft"
-                    android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tvPuntajeGeneral"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="—"
+                            android:textStyle="bold"
+                            android:textSize="20sp"
+                            android:textColor="@color/text_primary"
+                            android:contentDescription="Porcentaje de puntaje"/>
+                    </FrameLayout>
 
-                    <TextView
-                        android:id="@+id/tvPuntajeGeneral"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="—"
-                        android:textColor="#2D3139"
-                        android:textSize="18sp"
-                        android:textStyle="bold"/>
-
+                    <!-- Métricas a la derecha -->
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="4dp">
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Puntaje ICFES: "
+                            android:text="Puntaje (ICFES)"
                             android:textColor="#555D6D"
-                            android:textSize="14sp"/>
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvPuntajeGeneralIcfes"
@@ -118,53 +114,56 @@
                             android:layout_height="wrap_content"
                             android:text="—"
                             android:textColor="#403E9A"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-                    </LinearLayout>
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginTop="8dp">
-
-                        <!-- Fila 1: Correctas e Incorrectas -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center_vertical">
 
                             <TextView
                                 android:id="@+id/tvTotalCorrectas"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="—"
-                                android:textColor="#2D3139"
-                                android:textSize="12sp"
+                                android:text="— correctas"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
                                 android:textStyle="bold"/>
 
                             <TextView
                                 android:id="@+id/tvTotalIncorrectas"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:text="—"
-                                android:textColor="#E53935"
-                                android:textSize="12sp"
+                                android:layout_marginStart="12dp"
+                                android:text="— incorrectas"
+                                android:textColor="@color/rojo_necesita"
+                                android:textSize="14sp"
                                 android:textStyle="bold"/>
                         </LinearLayout>
 
-                        <!-- Fila 2: Total -->
                         <TextView
                             android:id="@+id/tvTotalPreguntas"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="—"
+                            android:layout_marginTop="8dp"
+                            android:text="— preguntas totales"
                             android:textColor="#555D6D"
-                            android:textSize="11sp"/>
+                            android:textSize="12sp"/>
+
                     </LinearLayout>
                 </LinearLayout>
+
+                <!-- Donde se listarán puntajes por área (sin cambios, se llena desde Activity) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="12dp"/>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -232,4 +231,3 @@
             app:backgroundTint="@color/primaryyy"/>
     </LinearLayout>
 </ScrollView>
-

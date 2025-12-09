@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zavira_movil.R;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
+import java.util.List;
 
 public class FragmentDetalleResumen extends Fragment {
     private TextView tvMensaje, tvNivelActual, tvNivelActualValue;
@@ -17,6 +20,12 @@ public class FragmentDetalleResumen extends Fragment {
     private RecyclerView rvStats;
     private ProgresoDetalleResponse data;
     private String materia;
+
+    // Nuevas vistas
+    private CircularProgressIndicator progresoResumen;
+    private TextView tvPctCenter, tvBadgeCorrectas, tvBadgeIncorrectas, tvBadgeTiempo;
+    private android.view.View llRecomendaciones;
+    private android.view.View containerRecomendaciones;
 
     public void setData(ProgresoDetalleResponse data) {
         this.data = data;
@@ -36,6 +45,16 @@ public class FragmentDetalleResumen extends Fragment {
         tvNivelActualValue = v.findViewById(R.id.tvNivelActualValue);
         llNivelActual = v.findViewById(R.id.llNivelActual);
         rvStats = v.findViewById(R.id.rvStats);
+
+        // nuevas vistas
+        progresoResumen = v.findViewById(R.id.progresoResumen);
+        tvPctCenter = v.findViewById(R.id.tvPctCenter);
+        tvBadgeCorrectas = v.findViewById(R.id.tvBadgeCorrectas);
+        tvBadgeIncorrectas = v.findViewById(R.id.tvBadgeIncorrectas);
+        tvBadgeTiempo = v.findViewById(R.id.tvBadgeTiempo);
+        llRecomendaciones = v.findViewById(R.id.llRecomendaciones);
+        containerRecomendaciones = v.findViewById(R.id.containerRecomendaciones);
+
         if (getContext() != null) {
             rvStats.setLayoutManager(new LinearLayoutManager(getContext()));
         }
@@ -64,21 +83,15 @@ public class FragmentDetalleResumen extends Fragment {
         tvMensaje.setGravity(Gravity.CENTER);
         tvMensaje.setTypeface(null, Typeface.BOLD);
         
-        // Nivel actual: negrita y alineado con estadísticas
-        // Ocultar si es "Todas las áreas" o "Isla del Conocimiento"
+        // Nivel actual: mostrar u ocultar
         if (materia != null) {
             String m = materia.toLowerCase().trim();
             boolean esTodasLasAreas = m.contains("conocimiento") || m.contains("isla") || 
                 (m.contains("todas") && (m.contains("area") || m.contains("área")));
-            
             if (esTodasLasAreas) {
-                if (llNivelActual != null) {
-                    llNivelActual.setVisibility(View.GONE);
-                }
+                if (llNivelActual != null) llNivelActual.setVisibility(View.GONE);
             } else {
-                if (llNivelActual != null) {
-                    llNivelActual.setVisibility(View.VISIBLE);
-                }
+                if (llNivelActual != null) llNivelActual.setVisibility(View.VISIBLE);
                 if (tvNivelActual != null) {
                     tvNivelActual.setText("Nivel actual:");
                     tvNivelActual.setTypeface(null, Typeface.BOLD);
@@ -89,26 +102,63 @@ public class FragmentDetalleResumen extends Fragment {
                 }
             }
         } else {
-            if (llNivelActual != null) {
-                llNivelActual.setVisibility(View.VISIBLE);
-            }
-            if (tvNivelActual != null) {
-                tvNivelActual.setText("Nivel actual:");
-                tvNivelActual.setTypeface(null, Typeface.BOLD);
-            }
-            if (tvNivelActualValue != null) {
-                tvNivelActualValue.setText(String.valueOf(data.resumen.nivelActual));
-                tvNivelActualValue.setTypeface(null, Typeface.BOLD);
-            }
+            if (llNivelActual != null) llNivelActual.setVisibility(View.VISIBLE);
+            if (tvNivelActual != null) { tvNivelActual.setText("Nivel actual:"); tvNivelActual.setTypeface(null, Typeface.BOLD); }
+            if (tvNivelActualValue != null) { tvNivelActualValue.setText(String.valueOf(data.resumen.nivelActual)); tvNivelActualValue.setTypeface(null, Typeface.BOLD); }
         }
 
+        // Estadísticas: badges y progress
+        int total = data.header.total;
+        int correctas = data.header.correctas;
+        int incorrectas = data.header.incorrectas;
+        int tiempo = data.header.tiempo_total_seg;
+
+        if (progresoResumen != null) {
+            int pct = (data.header.escala != null && data.header.escala.equalsIgnoreCase("porcentaje")) ? data.header.puntaje
+                    : (total > 0 ? Math.round(correctas * 100f / total) : 0);
+            progresoResumen.setMax(100);
+            progresoResumen.setProgress(pct);
+            if (tvPctCenter != null) tvPctCenter.setText(String.format("%d%%", pct));
+        }
+
+        if (tvBadgeCorrectas != null) tvBadgeCorrectas.setText(String.format("%d\nCorrectas", correctas));
+        if (tvBadgeIncorrectas != null) tvBadgeIncorrectas.setText(String.format("%d\nIncorrectas", incorrectas));
+        if (tvBadgeTiempo != null) tvBadgeTiempo.setText(String.format("%ds\nTiempo", tiempo));
+
+        // RecyclerView de estadísticas detalladas
         if (rvStats != null) {
-            rvStats.setAdapter(new ResumenAdapter(
-                    data.header.total,
-                    data.header.correctas,
-                    data.header.incorrectas,
-                    data.header.tiempo_total_seg
-            ));
+            rvStats.setAdapter(new ResumenAdapter(total, correctas, incorrectas, tiempo));
+        }
+
+        // Recomendaciones: mostrar si hay datos en data.analisis.recomendaciones (si existe)
+        if (llRecomendaciones != null && containerRecomendaciones != null) {
+            containerRecomendaciones.setVisibility(View.GONE);
+            if (data.analisis != null) {
+                List<String> recs = null;
+                try { recs = data.analisis.recomendaciones; } catch (Exception e) { recs = null; }
+                if (recs != null && !recs.isEmpty()) {
+                    containerRecomendaciones.setVisibility(View.VISIBLE);
+                    containerRecomendaciones.setFocusable(false);
+                    containerRecomendaciones.clearFocus();
+                    containerRecomendaciones.setVisibility(View.VISIBLE);
+                    containerRecomendaciones.setEnabled(true);
+                    // limpiar
+                    if (containerRecomendaciones instanceof android.view.ViewGroup) {
+                        ((android.view.ViewGroup) containerRecomendaciones).removeAllViews();
+                        for (String r : recs) {
+                            TextView t = new TextView(getContext());
+                            t.setText("• " + r);
+                            t.setPadding(6,6,6,6);
+                            ((android.view.ViewGroup) containerRecomendaciones).addView(t);
+                        }
+                        llRecomendaciones.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    llRecomendaciones.setVisibility(View.GONE);
+                }
+            } else {
+                llRecomendaciones.setVisibility(View.GONE);
+            }
         }
     }
 }

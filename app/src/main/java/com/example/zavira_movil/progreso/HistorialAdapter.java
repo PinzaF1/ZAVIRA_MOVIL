@@ -52,13 +52,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.VH> 
         h.tvNivel.setText(it.getNivel());
         h.tvFecha.setText(formatFecha(it.getFecha()));
 
-        // Mostrar correctas, incorrectas y total
-        if (h.tvCorrectas != null) {
-            h.tvCorrectas.setText(String.valueOf(it.getCorrectas()));
-        }
-        if (h.tvIncorrectas != null) {
-            h.tvIncorrectas.setText(String.valueOf(it.getIncorrectas()));
-        }
+        // Mostrar total
         if (h.tvTotal != null) {
             h.tvTotal.setText(String.valueOf(it.getTotal()));
         }
@@ -98,7 +92,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.VH> 
     @Override public int getItemCount() { return data.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvMateria, tvNivel, tvFecha, tvCorrectas, tvIncorrectas, tvTotal;
+        TextView tvMateria, tvNivel, tvFecha, tvTotal;
         ImageView ivFlecha;
 
         VH(@NonNull View v) {
@@ -106,8 +100,6 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.VH> 
             tvMateria = v.findViewById(R.id.tvMateria);
             tvNivel   = v.findViewById(R.id.tvNivel);
             tvFecha   = v.findViewById(R.id.tvFecha);
-            tvCorrectas = v.findViewById(R.id.tvCorrectas);
-            tvIncorrectas = v.findViewById(R.id.tvIncorrectas);
             tvTotal = v.findViewById(R.id.tvTotal);
             ivFlecha  = v.findViewById(R.id.ivFlecha);
         }

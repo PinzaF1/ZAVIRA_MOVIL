@@ -37,12 +37,14 @@ public class FragmentDetalleAnalisis extends Fragment {
         if (data.analisis != null) {
             if (data.analisis.fortalezas != null && !data.analisis.fortalezas.isEmpty())
                 items.add(new AnalisisItem("Fortalezas", data.analisis.fortalezas));
+            if (data.analisis.subtemas_a_mejorar != null && !data.analisis.subtemas_a_mejorar.isEmpty())
+                items.add(new AnalisisItem("Subtemas a Mejorar", data.analisis.subtemas_a_mejorar));
             if (data.analisis.mejoras != null && !data.analisis.mejoras.isEmpty())
                 items.add(new AnalisisItem("Áreas de Mejora", data.analisis.mejoras));
             if (data.analisis.recomendaciones != null && !data.analisis.recomendaciones.isEmpty())
                 items.add(new AnalisisItem("Recomendaciones", data.analisis.recomendaciones));
         }
-        if (items.isEmpty()) items.add(new AnalisisItem("Análisis", Arrays.asList("Sin datos")));
+        if (items.isEmpty()) items.add(new AnalisisItem("Análisis", Arrays.asList("Sin datos de análisis disponibles")));
         rv.setAdapter(new AnalisisAdapter(items));
     }
 

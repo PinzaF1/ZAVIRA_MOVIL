@@ -93,7 +93,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 @Override
                 public void handleOnBackPressed() {
                     int currentStep = viewFlipper.getDisplayedChild();
-                    
+
                     if (currentStep > 0) {
                         // Si no está en el primer paso, volver al paso anterior
                         showStep(currentStep - 1);
@@ -105,31 +105,24 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 }
             });
 
-            // Mostrar paso 1
-            showStep(0);
-            android.util.Log.d("ResetPasswordActivity", "onCreate: Paso 1 mostrado - Actividad lista");
         } catch (Exception e) {
-            android.util.Log.e("ResetPasswordActivity", "Error en onCreate", e);
-            throw e; // Re-lanzar para que el sistema lo maneje
+            android.util.Log.e("ResetPasswordActivity", "onCreate: Error al inicializar", e);
         }
     }
 
-
-
     private void initViews() {
+        // ViewFlipper y vistas generales
         viewFlipper = findViewById(R.id.viewFlipper);
         btnBack = findViewById(R.id.btnBack);
 
         // Paso 1
         etCorreo = findViewById(R.id.etCorreo);
         btnEnviarCodigo = findViewById(R.id.btnEnviarCodigo);
-
         progressStep1 = findViewById(R.id.progressStep1);
 
         // Paso 2
         etCodigo = findViewById(R.id.etCodigo);
         btnVerificarCodigo = findViewById(R.id.btnVerificarCodigo);
-
         tvReenviarCodigo = findViewById(R.id.tvReenviarCodigo);
         tvEmailEnviado = findViewById(R.id.tvEmailEnviado);
         tvTimer = findViewById(R.id.tvTimer);
@@ -147,11 +140,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
         indicatorStep3 = findViewById(R.id.indicatorStep3);
     }
 
-
-    // no
-
     private void setupListeners() {
-        btnBack.setOnClickListener(v -> onBackPressed());
+        btnBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         // Paso 1: Enviar código
         btnEnviarCodigo.setOnClickListener(v -> solicitarCodigo());
@@ -526,8 +516,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         
         resendTimer.start();
     }
-
-    // ...existing code...
 
     @Override
     protected void onResume() {
