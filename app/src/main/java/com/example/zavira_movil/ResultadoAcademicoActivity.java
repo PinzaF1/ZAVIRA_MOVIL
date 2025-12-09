@@ -10,14 +10,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.example.zavira_movil.Home.HomeActivity;
 import com.example.zavira_movil.Home.SplashActivity;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -33,6 +32,7 @@ public class ResultadoAcademicoActivity extends AppCompatActivity {
     private TextView tvTotalIncorrectas;
     private TextView tvTotalPreguntas;
     private LinearLayout containerPuntajesPorArea;
+    private CircularProgressIndicator progresoPuntaje;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +45,7 @@ public class ResultadoAcademicoActivity extends AppCompatActivity {
         tvTotalIncorrectas = findViewById(R.id.tvTotalIncorrectas);
         tvTotalPreguntas = findViewById(R.id.tvTotalPreguntas);
         containerPuntajesPorArea = findViewById(R.id.containerPuntajesPorArea);
+        progresoPuntaje = findViewById(R.id.progresoPuntaje);
 
         findViewById(R.id.btnIrHome).setOnClickListener(v -> {
             Intent i = new Intent(ResultadoAcademicoActivity.this, SplashActivity.class);
@@ -90,7 +91,16 @@ public class ResultadoAcademicoActivity extends AppCompatActivity {
         // Mostrar valores
         tvPuntajeGeneral.setText(porcentajeReal + "%");
         tvPuntajeGeneralIcfes.setText(String.valueOf(puntajeGeneralIcfes));
-        
+
+        // Actualizar anillo de progreso si está presente
+        if (progresoPuntaje != null) {
+            try {
+                progresoPuntaje.setMax(100);
+                progresoPuntaje.setProgress(porcentajeReal);
+                progresoPuntaje.setContentDescription("Puntaje: " + porcentajeReal + " porcento");
+            } catch (Exception ignored) {}
+        }
+
         // Mostrar correctas e incorrectas
         tvTotalCorrectas.setText(totalCorrectas + " correctas");
         if (tvTotalIncorrectas != null) {
@@ -235,7 +245,7 @@ public class ResultadoAcademicoActivity extends AppCompatActivity {
             
             // Usar los valores recalculados en lugar de los del backend si hay discrepancia
             if (puntaje != null && puntaje != porcentajeReal) {
-                android.util.Log.w("ResultadoAcademico", "Área " + clave + ": porcentaje del backend (" + puntaje + "%) no coincide con cálculo real (" + porcentajeReal + "%). Usando cálculo real.");
+                android.util.Log.w("ResultadoAcademico", "Área " + clave + ": porcentaje del backend (" + puntaje + "% ) no coincide con cálculo real (" + porcentajeReal + "% ). Usando cálculo real.");
                 puntaje = porcentajeReal;
             } else if (puntaje == null) {
                 puntaje = porcentajeReal;
@@ -425,4 +435,3 @@ public class ResultadoAcademicoActivity extends AppCompatActivity {
         return (int) (value * getResources().getDisplayMetrics().density);
     }
 }
-

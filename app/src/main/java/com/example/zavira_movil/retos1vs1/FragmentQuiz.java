@@ -336,7 +336,7 @@ public class FragmentQuiz extends Fragment {
             }
         }
     }
-    
+
     private void ocultarTopBar() {
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> {

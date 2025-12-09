@@ -21,11 +21,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
         app:cardUseCompatPadding="true"
-        app:cardCornerRadius="16dp">
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp">
 
         <LinearLayout
             android:orientation="vertical"
-            android:padding="10dp"
+            android:padding="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -51,71 +52,106 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
+            <!-- Nuevo header: porcentaje dentro de un círculo y nivel debajo -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-                <TextView
-                    android:id="@+id/tvPuntaje"
-                    android:text="0%"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                <FrameLayout
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_marginEnd="12dp">
 
-                <TextView
-                    android:id="@+id/tvNivel"
-                    android:text="Nivel"
-                    android:layout_marginStart="10dp"
-                    android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
+                    <!-- Fondo circular claro -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/circle_bg_gray" />
+
+                    <!-- Porcentaje grande en el centro -->
+                    <TextView
+                        android:id="@+id/tvPuntaje"
+                        android:text="0%"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tvNivel"
+                        android:text="Nivel"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvPuntajeDesc"
+                        android:text="Puntaje general de la sesión"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp" />
+
+                </LinearLayout>
             </LinearLayout>
 
+            <!-- Métricas como chips limpios (sin iconos) -->
             <LinearLayout
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:weightSum="3">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvCorrectas"
                     android:layout_weight="1"
-                    android:orientation="vertical"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
-                    <TextView android:text="Correctas" android:textSize="12sp"
-                        android:textColor="#888" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:id="@+id/tvCorrectas" android:text="0"
-                        android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_success_rect"
+                    android:padding="8dp"
+                    android:text="Correctas\n0"
+                    android:textColor="@color/black"
+                    android:textAlignment="center" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvIncorrectas"
                     android:layout_weight="1"
-                    android:orientation="vertical"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
-                    <TextView android:text="Incorrectas" android:textSize="12sp"
-                        android:textColor="#888" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:id="@+id/tvIncorrectas" android:text="0"
-                        android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/chip_bg_error"
+                    android:padding="8dp"
+                    android:text="Incorrectas\n0"
+                    android:textColor="@color/black"
+                    android:textAlignment="center" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvTiempo"
                     android:layout_weight="1"
-                    android:orientation="vertical"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
-                    <TextView android:text="Tiempo" android:textSize="12sp"
-                        android:textColor="#888" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:id="@+id/tvTiempo" android:text="0s"
-                        android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_bg_time"
+                    android:padding="8dp"
+                    android:text="Tiempo\n0s"
+                    android:textColor="@color/black"
+                    android:textAlignment="center" />
 
             </LinearLayout>
         </LinearLayout>

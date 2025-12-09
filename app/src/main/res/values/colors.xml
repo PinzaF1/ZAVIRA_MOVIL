@@ -38,6 +38,7 @@
     <color name="bg_surface">#F6F8FB</color>
     <color name="text_primary">#1F2937</color>
     <color name="text_muted">#6B7280</color>
+    <color name="text_hint">#9CA3AF</color>
 
     <color name="progress_primary">#16A34A</color>
     <color name="progress_track">#E5E7EB</color>

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="12dp">
 
     <!-- Fila principal: materia (texto) + flecha (único click habilitado) -->
     <LinearLayout
@@ -20,7 +20,7 @@
             android:layout_weight="1"
             android:text="Matemáticas"
             android:textStyle="bold"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/text_primary"
             android:clickable="false"
             android:focusable="false" />
@@ -38,110 +38,47 @@
             android:tint="?attr/colorOnSurface" />
     </LinearLayout>
 
-    <!-- Nivel (solo display) -->
-    <TextView
-        android:id="@+id/tvNivel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Básico"
-        android:textColor="@color/text_secondary"
-        android:layout_marginTop="6dp" />
-
-    <!-- Fecha (solo display) -->
-    <TextView
-        android:id="@+id/tvFecha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="07/10/2025"
-        android:textColor="@color/text_secondary" />
-
-    <!-- Fila de Correctas e Incorrectas -->
+    <!-- Meta info: nivel + fecha (alineados en una sola fila compacta) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:gravity="center_vertical">
 
-        <!-- Correctas -->
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tvNivel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:text="Básico"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tvCorrectasLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="✓ "
-                android:textColor="@color/green"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+        <TextView
+            android:layout_width="8dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
-            <TextView
-                android:id="@+id/tvCorrectas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/green"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Incorrectas -->
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tvFecha"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:text="07/10/2025"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tvIncorrectasLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="✗ "
-                android:textColor="@color/red"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvIncorrectas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/red"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Total -->
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Mantener total (opcional) alineado a la derecha -->
+        <TextView
+            android:id="@+id/tvTotal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/tvTotalLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Total: "
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+            android:layout_marginStart="8dp"
+            android:text="5"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_gravity="end" />
     </LinearLayout>
 
 </LinearLayout>

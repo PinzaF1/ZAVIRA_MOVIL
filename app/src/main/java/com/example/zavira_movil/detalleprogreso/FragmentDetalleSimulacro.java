@@ -21,6 +21,8 @@ import com.example.zavira_movil.remote.RetrofitClient;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.Locale;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -231,9 +233,8 @@ public class FragmentDetalleSimulacro extends Fragment {
                 Log.d("DETALLE_SIMU", "  - Tiempo Total (seg): " + d.header.tiempo_total_seg);
                 Log.d("DETALLE_SIMU", "  - Escala: " + d.header.escala);
 
-                // Verificar si la sesión está vacía (usuario salió sin responder)
-                if (d.header.total == 0 && (d.preguntas == null || d.preguntas.isEmpty())) {
-                    Log.w("DETALLE_SIMU", "⚠️ SESIÓN VACÍA: El usuario salió sin responder ninguna pregunta");
+                // Verificar preguntas
+                if (d.preguntas != null && !d.preguntas.isEmpty()) {
                     Log.d("DETALLE_SIMU", "✅ PREGUNTAS: " + d.preguntas.size() + " preguntas");
                     for (int i = 0; i < Math.min(3, d.preguntas.size()); i++) {
                         Log.d("DETALLE_SIMU", "  - Pregunta " + (i+1) + ": " +
@@ -242,7 +243,11 @@ public class FragmentDetalleSimulacro extends Fragment {
                                 "sin enunciado"));
                     }
                 } else {
-                    Log.w("DETALLE_SIMU", "⚠️ PREGUNTAS es NULL");
+                    Log.w("DETALLE_SIMU", "⚠️ PREGUNTAS es NULL o vacío");
+                    // Verificar si la sesión está vacía (usuario salió sin responder)
+                    if (d.header.total == 0) {
+                        Log.w("DETALLE_SIMU", "⚠️ SESIÓN VACÍA: El usuario salió sin responder ninguna pregunta");
+                    }
                 }
 
                 // Logging de análisis
@@ -259,11 +264,16 @@ public class FragmentDetalleSimulacro extends Fragment {
 
                 bindHeader(d);
 
+                // Forzar color blanco en chips tras bind (defensa contra overrides posteriores)
+                forceChipTextWhite();
+
                 if (pagerAdapter != null) {
                     Log.d("DETALLE_SIMU", "✅ PagerAdapter existe, configurando datos...");
                     // Primero establecer la materia, luego los datos
                     pagerAdapter.setMateria(nullSafe(d.header.materia));
                     pagerAdapter.setData(d); // -> Resumen, Preguntas, Análisis
+                    // Reforzar color blanco en chips en caso de que setData provoque algún cambio visual
+                    forceChipTextWhite();
                     Log.d("DETALLE_SIMU", "✅ Datos configurados en PagerAdapter");
                 } else {
                     Log.e("DETALLE_SIMU", "❌ ERROR: PagerAdapter es NULL");
@@ -321,7 +331,8 @@ public class FragmentDetalleSimulacro extends Fragment {
         if (tvTiempo != null) {
             String tiempoFormateado = toMin(h.tiempo_total_seg);
             tvTiempo.setText(tiempoFormateado);
-            tvTiempo.setTextColor(ContextCompat.getColor(ctx, R.color.blue_time));
+            // Mostrar texto blanco para contraste sobre el chip azul
+            tvTiempo.setTextColor(ContextCompat.getColor(ctx, R.color.white));
             Log.d("DETALLE_SIMU", "✅ tvTiempo actualizado: " + tiempoFormateado + " (seg: " + h.tiempo_total_seg + ")");
         } else {
             Log.e("DETALLE_SIMU", "❌ tvTiempo es NULL");
@@ -329,7 +340,8 @@ public class FragmentDetalleSimulacro extends Fragment {
 
         if (tvCorr != null) {
             tvCorr.setText(String.valueOf(h.correctas));
-            tvCorr.setTextColor(ContextCompat.getColor(ctx, R.color.green_success));
+            // Mostrar texto blanco para contraste sobre el chip verde
+            tvCorr.setTextColor(ContextCompat.getColor(ctx, R.color.white));
             Log.d("DETALLE_SIMU", "✅ tvCorr (correctas) actualizado: " + h.correctas);
         } else {
             Log.e("DETALLE_SIMU", "❌ tvCorr es NULL");
@@ -337,7 +349,8 @@ public class FragmentDetalleSimulacro extends Fragment {
 
         if (tvInc != null) {
             tvInc.setText(String.valueOf(h.incorrectas));
-            tvInc.setTextColor(ContextCompat.getColor(ctx, R.color.red_error));
+            // Mostrar texto blanco para contraste sobre el chip rojo
+            tvInc.setTextColor(ContextCompat.getColor(ctx, R.color.white));
             Log.d("DETALLE_SIMU", "✅ tvInc (incorrectas) actualizado: " + h.incorrectas);
         } else {
             Log.e("DETALLE_SIMU", "❌ tvInc es NULL");
@@ -355,7 +368,7 @@ public class FragmentDetalleSimulacro extends Fragment {
         Log.d("DETALLE_SIMU", "  - Porcentaje calculado: " + pct + "%");
 
         if (tvPuntaje != null) {
-            tvPuntaje.setText(String.format("%d%%", pct));
+            tvPuntaje.setText(String.format(Locale.getDefault(), "%d%%", pct));
             // Obtener color del área para el porcentaje
             int areaColor = obtenerColorArea(nullSafe(h.materia), ctx);
             tvPuntaje.setTextColor(areaColor);
@@ -415,5 +428,19 @@ public class FragmentDetalleSimulacro extends Fragment {
 
     private String nullSafe(String s) { return s == null ? "" : s; }
 
-    private int safeInt(Integer i) { return i == null ? 0 : i; }
+    /**
+     * Fuerza el color de texto blanco en los chips de Correctas/Incorrectas/Tiempo.
+     * Método defensivo: llamado tras bindHeader y tras setData.
+     */
+    private void forceChipTextWhite() {
+        if (!isAdded() || getContext() == null) return;
+        android.content.Context ctx = getContext();
+        try {
+            if (tvCorr != null) tvCorr.setTextColor(ContextCompat.getColor(ctx, R.color.white));
+            if (tvInc != null) tvInc.setTextColor(ContextCompat.getColor(ctx, R.color.white));
+            if (tvTiempo != null) tvTiempo.setTextColor(ContextCompat.getColor(ctx, R.color.white));
+        } catch (Exception e) {
+            Log.w("DETALLE_SIMU", "forceChipTextWhite error", e);
+        }
+    }
 }

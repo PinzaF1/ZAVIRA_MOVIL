@@ -1,41 +1,173 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <LinearLayout android:orientation="vertical" android:padding="16dp"
         android:layout_width="match_parent" android:layout_height="wrap_content">
 
+        <!-- Mensaje principal más destacado -->
         <TextView android:id="@+id/tvMensaje"
-            android:text="¡Buen trabajo!" android:textSize="16sp"
+            android:text="¡Buen trabajo!"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_width="match_parent" 
-            android:layout_height="wrap_content"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
 
+        <!-- Tarjeta con anillo y métricas -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:strokeColor="#E6EAF2"
+            app:strokeWidth="1dp"
+            android:padding="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <FrameLayout
+                    android:layout_width="110dp"
+                    android:layout_height="110dp">
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/progresoResumen"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:indicatorSize="110dp"
+                        app:trackThickness="12dp"
+                        app:indicatorColor="@color/azul_excellent"
+                        app:trackColor="#E6EAF2" />
+
+                    <TextView
+                        android:id="@+id/tvPctCenter"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="--%"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/tvNivelActual"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nivel actual:" android:textStyle="bold"
+                            android:textSize="14sp"/>
+
+                        <TextView
+                            android:id="@+id/tvNivelActualValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="-" android:textSize="14sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <!-- Fila de métricas compactas -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp">
+
+                        <TextView
+                            android:id="@+id/tvBadgeCorrectas"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0\nCorrectas"
+                            android:textColor="@color/green_success"
+                            android:textSize="13sp"/>
+
+                        <TextView
+                            android:id="@+id/tvBadgeIncorrectas"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0\nIncorrectas"
+                            android:textColor="@color/red_error"
+                            android:textSize="13sp"/>
+
+                        <TextView
+                            android:id="@+id/tvBadgeTiempo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0s\nTiempo"
+                            android:textColor="@color/blue_time"
+                            android:textSize="13sp"/>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Nivel actual (mantener para compatibilidad) -->
         <LinearLayout
             android:id="@+id/llNivelActual"
             android:orientation="horizontal"
-            android:padding="12dp"
-            android:layout_marginTop="6dp"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <TextView android:id="@+id/tvNivelActual"
-                android:text="Nivel actual: -" 
-                android:textColor="#000000" 
-                android:textStyle="bold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <TextView
-                android:id="@+id/tvNivelActualValue"
-                android:text="-"
-                android:textColor="#000000"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+            <!-- tvNivelActual y tvNivelActualValue ya definidos arriba pero mantener referencias -->
         </LinearLayout>
 
+        <!-- Estadísticas detalladas (listado) -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvStats"
             android:layout_marginTop="12dp"
             android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <!-- Recomendaciones (si existen) -->
+        <LinearLayout
+            android:id="@+id/llRecomendaciones"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvRecomTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recomendaciones"
+                android:textStyle="bold"
+                android:paddingBottom="6dp"/>
+
+            <LinearLayout
+                android:id="@+id/containerRecomendaciones"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
