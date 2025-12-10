@@ -119,7 +119,11 @@ public class SubjectDetailActivity extends AppCompatActivity {
             
             try {
                 android.content.IntentFilter filter = new android.content.IntentFilter("com.example.zavira_movil.SYNC_COMPLETED");
-                registerReceiver(syncReceiver, filter);
+                if (android.os.Build.VERSION.SDK_INT >= 33) {
+                    registerReceiver(syncReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                } else {
+                    registerReceiver(syncReceiver, filter);
+                }
                 android.util.Log.d("SubjectDetailActivity", "Receiver registrado para sincronización");
             } catch (Exception e) {
                 android.util.Log.e("SubjectDetailActivity", "Error al registrar receiver", e);
@@ -435,30 +439,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }
         
         private int obtenerColorArea(Context context, String area) {
-            if (area == null) return Color.parseColor("#B6B9C2");
-            String a = area.toLowerCase().trim();
-            
-            // Isla del Conocimiento / Todas las áreas - Amarillo
-            if (a.contains("conocimiento") || a.contains("isla") || 
-                (a.contains("todas") && (a.contains("area") || a.contains("área")))) {
-                return ContextCompat.getColor(context, R.color.area_conocimiento);
-            }
-            
-            try {
-                if (a.contains("matem")) return ContextCompat.getColor(context, R.color.area_matematicas);
-                if (a.contains("lengua") || a.contains("lectura") || a.contains("espa") || a.contains("critica")) 
-                    return ContextCompat.getColor(context, R.color.area_lenguaje);
-                if (a.contains("social") || a.contains("ciudad")) 
-                    return ContextCompat.getColor(context, R.color.area_sociales);
-                if (a.contains("cien") || a.contains("biolo") || a.contains("fis") || a.contains("quim")) 
-                    return ContextCompat.getColor(context, R.color.area_ciencias);
-                if (a.contains("ingl")) 
-                    return ContextCompat.getColor(context, R.color.area_ingles);
-            } catch (Exception e) {
-                return Color.parseColor("#B6B9C2");
-            }
-            
-            return Color.parseColor("#B6B9C2");
+            return com.example.zavira_movil.util.AreaColorManager.getColor(context, area);
         }
         
         private int dp(Context context, int px) {

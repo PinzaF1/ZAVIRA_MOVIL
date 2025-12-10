@@ -16,11 +16,12 @@ public class ProgressAreaView extends View {
     
     private String[] areas = {"MAT", "LENG", "CIEN", "SOC", "ING"};
     private int[] colores = {
-        android.graphics.Color.parseColor("#E53935"), // Matemáticas - rojo
-        android.graphics.Color.parseColor("#1E88E5"), // Lenguaje - azul
-        android.graphics.Color.parseColor("#43A047"), // Ciencias - verde
-        android.graphics.Color.parseColor("#FB8C00"), // Sociales - naranja
-        android.graphics.Color.parseColor("#8E24AA")  // Inglés - morado
+        // Inicialización por defecto; serán reemplazados en onSizeChanged o antes de dibujar
+        android.graphics.Color.parseColor("#B6B9C2"),
+        android.graphics.Color.parseColor("#B6B9C2"),
+        android.graphics.Color.parseColor("#B6B9C2"),
+        android.graphics.Color.parseColor("#B6B9C2"),
+        android.graphics.Color.parseColor("#B6B9C2")
     };
     private int areaActual = 0;
     
@@ -59,7 +60,32 @@ public class ProgressAreaView extends View {
         paintTextoInactivo.setTextAlign(Paint.Align.CENTER);
         paintTextoInactivo.setTypeface(android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD));
     }
-    
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        // Actualizar la paleta desde AreaColorManager cuando la vista se adjunta
+        try {
+            com.example.zavira_movil.util.AreaColorManager m = new com.example.zavira_movil.util.AreaColorManager();
+        } catch (Exception ignored) {}
+        actualizarColoresDesdeRecursos();
+    }
+
+    private void actualizarColoresDesdeRecursos() {
+        // Mapear cada índice a su área correspondiente y obtener color via AreaColorManager
+        // Orden: MAT, LENG, CIEN, SOC, ING
+        try {
+            android.content.Context c = getContext();
+            colores[0] = com.example.zavira_movil.util.AreaColorManager.getColor(c, "Matematicas");
+            colores[1] = com.example.zavira_movil.util.AreaColorManager.getColor(c, "Lenguaje");
+            colores[2] = com.example.zavira_movil.util.AreaColorManager.getColor(c, "Ciencias");
+            colores[3] = com.example.zavira_movil.util.AreaColorManager.getColor(c, "Sociales");
+            colores[4] = com.example.zavira_movil.util.AreaColorManager.getColor(c, "Ingles");
+        } catch (Exception e) {
+            // Silencioso: mantener colores por defecto si falla
+        }
+    }
+
     public void setAreaActual(int index) {
         this.areaActual = index;
         invalidate();
@@ -129,4 +155,3 @@ public class ProgressAreaView extends View {
         }
     }
 }
-

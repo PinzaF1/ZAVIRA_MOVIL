@@ -81,7 +81,6 @@
             android:layout_marginEnd="12dp"
             android:max="100"
             android:progress="0"
-            android:progressTint="#2196F3"
             android:backgroundTint="#E0E0E0"/>
 
         <!-- LISTA DE NIVELES -->

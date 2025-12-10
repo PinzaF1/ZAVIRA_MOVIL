@@ -128,9 +128,9 @@ public class HomeActivity extends AppCompatActivity {
         // Configurar status bar con color azul (#3988FF)
         setupStatusBarColor(false);
 
-        // Usar Handler para forzar el color azul de manera continua y verificar que se mantenga
-        android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
-        Runnable forceBlueColor = new Runnable() {
+        // Usar Handler de instancia en vez de local para poder cancelarlo cuando la Activity no está visible
+        backgroundHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+        hideBackgroundRunnable = new Runnable() {
             @Override
             public void run() {
                 if (!isRetosActive) {
@@ -147,12 +147,13 @@ public class HomeActivity extends AppCompatActivity {
                             String.format("#%08X", azulStatusBar));
                     }
 
-                    // Programar siguiente verificación en 50ms (más frecuente)
-                    handler.postDelayed(this, 50);
+                    // Programar siguiente verificación en 200ms (menos agresivo que 50ms)
+                    backgroundHandler.postDelayed(this, 200);
                 }
             }
         };
-        handler.postDelayed(forceBlueColor, 50);
+        // Iniciar verificación solo si la Activity está en foreground (onCreate -> visible)
+        backgroundHandler.postDelayed(hideBackgroundRunnable, 50);
 
         // También forzar en múltiples momentos específicos
         getWindow().getDecorView().post(() -> {
@@ -1046,6 +1047,13 @@ public class HomeActivity extends AppCompatActivity {
 
         // Detener servicio de polling de retos
         detenerServicioPollingRetos();
+
+        // Cancelar cualquier runnable programado que fuerce la status bar
+        if (backgroundHandler != null && hideBackgroundRunnable != null) {
+            backgroundHandler.removeCallbacks(hideBackgroundRunnable);
+            backgroundHandler = null;
+            hideBackgroundRunnable = null;
+        }
     }
 
     /**

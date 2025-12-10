@@ -213,6 +213,12 @@ public class FragmentDetalleSimulacro extends Fragment {
                 Log.d("DETALLE_SIMU", "📊 DATOS RECIBIDOS:");
                 Log.d("DETALLE_SIMU", "========================================");
 
+                // Fallback: si preguntas está vacío pero detalleResumen existe (backend puede devolverlo)
+                if ((d.preguntas == null || d.preguntas.isEmpty()) && d.detalleResumen != null && !d.detalleResumen.isEmpty()) {
+                    Log.w("DETALLE_SIMU", "⚠️ preguntas vacío pero detalleResumen presente → aplicando fallback");
+                    d.preguntas = d.detalleResumen;
+                }
+
                 if (d.header == null) {
                     Log.e("DETALLE_SIMU", "❌ ERROR: Header es NULL");
                     if (getContext() != null) {
@@ -390,30 +396,12 @@ public class FragmentDetalleSimulacro extends Fragment {
     }
     
     private int obtenerColorArea(String area, android.content.Context ctx) {
-        if (area == null || ctx == null) return Color.parseColor("#B6B9C2");
-        String a = area.toLowerCase().trim();
-        
+        if (ctx == null) return Color.parseColor("#B6B9C2");
         try {
-            // Isla del Conocimiento / Todas las áreas - Amarillo
-            if (a.contains("conocimiento") || a.contains("isla") || 
-                (a.contains("todas") && (a.contains("area") || a.contains("área")))) {
-                return ContextCompat.getColor(ctx, R.color.area_conocimiento);
-            }
-            
-            if (a.contains("matem")) return ContextCompat.getColor(ctx, R.color.area_matematicas);
-            if (a.contains("lengua") || a.contains("lectura") || a.contains("espa") || a.contains("critica")) 
-                return ContextCompat.getColor(ctx, R.color.area_lenguaje);
-            if (a.contains("social") || a.contains("ciudad")) 
-                return ContextCompat.getColor(ctx, R.color.area_sociales);
-            if (a.contains("cien") || a.contains("biolo") || a.contains("fis") || a.contains("quim")) 
-                return ContextCompat.getColor(ctx, R.color.area_ciencias);
-            if (a.contains("ingl")) 
-                return ContextCompat.getColor(ctx, R.color.area_ingles);
+            return com.example.zavira_movil.util.AreaColorManager.getColor(ctx, area);
         } catch (Exception e) {
             return Color.parseColor("#B6B9C2");
         }
-        
-        return Color.parseColor("#B6B9C2");
     }
 
     // ---------- Helpers ----------

@@ -8,10 +8,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zavira_movil.model.Question;
+import com.example.zavira_movil.util.AreaColorManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +20,15 @@ public class QuizQuestionsAdapter extends RecyclerView.Adapter<QuizQuestionsAdap
 
     private final List<Question> data = new ArrayList<>();
     private final List<String> marcadas = new ArrayList<>(); // "A".."D"
-    private String areaNombre;
-    private boolean forzarAmarillo = false; // Flag para forzar color amarillo en Isla del Conocimiento
+    private final String areaNombre;
+    private boolean forzarAmarillo; // Flag para forzar color amarillo en Isla del Conocimiento
 
     public QuizQuestionsAdapter(List<Question> preguntas, String areaNombre) {
         this(preguntas, areaNombre, null);
     }
     
-    private int numeroPreguntaActual = 1; // Número de pregunta actual (1-indexed)
-    
+    private int numeroPreguntaActual; // Número de pregunta actual (1-indexed)
+
     public QuizQuestionsAdapter(List<Question> preguntas, String areaNombre, String respuestaPreseleccionada) {
         this(preguntas, areaNombre, respuestaPreseleccionada, 1);
     }
@@ -63,30 +63,32 @@ public class QuizQuestionsAdapter extends RecyclerView.Adapter<QuizQuestionsAdap
             String a = areaNombre.toLowerCase().trim();
             // Si forzarAmarillo está activado, siempre usar color amarillo (para Isla del Conocimiento)
             if (forzarAmarillo) {
-                holder.areaColor = Color.parseColor("#F59E0B");
-                holder.areaColorPastel = Color.parseColor("#FFF9E6");
+                // Usar color centralizado para "isla" (amarillo)
+                holder.areaColor = AreaColorManager.getColor(p.getContext(), "isla");
+                holder.areaColorPastel = AreaColorManager.getSoftColor(p.getContext(), "isla");
             } else if (a.contains("isla")) {
-                // Color amarillo para Isla del Conocimiento
-                holder.areaColor = Color.parseColor("#F59E0B");
-                holder.areaColorPastel = Color.parseColor("#FFF9E6");
+                // Color amarillo para Isla del Conocimiento (delegado)
+                holder.areaColor = AreaColorManager.getColor(p.getContext(), "isla");
+                holder.areaColorPastel = AreaColorManager.getSoftColor(p.getContext(), "isla");
             } else if (a.contains("matem")) {
-                holder.areaColor = ContextCompat.getColor(p.getContext(), R.color.area_matematicas);
-                holder.areaColorPastel = ContextCompat.getColor(p.getContext(), R.color.area_matematicas_pastel);
+                holder.areaColor = AreaColorManager.getColor(p.getContext(), areaNombre);
+                holder.areaColorPastel = AreaColorManager.getSoftColor(p.getContext(), areaNombre);
             } else if (a.contains("lengua") || a.contains("lectura") || a.contains("espa") || a.contains("critica")) {
-                holder.areaColor = ContextCompat.getColor(p.getContext(), R.color.area_lenguaje);
-                holder.areaColorPastel = ContextCompat.getColor(p.getContext(), R.color.area_lenguaje_pastel);
+                holder.areaColor = AreaColorManager.getColor(p.getContext(), areaNombre);
+                holder.areaColorPastel = AreaColorManager.getSoftColor(p.getContext(), areaNombre);
             } else if (a.contains("social") || a.contains("ciudad")) {
-                holder.areaColor = ContextCompat.getColor(p.getContext(), R.color.area_sociales);
-                holder.areaColorPastel = ContextCompat.getColor(p.getContext(), R.color.area_sociales_pastel);
+                holder.areaColor = AreaColorManager.getColor(p.getContext(), areaNombre);
+                holder.areaColorPastel = AreaColorManager.getSoftColor(p.getContext(), areaNombre);
             } else if (a.contains("cien") || a.contains("biolo") || a.contains("fis") || a.contains("quim")) {
-                holder.areaColor = ContextCompat.getColor(p.getContext(), R.color.area_ciencias);
-                holder.areaColorPastel = ContextCompat.getColor(p.getContext(), R.color.area_ciencias_pastel);
+                holder.areaColor = AreaColorManager.getColor(p.getContext(), areaNombre);
+                holder.areaColorPastel = AreaColorManager.getSoftColor(p.getContext(), areaNombre);
             } else if (a.contains("ingl")) {
-                holder.areaColor = ContextCompat.getColor(p.getContext(), R.color.area_ingles);
-                holder.areaColorPastel = ContextCompat.getColor(p.getContext(), R.color.area_ingles_pastel);
+                holder.areaColor = AreaColorManager.getColor(p.getContext(), areaNombre);
+                holder.areaColorPastel = AreaColorManager.getSoftColor(p.getContext(), areaNombre);
             } else {
-                holder.areaColor = Color.parseColor("#957DAD");
-                holder.areaColorPastel = Color.parseColor("#F3E5F5");
+                // Fallback: usar color por defecto desde AreaColorManager
+                holder.areaColor = AreaColorManager.getColor(p.getContext(), null);
+                holder.areaColorPastel = AreaColorManager.getSoftColor(p.getContext(), null);
             }
         }
         return holder;
@@ -96,6 +98,26 @@ public class QuizQuestionsAdapter extends RecyclerView.Adapter<QuizQuestionsAdap
         Question q = data.get(pos);
         h.tvEnunciado.setText(q.enunciado != null ? q.enunciado : "");
         
+        // Recalcular color del área en bind (defensa contra reciclado de holders)
+        int resolvedAreaColor;
+        int resolvedAreaColorPastel;
+        if (areaNombre != null) {
+            String a = areaNombre.toLowerCase().trim();
+            if (forzarAmarillo || a.contains("isla") || a.contains("conocimiento")) {
+                resolvedAreaColor = AreaColorManager.getColor(h.itemView.getContext(), "isla");
+                resolvedAreaColorPastel = AreaColorManager.getSoftColor(h.itemView.getContext(), "isla");
+            } else {
+                resolvedAreaColor = AreaColorManager.getColor(h.itemView.getContext(), areaNombre);
+                resolvedAreaColorPastel = AreaColorManager.getSoftColor(h.itemView.getContext(), areaNombre);
+            }
+        } else {
+            resolvedAreaColor = AreaColorManager.getColor(h.itemView.getContext(), null);
+            resolvedAreaColorPastel = AreaColorManager.getSoftColor(h.itemView.getContext(), null);
+        }
+        // Guardar en el holder para uso posterior
+        h.areaColor = resolvedAreaColor;
+        h.areaColorPastel = resolvedAreaColorPastel;
+
         // Configurar área y número
         if (h.tvAreaNombre != null && areaNombre != null) {
             h.tvAreaNombre.setText(areaNombre);
@@ -157,7 +179,7 @@ public class QuizQuestionsAdapter extends RecyclerView.Adapter<QuizQuestionsAdap
 
     @Override public int getItemCount() { return data.size(); }
 
-    static class VH extends RecyclerView.ViewHolder {
+    public static class VH extends RecyclerView.ViewHolder {
         TextView tvEnunciado, tvAreaNombre, tvNumeroArea;
         LinearLayout optionA, optionB, optionC, optionD;
         TextView circleA, circleB, circleC, circleD;

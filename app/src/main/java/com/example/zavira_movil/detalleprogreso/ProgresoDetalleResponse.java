@@ -7,6 +7,8 @@ public class ProgresoDetalleResponse {
     public Header header;
     public Resumen resumen;
     public List<Pregunta> preguntas;
+    @SerializedName("detalleResumen")
+    public List<Pregunta> detalleResumen; // fallback: algunos endpoints devuelven detalleResumen en vez de preguntas
     public Analisis analisis;
 
     public static class Header {

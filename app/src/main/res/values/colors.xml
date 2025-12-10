@@ -63,19 +63,19 @@
     <color name="area_ciencias_pastel">#E8F5E8</color>
     <color name="area_ingles_pastel">#FFF2E8</color>
     <color name="area_lenguaje_pastel">#F0E8FF</color>
-    <color name="area_matematicas_pastel">#E8F2FF</color>
-    <color name="area_sociales_pastel">#FFE8E8</color>
+    <color name="area_matematicas_pastel">#FFCDD2</color>
+    <color name="area_sociales_pastel">#FFF3E0</color>
 
-    <!-- Colores de áreas principales faltantes -->
-    <color name="area_matematicas">#2196F3</color>
-    <color name="area_lenguaje">#9C27B0</color>
-    <color name="area_sociales">#F44336</color>
-    <color name="area_ciencias">#4CAF50</color>
-    <color name="area_ingles">#FF9800</color>
+    <!-- Colores de áreas principales corregidos según expectativas -->
+    <color name="area_matematicas">#E53935</color> <!-- rojo -->
+    <color name="area_lenguaje">#2196F3</color>   <!-- lectura/lenguaje -> azul -->
+    <color name="area_sociales">#FF9800</color>   <!-- sociales -> naranja -->
+    <color name="area_ciencias">#4CAF50</color>   <!-- ciencias -> verde -->
+    <color name="area_ingles">#9C27B0</color>     <!-- ingles -> morado -->
     <color name="area_conocimiento">#FFC107</color>
 
-    <!-- Colores de áreas soft faltantes -->
-    <color name="area_matematicas_soft">#BBDEFB</color>
+    <!-- Colores de áreas soft faltantes (sin cambios necesarios) -->
+    <color name="area_matematicas_soft">#FFCDD2</color>
     <color name="area_lenguaje_soft">#E1BEE7</color>
     <color name="area_sociales_soft">#FFCDD2</color>
     <color name="area_ciencias_soft">#C8E6C9</color>

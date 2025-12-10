@@ -22,6 +22,7 @@ import com.example.zavira_movil.HislaConocimiento.IslaSimulacroActivity;
 import com.example.zavira_movil.Home.LevelMiniAdapter;
 import com.example.zavira_movil.R;
 import com.example.zavira_movil.model.Subject;
+import com.example.zavira_movil.util.AreaColorManager;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override public int getItemCount() {
-        return (data == null ? 0 : data.size()) + 1; // +1 por la isla
+        return data.size() + 1; // +1 por la isla (data nunca es null)
     }
 
     // ---------- Header (Isla del Conocimiento) ----------
@@ -135,7 +136,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         h.ivArrow.setRotation(isExpanded ? 90f : 0f);
 
         // Borde + ripple (color del área). Plegado = gris, expandido = color área
-        int areaColor = colorFor(s.title);
+        int areaColor = AreaColorManager.getColor(ctx, s.title);
         int grayLocked = Color.parseColor("#B6B9C2");
         h.card.setStrokeWidth(3);
         h.card.setStrokeColor(isExpanded ? areaColor : grayLocked);
@@ -144,6 +145,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         // Progreso (si tu modelo lo maneja)
         int percent = s.percent(); // o 0 si no aplica
         h.progress.setProgress(percent);
+        // Asegurar que la barra de progreso muestre siempre el color del área correspondiente
+        h.progress.setProgressTintList(ColorStateList.valueOf(areaColor));
 
         // Toggle expand/collapse (header, fila de info y flecha)
         View.OnClickListener toggle = v -> {
@@ -173,10 +176,10 @@ public class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         
         // CRÍTICO: Reutilizar adapter existente si existe, sino crear uno nuevo
         // Esto asegura que los cambios en ProgressLockManager se reflejen
-        RecyclerView.Adapter adapterActual = h.rvInner.getAdapter();
+        RecyclerView.Adapter<?> adapterActual = h.rvInner.getAdapter();
         if (adapterActual instanceof LevelMiniAdapter) {
-            // Si ya existe, notificar cambios para refrescar la UI
-            adapterActual.notifyDataSetChanged();
+            // Si ya existe, notificar cambios para refrescar la UI (usar la API específica)
+            ((LevelMiniAdapter) adapterActual).notifyDataSetChanged();
             android.util.Log.d("SubjectAdapter", "Adapter interno actualizado con notifyDataSetChanged() para " + s.title);
         } else {
             // Si no existe, crear uno nuevo
@@ -227,21 +230,6 @@ public class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return R.drawable.fondiespa; // fallback
     }
 
-    // ---- Color por área (para borde y ripple) ----
-    private int colorFor(String title) {
-        if (title == null) return Color.parseColor("#B6B9C2");
-        String t = title.toLowerCase().trim();
-
-        if (t.contains("matem"))                                   return Color.parseColor("#E53935"); // rojo
-        if (t.contains("lectura") || t.contains("lenguaje") || t.contains("espa"))
-            return Color.parseColor("#1E88E5"); // azul
-        if (t.contains("social") || t.contains("ciudad"))          return Color.parseColor("#FB8C00"); // naranja
-        if (t.contains("cien") || t.contains("biolo") || t.contains("fis") || t.contains("quim"))
-            return Color.parseColor("#43A047"); // verde
-        if (t.contains("ingl"))                                    return Color.parseColor("#8E24AA"); // morado
-
-        return Color.parseColor("#B6B9C2");
-    }
 
     // ---- Icono por área (usa tus drawables .png) ----
     @DrawableRes
@@ -261,11 +249,6 @@ public class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return 0;
     }
 
-    // ---- Color del header de la isla ----
-    private int headerColor() {
-        return Color.TRANSPARENT; // sin morado
-    }
-
     static class SubjectVH extends RecyclerView.ViewHolder {
         final MaterialCardView card;
         final View header;         // flHeader (imagen arriba)
@@ -280,7 +263,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(v);
             card      = (MaterialCardView) v; // root del item
             header    = v.findViewById(R.id.flHeader);
-            rowHeader = v.findViewById(R.id.flHeader);
+            rowHeader = header; // reutilizar la misma vista para evitar doble lookup
             rowInfo   = v.findViewById(R.id.rowInfo);
             ivIcon    = v.findViewById(R.id.ivIcon);
             ivArrow   = v.findViewById(R.id.ivArrow);

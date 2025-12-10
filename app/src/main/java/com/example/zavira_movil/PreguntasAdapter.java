@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zavira_movil.util.AreaColorManager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -212,39 +214,13 @@ public class PreguntasAdapter extends RecyclerView.Adapter<PreguntasAdapter.View
     }
     
     private int obtenerColorAreaDesdeRecursos(String area) {
-        if (area == null) return Color.parseColor("#957DAD");
-        String a = area.toLowerCase().trim();
-        if (a.contains("matem")) {
-            return ContextCompat.getColor(context, R.color.area_matematicas);
-        } else if (a.contains("lengua") || a.contains("lectura") || a.contains("leng") || a.contains("espa") || a.contains("critica")) {
-            return ContextCompat.getColor(context, R.color.area_lenguaje);
-        } else if (a.contains("social") || a.contains("soci") || a.contains("ciudad")) {
-            return ContextCompat.getColor(context, R.color.area_sociales);
-        } else if (a.contains("cien") || a.contains("biolo") || a.contains("fis") || a.contains("quim")) {
-            return ContextCompat.getColor(context, R.color.area_ciencias);
-        } else if (a.contains("ingl") || a.contains("ing")) {
-            return ContextCompat.getColor(context, R.color.area_ingles);
-        } else {
-            return Color.parseColor("#957DAD");
-        }
+        // Delegar a AreaColorManager para consistencia
+        return AreaColorManager.getColor(context, area);
     }
     
     private int obtenerColorAreaPastelDesdeRecursos(String area) {
-        if (area == null) return Color.parseColor("#F3E5F5");
-        String a = area.toLowerCase().trim();
-        if (a.contains("matem")) {
-            return ContextCompat.getColor(context, R.color.area_matematicas_pastel);
-        } else if (a.contains("lengua") || a.contains("lectura") || a.contains("leng") || a.contains("espa") || a.contains("critica")) {
-            return ContextCompat.getColor(context, R.color.area_lenguaje_pastel);
-        } else if (a.contains("social") || a.contains("soci") || a.contains("ciudad")) {
-            return ContextCompat.getColor(context, R.color.area_sociales_pastel);
-        } else if (a.contains("cien") || a.contains("biolo") || a.contains("fis") || a.contains("quim")) {
-            return ContextCompat.getColor(context, R.color.area_ciencias_pastel);
-        } else if (a.contains("ingl") || a.contains("ing")) {
-            return ContextCompat.getColor(context, R.color.area_ingles_pastel);
-        } else {
-            return Color.parseColor("#F3E5F5");
-        }
+        // Delegar a AreaColorManager para consistencia
+        return AreaColorManager.getSoftColor(context, area);
     }
     
     private int obtenerColorArea(String area) {
@@ -255,10 +231,10 @@ public class PreguntasAdapter extends RecyclerView.Adapter<PreguntasAdapter.View
         if (area == null) return R.drawable.bg_option_circle_purple;
         String areaLower = area.toLowerCase();
         if (areaLower.contains("matem")) return R.drawable.bg_option_circle_red;
-        if (areaLower.contains("leng") || areaLower.contains("lect")) return R.drawable.bg_option_circle_blue;
-        if (areaLower.contains("cien")) return R.drawable.bg_option_circle_green;
-        if (areaLower.contains("soci")) return R.drawable.bg_option_circle_orange;
-        if (areaLower.contains("ing")) return R.drawable.bg_option_circle_purple;
+        if (areaLower.contains("lect") || areaLower.contains("lengua") || areaLower.contains("leng")) return R.drawable.bg_option_circle_blue;
+        if (areaLower.contains("cien") || areaLower.contains("naturales")) return R.drawable.bg_option_circle_green;
+        if (areaLower.contains("soci") || areaLower.contains("social") || areaLower.contains("ciudad")) return R.drawable.bg_option_circle_orange;
+        if (areaLower.contains("ingl")) return R.drawable.bg_option_circle_purple;
         return R.drawable.bg_option_circle_purple;
     }
     

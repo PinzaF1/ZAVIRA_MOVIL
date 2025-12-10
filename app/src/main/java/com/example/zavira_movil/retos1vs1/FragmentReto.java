@@ -164,7 +164,8 @@ public class FragmentReto extends Fragment {
         ApiService api = RetrofitClient.getInstance().create(ApiService.class);
         btnEnviar.setEnabled(false);
 
-        api.crearReto(new RetoCreateRequest(25, area, oppId)).enqueue(new Callback<RetoCreadoResponse>() {
+        // Crear reto con 5 preguntas (exclusivo para retos)
+        api.crearReto(new RetoCreateRequest(5, area, oppId)).enqueue(new Callback<RetoCreadoResponse>() {
             @Override public void onResponse(Call<RetoCreadoResponse> call, Response<RetoCreadoResponse> resp) {
                 btnEnviar.setEnabled(true);
                 if (!isAdded() || getActivity() == null) return;
@@ -248,4 +249,3 @@ public class FragmentReto extends Fragment {
         if (tvDerrotas  != null) tvDerrotas.setText(String.valueOf(derrotas));
     }
 }
-

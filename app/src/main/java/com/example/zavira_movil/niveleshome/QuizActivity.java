@@ -78,8 +78,8 @@ public class QuizActivity extends AppCompatActivity {
         subtemaUi = getIntent().getStringExtra(EXTRA_SUBTEMA);
         nivel     = getIntent().getIntExtra(EXTRA_NIVEL, 1);
 
-        // Configurar header
-        binding.tvAreaSubtema.setText("Pregunta 1 de 5 • " + (areaUi != null ? areaUi : ""));
+        // Configurar header (máximo 10 preguntas en sesiones normales)
+        binding.tvAreaSubtema.setText("Pregunta 1 de 10 • " + (areaUi != null ? areaUi : ""));
 
         binding.rvQuestions.setLayoutManager(new LinearLayoutManager(this));
         adapter = new QuizQuestionsAdapter(new ArrayList<>(), areaUi);
@@ -306,6 +306,7 @@ public class QuizActivity extends AppCompatActivity {
 
                         // 🎯 MOSTRAR DIÁLOGO IA/ICFES cuando se detectan preguntas de IA (solo una vez por usuario)
                         ArrayList<Question> preguntasFinales = ApiQuestionMapper.toAppList(apiQs);
+                        // Límite de preguntas cambiado a 5 por requerimiento
                         if (preguntasFinales.size() > 10) preguntasFinales = new ArrayList<>(preguntasFinales.subList(0, 10));
 
                         if (!preguntasFinales.isEmpty()) {
@@ -407,6 +408,7 @@ public class QuizActivity extends AppCompatActivity {
                 }
 
                 ArrayList<Question> preguntas = ApiQuestionMapper.toAppList(apiQs);
+                // Límite de preguntas del quiz en cliente: 10
                 if (preguntas.size() > 10) preguntas = new ArrayList<>(preguntas.subList(0, 10));
                 if (preguntas.isEmpty()) {
                     Toast.makeText(QuizActivity.this, "No hay preguntas para este subtema.", Toast.LENGTH_LONG).show();
@@ -824,8 +826,6 @@ public class QuizActivity extends AppCompatActivity {
         // Configurar icono (puedes usar un ícono de alerta o similar)
         ivIcono.setImageResource(android.R.drawable.ic_dialog_alert);
         ivIcono.setColorFilter(areaColor);
-
-        // ... resto del código...
 
         // Configurar textos
         tvTitulo.setText("Necesitas Practicar Más");
@@ -1487,43 +1487,12 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private int obtenerColorArea(String area) {
-        if (area == null) return Color.parseColor("#B6B9C2");
-        String a = area.toLowerCase().trim();
-
-        // Isla del Conocimiento / Todas las áreas - Amarillo
-        if (a.contains("conocimiento") || a.contains("isla") ||
-                (a.contains("todas") && (a.contains("area") || a.contains("área")))) {
-            return ContextCompat.getColor(this, R.color.area_conocimiento);
-        }
-
-        if (a.contains("matem")) return ContextCompat.getColor(this, R.color.area_matematicas);
-        if (a.contains("lengua") || a.contains("lectura") || a.contains("espa") || a.contains("critica"))
-            return ContextCompat.getColor(this, R.color.area_lenguaje);
-        if (a.contains("social") || a.contains("ciudad"))
-            return ContextCompat.getColor(this, R.color.area_sociales);
-        if (a.contains("cien") || a.contains("biolo") || a.contains("fis") || a.contains("quim"))
-            return ContextCompat.getColor(this, R.color.area_ciencias);
-        if (a.contains("ingl"))
-            return ContextCompat.getColor(this, R.color.area_ingles);
-
-        return Color.parseColor("#B6B9C2");
+        // Delegar en AreaColorManager para centralizar colores por área
+        return com.example.zavira_movil.util.AreaColorManager.getColor(this, area);
     }
 
     private int obtenerColorAreaSoft(String area) {
-        if (area == null) return Color.parseColor("#BA68C8");
-        String a = area.toLowerCase().trim();
-
-        if (a.contains("matem")) return ContextCompat.getColor(this, R.color.area_matematicas_soft);
-        if (a.contains("lengua") || a.contains("lectura") || a.contains("espa") || a.contains("critica"))
-            return ContextCompat.getColor(this, R.color.area_lenguaje_soft);
-        if (a.contains("social") || a.contains("ciudad"))
-            return ContextCompat.getColor(this, R.color.area_sociales_soft);
-        if (a.contains("cien") || a.contains("biolo") || a.contains("fis") || a.contains("quim"))
-            return ContextCompat.getColor(this, R.color.area_ciencias_soft);
-        if (a.contains("ingl"))
-            return ContextCompat.getColor(this, R.color.area_ingles_soft);
-
-        return Color.parseColor("#BA68C8");
+        return com.example.zavira_movil.util.AreaColorManager.getSoftColor(this, area);
     }
 
     private int dp(int px) {
